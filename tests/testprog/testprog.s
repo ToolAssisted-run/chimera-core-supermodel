@@ -13,7 +13,13 @@
 ;     (frame mod 62); the eight bits of each control byte on rows 46 and 47
 ;     (blue = pressed); the real-time clock's seconds (two digits, as tiles
 ;     6 to 15) and minutes on row 2; the low bits of the boot count on
-;     row 45 (red = 1, blue = 0).
+;     row 45 (red = 1, blue = 0);
+;   - colours the Real3D's one polygon, a quad in the upper right of the
+;     picture, with the frame (red rising, full green).
+;
+; The 3D scene is one viewport, its base matrix and one polygon, written
+; to the Real3D's memories at power-on (tables at the end). The Real3D is a
+; little-endian chip: its words are written with stwbrx.
 ;
 ; At power-on it counts the boot in the backup RAM (0xF00C0004), which a
 ; game's NVRAM keeps: a machine started with the NVRAM of an earlier run
@@ -32,6 +38,9 @@
 .equ SYSREG, 0xF0100000
 .equ RTC, 0xF0140000
 .equ BACKUP, 0xF00C0000
+.equ CULLHI, 0x8E000000   ; the Real3D's high culling RAM
+.equ POLYRAM, 0x98000000  ; its polygon RAM
+.equ POLYCOLOUR, 0x98000050 ; the polygon's colour word (polygon RAM word 0x14)
 
 .org 0xFFF00100
 reset:
@@ -114,6 +123,25 @@ maskl:
 	stw r4, 0x68(r3)
 	stw r4, 0x6C(r3)
 
+	; the 3D scene
+	lis r3, vpnode@h
+	ori r3, r3, vpnode@l
+	lis r4, CULLHI@h
+	li r5, 40
+	bl r3dcopy
+	lis r3, matrix0@h
+	ori r3, r3, matrix0@l
+	lis r4, CULLHI@h
+	ori r4, r4, 0x0400  ; word 0x100
+	li r5, 12
+	bl r3dcopy
+	lis r3, quad@h
+	ori r3, r3, quad@l
+	lis r4, POLYRAM@h
+	ori r4, r4, 0x0040  ; word 0x10
+	li r5, 23
+	bl r3dcopy
+
 main:
 	; wait for the frame's IRQ 0x02, then take it away
 wait:
@@ -177,6 +205,14 @@ ylo:
 yhi:
 	stw r7, 4(r31)
 	stw r8, 8(r31)
+
+	; the polygon's colour: red is the frame times 4, green full
+	lwz r3, 0(r31)
+	slwi r3, r3, 26
+	oris r3, r3, 0x00FF
+	lis r4, POLYCOLOUR@h
+	ori r4, r4, POLYCOLOUR@l
+	stwbrx r3, r0, r4
 
 	; the shadow name table, cleared
 	mr r3, r27
@@ -300,8 +336,53 @@ bitset:
 	mtlr r20
 	blr
 
-; tbbbbbgggggrrrrr: black, red, green, blue, white, yellow, then ten for the
-; digits (from dark blue to cyan); byte-reversed, as the chip reads them
+; r3dcopy: r5 words from r3 to the Real3D at r4, byte-reversed
+r3dcopy:
+	mtctr r5
+r3dl:
+	lwz r6, 0(r3)
+	stwbrx r6, r0, r4
+	addi r3, r3, 4
+	addi r4, r4, 4
+	bdnz r3dl
+	blr
+
+; tbbbbbgggggrrrrr: transparent (so the 3D shows), red, green, blue, white,
+; yellow, then ten for the digits (from dark blue to cyan); byte-reversed,
+; as the chip reads them
 colours:
-	.word 0x00000000, 0x1F000000, 0xE0030000, 0x007C0000, 0xFF7F0000, 0xFF030000
+	.word 0x00800000, 0x1F000000, 0xE0030000, 0x007C0000, 0xFF7F0000, 0xFF030000
 	.word 0x00280000, 0x00300000, 0x00380000, 0x00400000, 0x80480000, 0x00510000, 0x80590000, 0x00620000, 0x806A0000, 0x00730000
+
+; The viewport node (high culling RAM word 0): no next viewport, its child
+; the model at polygon RAM word 0x10; a 90-degree frustum (cv, cw, io, jo
+; 0.5); 496x384 (in 14.2); base matrix at culling word 0x100; full ambient
+; light; no fog, no spotlight.
+vpnode:
+	.word 0x00000000, 0x01000000, 0x01000010
+	.float 1.0
+	.word 0, 0, 0, 0
+	.float 0.5, 0.5, 0.5, 0.5
+	.word 0, 0, 0, 0, 0, 0, 0, 0
+	.word 0x060007C0, 0x00000000, 0x00800100, 0x00000000
+	.word 0, 0, 0, 0, 0, 0, 0, 0
+	.word 0
+	.float 1.0
+	.word 0, 0, 0x0000FF00, 0, 0, 0
+; The base matrix as games give it (translation, then three rows): it
+; undoes the Real3D's axis order, so the model is in OpenGL's view space.
+matrix0:
+	.float 0.0, 0.0, 0.0
+	.float 0.0, 0.0, -1.0
+	.float 1.0, 0.0, 0.0
+	.float 0.0, -1.0, 0.0
+; One quad: no shared vertices; its normal +Z; double-sided, its colour in
+; the header, the last polygon; opaque, unlit. Then four vertices of x, y,
+; z in 17.7 fixed point (Step 1.0) shifted up 8 bits, and no texture: x 1
+; to 6, y 1 to 4, z -10.
+quad:
+	.word 0x00000040, 0x00000016, 0x00000000, 0x40000000, 0xFFFF0000, 0x00000000, 0x00810000
+	.word 0x00008000, 0x00008000, 0xFFFB0000, 0
+	.word 0x00030000, 0x00008000, 0xFFFB0000, 0
+	.word 0x00030000, 0x00020000, 0xFFFB0000, 0
+	.word 0x00008000, 0x00020000, 0xFFFB0000, 0

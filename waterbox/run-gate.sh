@@ -21,6 +21,9 @@
 #   teeth        the comparison sees a press one frame later
 #   scale        Drawing Scale 2x: a 992x768 picture, native = sandbox, and
 #                the same machine as at 1x (steps, sound, cycles, lag)
+#   3d           the Real3D's polygon (the program's one quad) is drawn by
+#                New3D where its vertices put it, coloured as the program
+#                sets it each frame, and nothing around it
 #   controls     a press reaches the program through the Model 3's input
 #                registers, and the controls a cabinet lacks are not shown
 #   lag          a frame in which the program did not read its controls (one
@@ -40,8 +43,9 @@
 #   real games   (SKIP without SUPERMODEL_ROMS) native = sandbox and a
 #                session, on each ROM set named below that is there
 #
-# What the test program does not stand in for: the 3D renderer (it draws no
-# polygons), the sound board's sound (it gives the sound board no program,
+# What the test program does not stand in for: the 3D renderer with a real
+# game's models, textures, lights and fog (it draws one flat, unlit, untextured
+# quad), the sound board's sound (it gives the sound board no program,
 # so the sound is silence, compared all the same), the MPEG board, the
 # drive boards, the analog controls, the light guns, and a real game's
 # timing. The real game tests are where those are seen.
@@ -174,6 +178,19 @@ if grep -q '^frames=' "$work/s2.d" && cmp -s "$work/s2.d" "$work/s1.d" && [ "$si
 	pass "scale: at 2x the picture is 992x768 and the machine is the one at 1x (steps, sound, cycles, lag)"
 else
 	fail "scale: picture $size2; $(diff "$work/s2.d" "$work/s1.d" | head -5 | tr '\n' ' ')"
+fi
+
+echo "== 3d"
+# the quad spans x 1 to 6, y 1 to 4 at z -10 in a 90-degree view: pixels 273
+# to 396 across and 115 to 172 down; its red is the program's frame count
+# times 4, its green full
+"$native" "$work/tp" --frames 60 --screenshot 40:"$work/q40.tga" --screenshot 41:"$work/q41.tga" > /dev/null 2> /dev/null
+q40="$(pixel "$work/q40.tga" 330 145)"; q41="$(pixel "$work/q41.tga" 330 145)"
+qcorner="$(pixel "$work/q40.tga" 275 117)"; qout="$(pixel "$work/q40.tga" 268 145)$(pixel "$work/q40.tga" 330 178)"
+if [ "${q40:2:4}" = ff00 ] && [ "${q41:2:4}" = ff00 ] && [ "$q40" != "$q41" ] && [ "${qcorner:2:4}" = ff00 ] && [ "$qout" = 000000000000 ]; then
+	pass "3d: the Real3D's quad is drawn where its vertices put it (inside: $q40, then $q41 a frame later; outside: black)"
+else
+	fail "3d: inside $q40 and $q41 (..ff00, changing), corner $qcorner, outside $qout (black)"
 fi
 
 echo "== controls"

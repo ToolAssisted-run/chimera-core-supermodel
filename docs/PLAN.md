@@ -110,7 +110,7 @@ are listed at the end of this file.
   renderers) with the core's configuration (one thread, no network, the
   hardware's 57.524 Hz); `chimera_osd.cpp` answers Supermodel's OSD calls
   (OSMesa as the window, the picture read from OSMesa's buffer after
-  glFinish, the sound mixed to stereo as upstream mixes for two speakers, no
+  glFinish (glReadPixels gave back zeros there), the sound mixed to stereo as upstream mixes for two speakers, no
   threads, no folders); `chimera_input.cpp` writes Chimera's controls into
   Supermodel's inputs before each frame (upstream's input polling is not
   used); `chimera_net.cpp` stands in for the network the net board names.
@@ -119,9 +119,9 @@ are listed at the end of this file.
   Games.xml); 0002 the RTC72421 reads the machine's clock (Starting Clock
   plus frames, UTC); 0003 a read of the input registers is told to the core
   (lag frames); 0004 a clone's parent set is the file the core names (the
-  project's "parent" file); 0005 New3D gives the window back its front
-  buffer, not GL_BACK (OSMesa's window has no back buffer: every picture
-  was black until this).
+  project's "parent" file). (A patch 0005 that made New3D give the window
+  back GL_FRONT instead of GL_BACK was made in this round and taken out
+  the same day: see "The 3D test" below.)
 - **The controls** are one list, `tools/gen-inputs.py`, which writes the
   C++ table, the test harness's names and waterbox.config's input
   declaration: 79 buttons and 20 axes, every control a Model 3 cabinet has,
@@ -178,8 +178,8 @@ Measured (2026-10-31, on this machine, against Chimera at
   the mouse.
 - **Memory domains**: Main RAM (8 MiB) and Backup RAM (128 KiB), as
   Supermodel keeps them (32-bit words in the computer's byte order: a
-  PowerPC byte at address A is the domain's byte A ^ 3). Patch 0006 gives
-  the core their pointers. Chimera requires the five domain exports.
+  PowerPC byte at address A is the domain's byte A ^ 3). Patch 0005 (0006
+  when it was made) gives the core their pointers. Chimera requires the five domain exports.
 - **Texts**: 14 keys, in Chimera's 26 languages; English written here, the
   other 25 translated from it by an AI model (Claude), as the other cores'
   were; nobody who speaks them has read them yet.
@@ -202,9 +202,9 @@ Measured (2026-10-31, Chimera 3f8ea7e2):
   project opened in the window: each last picture is the native reference's,
   every pixel; the 79 controls the window lists carry the package's
   bindings. The first run found that Chimera refuses a core without the
-  memory domain exports (hence patch 0006).
+  memory domain exports (hence patch 0006, now 0005).
 - The package is 31 MB (core.wbx 88 MB before packing).
-- `waterbox/run-gate.sh` again after patch 0006: 16 passed, 0 failed, 4
+- `waterbox/run-gate.sh` again after patch 0006 (now 0005): 16 passed, 0 failed, 4
   skipped.
 
 ## Drawing Scale (2026-10-31)
@@ -231,8 +231,9 @@ folder as `<game>.nv`, a block file. The core keeps that format, so a file
 goes between Supermodel and Chimera as it is:
 
 - **Export Save Data** is one file, `<game>.nv`, written by upstream's own
-  code (CModel3::SaveNVRAM) into memory no state holds (patch 0007 lets a
-  block file be written into a stream: the sandbox has no folder). The
+  code (CModel3::SaveNVRAM) into memory no state holds (patch 0006, 0007
+  when it was made, lets a block file be written into a stream: the
+  sandbox has no folder). The
   stream is an `fmemopen` over that memory; the C library allocates and
   frees its small FILE record while the export runs.
 - **A project's "Save data" slot** takes such a file; it is loaded after
@@ -252,3 +253,31 @@ first); a file that is not an NVRAM file is refused. With upstream's
 SaveNVRAM and LoadNVRAM taken out on purpose, the first two failed (19
 passed, 2 failed). `tests/run-frontend.sh` 5 ok; contract tests 21 passed;
 check-core-texts 19 keys.
+
+## The 3D test (2026-10-31)
+
+The test program now draws with the Real3D too: at power-on it writes one
+viewport node (a 90-degree frustum, 496x384, full ambient light), the base
+matrix games use (which undoes the Real3D's axis order) and one polygon (a
+flat, unlit, double-sided quad whose colour is in its header) into the
+high culling RAM and the polygon RAM, with `stwbrx` (the Real3D is a
+little-endian chip), and each frame it changes the quad's colour with the
+frame count. The tile generator's colour 0 is now transparent, so the 3D
+shows through the 2D layer. The quad is drawn by New3D on llvmpipe (its
+OpenGL 4.1 shaders, its frame buffers, its geometry-shader quads) exactly
+where its vertices say: pixels 273 to 396 across, 115 to 172 down.
+
+Taken out: patch 0005 (New3D's `glDrawBuffer(GL_BACK)` made GL_FRONT). It
+was made when the first pictures were black, but that had two other
+causes: the test program wrote the tile generator's palette and name
+tables in the wrong byte order, and `glReadPixels` gave back zeros (the
+core reads OSMesa's buffer instead). With GL_BACK put back on purpose
+(after both were fixed) the quad and the 2D layers were still drawn the
+same, and the whole gate passes without the patch; on a context with no
+back buffer, Mesa refuses GL_BACK and keeps drawing into the front buffer.
+The later patches were renumbered (0006 is now 0005, 0007 now 0006).
+
+Measured: `waterbox/run-gate.sh` 22 passed, 0 failed, 4 skipped, with 3D in
+every comparison now (native = sandbox, save and load before every frame,
+a session, turbo, 2x). The new 3d test checks the quad's inside (its
+colour, changing a frame later), a corner and two pixels just outside.

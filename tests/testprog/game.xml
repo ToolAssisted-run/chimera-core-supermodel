@@ -17,7 +17,7 @@
     </hardware>
     <roms>
       <region name="crom" stride="4" chunk_size="4">
-        <file offset="0" name="chimeratest-crom.bin" crc32="0xCF152E74" />
+        <file offset="0" name="chimeratest-crom.bin" crc32="0x8950C224" />
       </region>
     </roms>
   </game>

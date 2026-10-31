@@ -7,7 +7,8 @@ and logic, compares, branches with labels, the special registers an
 interrupt handler needs (SRR0/1, SPRG0-3, MSR) and rfi. Big-endian output.
 
 A source line is "label:", or "mnemonic operands", or ".org ADDRESS",
-".word VALUE[, VALUE...]", ".equ NAME, VALUE"; ";" or "#" starts a comment.
+".word VALUE[, VALUE...]", ".float NUMBER[, NUMBER...]" (IEEE single),
+".equ NAME, VALUE"; ";" or "#" starts a comment.
 Registers are r0..r31; numbers are decimal or 0x hex; an expression may use
 labels, .equ names, + - * << >> | & and parentheses, and @h / @ha / @l on a
 value (high half, high half adjusted for a signed low half, low half).
@@ -95,6 +96,11 @@ class Asm:
                         self.emit(pc, self.val(a, pc, final))
                         pc += 4
                     continue
+                if op == ".float":
+                    for a in args:
+                        self.emit(pc, struct.unpack(">I", struct.pack(">f", float(a)))[0])
+                        pc += 4
+                    continue
                 self.emit(pc, self.encode(op, args, pc, final))
                 pc += 4
             except Exception as e:
@@ -143,6 +149,8 @@ class Asm:
             return (31 << 26) | (R(a[0]) << 21) | (R(a[1]) << 16) | (R(a[2]) << 11) | (xo[op] << 1)
         if op == "sub":  # sub rD, rA, rB = subf rD, rB, rA
             return (31 << 26) | (R(a[0]) << 21) | (R(a[2]) << 16) | (R(a[1]) << 11) | (40 << 1)
+        if op == "stwbrx":  # stwbrx rS, rA, rB (rA = r0 means no base)
+            return x_form(31, R(a[0]), R(a[1]), R(a[2]), 662)
         logic = {"and": 28, "or": 444, "xor": 316, "slw": 24, "srw": 536, "nor": 124}
         if op in logic:
             return x_form(31, R(a[1]), R(a[0]), R(a[2]), logic[op])

@@ -86,8 +86,8 @@ dashes (`P1Punch`, `P1Offscreen`), and axes are `NAME=value`
 
 ## Troubleshooting
 
-- Every picture black: New3D drew into GL_BACK, which OSMesa's window does
-  not have (patch 0005 must be applied).
+- Every picture black: the picture must be read from OSMesa's buffer after
+  glFinish (EndFrameVideo); glReadPixels gave back zeros there.
 - "missing required export Init": the core's library was not linked whole.
 - The test program not found in the game list: `tests/testprog/game.xml`
   names another CRC32 than the zip; run make-testprog.py and rebuild.
