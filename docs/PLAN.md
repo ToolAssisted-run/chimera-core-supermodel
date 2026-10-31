@@ -426,6 +426,45 @@ passed, 1 failed (names, naming that text), 4 skipped; with it fixed, 26
 passed, 0 failed, 4 skipped. Chimera's own `check-proper-nouns.py` run on
 these tables: 0 problems.
 
+## AVX2 drawing code, measured and not added (2026-10-31)
+
+The Godot cores let llvmpipe make AVX2 code (256-bit vectors) on a computer
+that has all of x86-64-v3, as the Drawing Code setting (their
+mesa-patches/0002 and a `chimera_llvmpipe_avx2` function in the core). To
+see whether this core should have it, the patch was applied to this
+repository's Mesa build for one experiment, both builds were linked with
+and without the function returning yes, and then the patch was taken out
+again: nothing of it is committed.
+
+Measured on this computer (Intel Core Ultra 7 265KF), the test program, 600
+frames with the gate's movie, times in seconds (two runs at 1x):
+
+| | Baseline (128 bits) | AVX2 (256 bits) |
+|---|---|---|
+| sandbox, 1x | 9.8, 9.5, 9.5 | 8.5, 8.4, 9.1 |
+| native, 1x | 7.9, 7.4, 7.9 | 7.4, 6.7, 7.2 |
+| sandbox, 2x | 27.6 | 24.9 |
+| native, 2x | 25.6 | 22.6 |
+
+- With AVX2 the sandbox and the native build were still the same machine
+  (every digest: pictures, sound, steps, lag, cycles), at 1x and at 2x.
+- At 1x the pictures were the same with and without AVX2 (the program's
+  flat colours); at 2x they were not (the 2D layers are scaled up
+  bilinearly): a movie's pictures would differ between a computer with
+  AVX2 and one without. The steps, the sound and the cycles were the same.
+- About a tenth faster on this program, at the price of a setting, a Mesa
+  patch, its tests, 26 tables of texts, and pictures that depend on the
+  computer. That is not a plain win, so it is not added. It should be
+  measured again on a real game (vf3), whose textured, lit scenes give
+  llvmpipe far more shader work than one flat quad.
+
+Trap: this repository's `build/mesa` was copied from the Ikemen GO core's,
+and its `build.ninja` still names that core's folders (for LLVM and for
+re-running meson). Rebuilding it in place with ninja compiled this
+repository's sources and wrote nothing in the other checkout, but its
+libOSMesa.so does not link (as setup-mesa.sh expects: the core links the
+archives).
+
 ## Where this stands (2026-10-31)
 
 **Works, on the test program, on Linux, native = sandbox:** the Model 3
@@ -441,11 +480,18 @@ order for the tools. The package passes Chimera's contract tests and runs
 in chimera-run and in Chimera's Qt window (headless), the window's picture
 the native reference's to the pixel.
 
-**Measured last** (Chimera 3f8ea7e2, miniBox 7216594, this machine):
-`waterbox/run-gate.sh` 25 passed, 0 failed, 4 skipped (the real games);
-`tests/run-frontend.sh` 6 ok; contract tests 21 passed;
-`check-core-texts.py` 19 keys. Every test was broken on purpose once and
-seen to fail (each section above says how).
+**Measured last** (2026-10-31, Chimera main cb46d2b7 at
+~/chimera-scratch-bump, miniBox 7216594, this machine):
+`waterbox/run-gate.sh` 26 passed, 0 failed, 4 skipped (the real games: no
+ROM sets here); `tests/run-frontend.sh` (chimera-run and Chimera's Qt
+window, headless) 6 ok; Chimera's contract tests on the package alone 22
+passed, 0 failed; `check-core-texts.py` 19 keys, every one named;
+`tools/check-names.py` and Chimera's `check-proper-nouns.py` 0 names
+changed. Every test was broken on purpose once and seen to fail (each
+section above says how).
+
+**The owner's answers** (2026-10-31) kept every default; see "The owner's
+answers" above.
 
 **Not tried, and what each needs:**
 
@@ -459,16 +505,18 @@ seen to fail (each section above says how).
   the MPEG digital sound board (scud, srally2); the drive board's Z80
   (Wheel boards); the security board; the Real3D's DMA and ping-pong
   update buffers; real timing.
-- **Speed of a game on llvmpipe.** The test program's 600 frames take 9.1 s
-  in the sandbox; a game's scenes are far heavier. AVX2 code generation (as
-  the Godot core has it as a setting) is not here yet.
+- **Speed of a game on llvmpipe.** The test program's 600 frames take
+  about 9.5 s in the sandbox; a game's scenes are far heavier. AVX2 code
+  was measured on the test program (about a tenth faster) and not added;
+  see "AVX2 drawing code" above. It is to be measured again on vf3.
 - **Windows.** Not run. The Windows test would be the frontend test's
   scenario in the published Windows build: the test program (and a game)
   from a project, its pictures and sound the Linux native reference's,
   and a state loaded across sessions. What failed only on Windows in other
   cores was stacks; Supermodel has no coroutines of its own, so the risk is
   Mesa's and the guest's usual ones.
-- **The GPU bridge.** Not started (owner's question 8).
+- **The GPU bridge.** Not started: the owner wants it after real games
+  are proved and their speed on llvmpipe measured.
 - **Clones**: the "Parent ROM set" slot (patch 0004) has not been tried:
   no clone set was on hand.
 - **The light gun's crosshair**: upstream draws one in its SDL frontend;
@@ -494,6 +542,8 @@ seen to fail (each section above says how).
   the control with the computer's clock fails under it).
 
 **Next:** the owner's ROM sets (vf3 first, then scud and srally2, then
-lostwsga) through the gate and by eye; then speed (AVX2 for llvmpipe,
-measured); then the owner's answers above; then Windows; then the GPU
-bridge if wanted.
+lostwsga) through the gate (`SUPERMODEL_ROMS`) and by eye; their speed on
+llvmpipe, with and without AVX2; then Windows; publishing when vf3 (and if
+possible scud) runs the same natively and in the sandbox and looks right
+(the owner's to do: the repository, the roster, issue 354); then the GPU
+bridge. Without a ROM set there is little content-free work left.
