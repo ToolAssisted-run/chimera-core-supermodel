@@ -10,6 +10,14 @@
 #   opened and played through Lua, its last picture compared with the
 #   reference's; and the package's bindings becoming Chimera's defaults.
 #
+# - A real game, where SUPERMODEL_ROMS names a folder holding vf3.zip
+#   (Virtua Fighter 3; SKIP without it): a fight (two coins, Start, a fighter
+#   picked, punches and kicks), 2400 frames, played by chimera-run from a
+#   project, which also records the movie it played; that recording made
+#   into a new project and played in a new chimera-run process; and the
+#   first project opened in Chimera's window. Each last picture must be the
+#   native reference's.
+#
 # Nothing is written under the Chimera checkout: the window's settings, its
 # cache and recovery files, the Base path and the sandbox's log are all in
 # build/frontend.
@@ -123,6 +131,59 @@ else
 	fi
 fi
 
+# ---------------------------------------------------------------- a real game: vf3
+# The fight the core's gate plays (waterbox/run-gate.sh, real_movie vf3),
+# here as a project. Each entry: control:first frame:frames held.
+vf3_frames=2400
+vf3_presses=("P1 Coin:600:4" "P1 Coin:620:4" "P1 Start:960:4" "P1 Right:1150:6" "P1 Punch:1200:6"
+	"P1 Right:1800:40" "P1 Punch:1860:3" "P1 Punch:1890:3" "P1 Kick:1920:3" "P1 Left:1960:30"
+	"P1 Kick:2000:3" "P1 Guard:2100:20" "P1 Down:2150:20" "P1 Punch:2200:3" "P1 Kick:2250:3"
+	"P1 Right:2300:30" "P1 Punch:2340:3" "P1 Kick:2340:3")
+vf3_zip="${SUPERMODEL_ROMS:-}/vf3.zip"
+have_vf3=0
+if [ -n "${SUPERMODEL_ROMS:-}" ] && [ -f "$vf3_zip" ]; then
+	have_vf3=1
+	mkdir -p "$work/vf3/native" "$work/vf3/proj"
+	cp "$vf3_zip" "$work/vf3/native/"; cp "$vf3_zip" "$work/vf3/proj/"
+	printf '{"game":["vf3.zip"]}' > "$work/vf3/native/slots"; printf '{}' > "$work/vf3/native/settings"
+	native_press=(); project_press=()
+	for p in "${vf3_presses[@]}"; do
+		IFS=: read -r name at len <<< "$p"
+		native_press+=(--press "$at:${name// /}:$len")
+		project_press+=("press=$name:$at:$len")
+	done
+	"$rn" "$work/vf3/native" --frames "$vf3_frames" "${native_press[@]}" \
+		--screenshot "$((vf3_frames - 1)):$work/vf3/native.last.tga" > "$work/vf3/native.txt" 2> "$work/vf3/native.err"
+	python3 "$here/make-project.py" "$pkg" "$work/vf3/proj/vf3.chimeraProject" "$vf3_frames" "${project_press[@]}" \
+		-- "game=$work/vf3/proj/vf3.zip" > "$work/vf3/project.log" 2>&1
+fi
+if [ "$have_vf3" = 0 ]; then
+	report "engine:vf3" SKIP "no vf3.zip (set SUPERMODEL_ROMS to a folder holding it)"
+elif [ ! -x "$crun" ]; then
+	report "engine:vf3" SKIP "no chimera-run at $crun"
+else
+	# the project played, and the movie the engine recorded while playing it
+	( cd "$work/vf3" && timeout 1800 "$crun" --project "$work/vf3/proj/vf3.chimeraProject" "$pkg" --files "$work/vf3/proj" \
+		--frames "$vf3_frames" --record "$work/vf3/recorded.log" \
+		--screenshot "$((vf3_frames - 1))=$work/vf3/run.last.tga" --meta "$work/vf3/run.meta" > "$work/vf3/run.log" 2>&1 )
+	if grep -q '^status=OK' "$work/vf3/run.meta" 2>/dev/null &&
+	   python3 "$here/compare-pictures.py" "$work/vf3/native.last.tga" "$work/vf3/run.last.tga" > "$work/vf3/run.pic" 2>&1; then
+		report "engine:vf3" PASS "Virtua Fighter 3, a fight from a project, $vf3_frames frames: the last picture is the native reference's, $(cat "$work/vf3/run.pic")"
+	else
+		report "engine:vf3" FAIL "$(grep -m1 detail= "$work/vf3/run.meta" 2>/dev/null) $(cat "$work/vf3/run.pic" 2>/dev/null) (build/frontend/vf3/run.log)"
+	fi
+	# the recorded movie made into a new project and played by a new process
+	( cd "$work/vf3" && "$crun" --new-project "$work/vf3/replay.chimeraProject" "$pkg" "$vf3_zip" "$work/vf3/recorded.log" > "$work/vf3/replay.make.log" 2>&1 \
+		&& timeout 1800 "$crun" --project "$work/vf3/replay.chimeraProject" "$pkg" --files "$SUPERMODEL_ROMS" --frames "$vf3_frames" \
+		--screenshot "$((vf3_frames - 1))=$work/vf3/replay.last.tga" --meta "$work/vf3/replay.meta" > "$work/vf3/replay.log" 2>&1 )
+	if grep -q '^status=OK' "$work/vf3/replay.meta" 2>/dev/null &&
+	   python3 "$here/compare-pictures.py" "$work/vf3/native.last.tga" "$work/vf3/replay.last.tga" > "$work/vf3/replay.pic" 2>&1; then
+		report "engine:vf3-replay" PASS "the movie chimera-run recorded, made into a new project and replayed in a new process: the same last picture"
+	else
+		report "engine:vf3-replay" FAIL "$(grep -m1 detail= "$work/vf3/replay.meta" 2>/dev/null) $(cat "$work/vf3/replay.pic" 2>/dev/null) (build/frontend/vf3/replay.log)"
+	fi
+fi
+
 # ---------------------------------------------------------------- Chimera itself
 if [ ! -x "$chimera_exe" ]; then
 	report "window" SKIP "Chimera's window is not built ($chimera_exe)"
@@ -161,6 +222,18 @@ if [ "$(meta gui status)" = "OK" ] && python3 "$here/compare-pictures.py" "$work
 	report "window:project" PASS "the project opened in Chimera: after $(meta gui frames) frames, $(meta gui width)x$(meta gui height), the picture is the reference's"
 else
 	report "window:project" FAIL "status $(meta gui status) $(meta gui detail); $(cat "$work/gui.pic" 2>/dev/null) (build/frontend/gui.log)"
+fi
+
+# the real game's project opened in the window
+if [ "$have_vf3" = 1 ]; then
+	gui gui-vf3 "$config" "$work/vf3/proj/vf3.chimeraProject" "$vf3_frames"
+	if [ "$(meta gui-vf3 status)" = "OK" ] && python3 "$here/compare-pictures.py" "$work/vf3/native.last.tga" "$work/gui-vf3/last.png" > "$work/gui-vf3.pic" 2>&1; then
+		report "window:vf3" PASS "the vf3 fight's project opened in Chimera: after $(meta gui-vf3 frames) frames, $(meta gui-vf3 width)x$(meta gui-vf3 height), the picture is the reference's"
+	else
+		report "window:vf3" FAIL "status $(meta gui-vf3 status) $(meta gui-vf3 detail); $(cat "$work/gui-vf3.pic" 2>/dev/null) (build/frontend/gui-vf3.log)"
+	fi
+else
+	report "window:vf3" SKIP "no vf3.zip (set SUPERMODEL_ROMS to a folder holding it)"
 fi
 
 # the bindings the package ships are the machine's when nobody changed them

@@ -47,8 +47,10 @@
 #   refusals     a zip that holds no Model 3 game, and a project without a
 #                game, each say why
 #   names        no name is translated or bent in the 26 language tables
-#   real games   (SKIP without SUPERMODEL_ROMS) native = sandbox and a
-#                session, on each ROM set named below that is there
+#   real games   (SKIP without SUPERMODEL_ROMS) on each ROM set named below
+#                that is there: native = sandbox (with both speeds), saved
+#                and loaded before every frame, a session, and the last
+#                picture a drawn scene; vf3's movie plays a fight
 #
 # What the test program does not stand in for: the 3D renderer with a real
 # game's models, textures, lights and fog (it draws one flat, unlit, untextured
@@ -363,21 +365,63 @@ fi
 echo "== real games"
 # Each ROM set is a zip named as Supermodel and MAME name it, in the folder
 # SUPERMODEL_ROMS names; a clone also needs its parent's zip there. Nothing
-# of them is in this repository. Each runs from power-on with coins and
-# Start pressed, native against the sandbox and saved into a new host.
-real_frames="${SUPERMODEL_FRAMES:-1800}"
-real_movie=(--press 600:P1Coin:4 --press 640:P1Start:4 --press 900:P1Start:4 --press 1000:P1Right,P1Punch:30 --press 1200:P1Left:30)
+# of them is in this repository. Each runs from power-on with its movie,
+# native against the sandbox, saved and loaded before every frame, and saved
+# into a new host; the native run's pictures at the frames named are kept in
+# build/gate (<set>-<frame>.tga) to be looked at, and the last one must be a
+# drawn 3D scene (thousands of colours, not a black or blank screen).
+#
+# vf3 (Virtua Fighter 3): two coins (the default is two coins a credit)
+# during the warning screen, Start once the title is up, the cursor one to
+# the right and Punch to pick that fighter, then the fight (it begins about
+# frame 1600): walks, punches, kicks, a guard, a crouch. 2400 frames.
+# The other sets' movies only press coins, Start and a few directions: no
+# one has run them yet.
+real_movie() { # real_movie <set>: the presses, frames, session frame and pictures to keep
+	case "$1" in
+		vf3)
+			movie=(--press 600:P1Coin:4 --press 620:P1Coin:4 --press 960:P1Start:4
+				--press 1150:P1Right:6 --press 1200:P1Punch:6
+				--press 1800:P1Right:40 --press 1860:P1Punch:3 --press 1890:P1Punch:3
+				--press 1920:P1Kick:3 --press 1960:P1Left:30 --press 2000:P1Kick:3
+				--press 2100:P1Guard:20 --press 2150:P1Down:20 --press 2200:P1Punch:3
+				--press 2250:P1Kick:3 --press 2300:P1Right:30 --press 2340:P1Punch,P1Kick:3)
+			frames="${SUPERMODEL_FRAMES:-2400}"; keep=(1000 1300 1650 1900 2200) ;;
+		*)
+			movie=(--press 600:P1Coin:4 --press 640:P1Start:4 --press 900:P1Start:4
+				--press 1000:P1Right,P1Punch:30 --press 1200:P1Left:30)
+			frames="${SUPERMODEL_FRAMES:-1800}"; keep=(600 1200) ;;
+	esac
+	session_at=$((frames * 5 / 6))
+}
 for set in vf3 scud srally2 lostwsga; do
 	if [ -z "${SUPERMODEL_ROMS:-}" ] || [ ! -f "${SUPERMODEL_ROMS}/$set.zip" ]; then
 		skip "real games: $set.zip (set SUPERMODEL_ROMS to a folder holding it)"
 		continue
 	fi
+	real_movie "$set"
 	mkwork "$set" "$SUPERMODEL_ROMS/$set.zip"
-	"$native" "$work/$set" --frames "$real_frames" "${real_movie[@]}" --screenshot "$((real_frames - 1))":"$work/$set-last.tga" > "$work/$set-n.txt" 2> "$work/$set-n.err"
-	"$wbx" "$core" "$work/$set" --frames "$real_frames" "${real_movie[@]}" > "$work/$set-w.txt" 2> "$work/$set-w.err"
-	same "real games" "$work/$set-n.txt" "$work/$set-w.txt" "$set: native = sandbox, $real_frames frames from power-on"
-	"$wbx" "$core" "$work/$set" --frames "$real_frames" "${real_movie[@]}" --session-at "$((real_frames / 2))" > "$work/$set-s.txt" 2> "$work/$set-s.err"
-	same "real games" "$work/$set-s.txt" "$work/$set-w.txt" "$set: saved at frame $((real_frames / 2)), loaded into a new host = straight"
+	shots=(--screenshot "$((frames - 1))":"$work/$set-last.tga")
+	for f in "${keep[@]}"; do
+		[ "$f" -lt "$frames" ] && shots+=(--screenshot "$f":"$work/$set-$f.tga")
+	done
+	t0=$(date +%s.%N)
+	"$native" "$work/$set" --frames "$frames" "${movie[@]}" "${shots[@]}" > "$work/$set-n.txt" 2> "$work/$set-n.err"
+	t1=$(date +%s.%N)
+	"$wbx" "$core" "$work/$set" --frames "$frames" "${movie[@]}" > "$work/$set-w.txt" 2> "$work/$set-w.err"
+	t2=$(date +%s.%N)
+	speed="$(python3 -c "print(f'native {$frames / ($t1 - $t0):.1f}, sandbox {$frames / ($t2 - $t1):.1f} frames a second')")"
+	same "real games" "$work/$set-n.txt" "$work/$set-w.txt" "$set: native = sandbox, $frames frames from power-on ($speed)"
+	"$wbx" "$core" "$work/$set" --frames "$frames" "${movie[@]}" --rerecord > "$work/$set-r.txt" 2> "$work/$set-r.err"
+	same "real games" "$work/$set-r.txt" "$work/$set-w.txt" "$set: saved and loaded before every frame = straight ($(sed -n 's/stateBytes=//p' "$work/$set-r.err") state bytes)"
+	"$wbx" "$core" "$work/$set" --frames "$frames" "${movie[@]}" --session-at "$session_at" > "$work/$set-s.txt" 2> "$work/$set-s.err"
+	same "real games" "$work/$set-s.txt" "$work/$set-w.txt" "$set: saved at frame $session_at, loaded into a new host = straight"
+	colours="$(python3 "$root/tests/colours.py" "$work/$set-last.tga" 2> /dev/null || echo 0)"
+	if [ "$colours" -gt 2000 ]; then
+		pass "real games: $set: the last picture is drawn ($colours colours; pictures kept in $work/$set-*.tga)"
+	else
+		fail "real games: $set: the last picture holds $colours colours (black or blank?)"
+	fi
 done
 
 echo
