@@ -317,3 +317,23 @@ frame count after 300 frames reads 0000012c through chimera-run's dump of
 the Main RAM bus, and 2c010000 in the hidden domain); with the bus's ^ 3
 taken out on purpose it failed (the bus read 2c010000). Gate 23 passed;
 contract tests 21 passed.
+
+## CI (2026-10-31, written, not run)
+
+`.github/workflows/chimera.yml` is the Godot core's, for this core: it
+builds Chimera (and its Qt window), miniBox, LLVM and Mesa (cached), runs
+`waterbox/run-gate.sh` and asks for each test by name, builds the package
+stamped with the commit, runs `tests/run-frontend.sh` and Chimera's
+contract tests, uploads `supermodel-<sha>` and calls Chimera's publishing
+workflow. It has never run: this repository is local only, and creating
+and publishing it are the owner's. On a runner the real game tests SKIP
+(no ROM sets); everything else in the gate runs on the test program.
+
+## Speed and size (2026-10-31, this machine, the test program)
+
+600 frames (10.4 s of Model 3 time) took 7.1 s natively and 9.1 s in the
+sandbox at 1x, 26.1 s in the sandbox at 2x; the sandboxed process peaked at
+1.08 GB of memory (0.48 GB natively). A state of the test program is 31 MB
+with the 3D, the sound and the backup RAM in use. A real game draws far
+more polygons and textures than one quad, so these say nothing yet about a
+game's speed on llvmpipe.

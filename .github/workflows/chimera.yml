@@ -1,0 +1,190 @@
+name: chimera waterbox core
+
+# Builds the core from a fresh clone, tests it, and publishes the package.
+#
+# No Model 3 game may be shared, so the tests here run this repository's
+# own test program (tests/testprog: PowerPC and 68000 code written here,
+# assembled by its scripts), which boots as a game's ROM does and uses the
+# main board, the tile generator, the Real3D, the sound board, the controls,
+# the real-time clock and the backup RAM:
+#   - the native reference and the sandboxed core are the same machine
+#     (pictures, sound, steps, lag, the PowerPC's cycles), with savestates,
+#     turbo and the 2x drawing scale;
+#   - the 3D, the sound, the controls, lag, the clock, save data and the
+#     refusals;
+#   - the package in Chimera's headless runner and in its window;
+#   - Chimera's own checks of the package.
+# What CI cannot run: the real game tests (waterbox/run-gate.sh's "real
+# games", which need ROM sets: they SKIP here, and the summary says so), and
+# anything on Windows or on a GPU.
+#
+# LLVM (for llvmpipe, the software OpenGL) and Mesa take most of an hour to
+# build here and change only with their scripts, so they are cached.
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      kind:
+        description: 'dev (rolling) or nightly (dated). Blank means dev.'
+        required: false
+        default: ''
+        type: string
+  schedule:
+    # A nightly is published only when main moved since the last one; the
+    # shared publishing workflow checks.
+    - cron: '25 6 * * *'
+
+# Keyed by the event as well as the branch: otherwise the nightly schedule
+# and a push to main cancel each other.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+env:
+  CHIMERA_REF: main
+
+jobs:
+
+  gate:
+    name: build and test (native against sandbox, the package, Chimera's package checks)
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Check out Chimera
+        uses: actions/checkout@v6
+        with:
+          repository: ToolAssisted-run/chimera
+          ref: ${{ env.CHIMERA_REF }}
+          path: chimera-checkout
+          submodules: recursive
+
+      - name: Install build dependencies
+        # The lib*-dev packages are what Chimera's own build needs; this core
+        # links none of them.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends meson ninja-build build-essential cmake pkg-config python3 python3-mako python3-packaging python3-pip curl xz-utils patch libgl1-mesa-dev libegl-dev libx11-dev libxext-dev libasound2-dev
+
+      - name: Cache Qt
+        uses: actions/cache@v4
+        with:
+          path: ~/qt
+          key: qt-6.12.0-linux-aqt-3.3.0
+
+      - name: Build Chimera (the engine, chimera-run and the window)
+        run: chimera-checkout/tools/ci-chimera.sh "$HOME/qt"
+
+      # The checkout's path is in these two keys: a build folder names its
+      # sources by their full path, and a renamed repository is checked out
+      # under its new name.
+      - name: Cache miniBox's sandbox toolchain
+        uses: actions/cache@v4
+        with:
+          path: |
+            chimera-checkout/extern/chimera-common-minibox/build/meson-linux
+            chimera-checkout/extern/chimera-common-minibox/build/meson-cpp
+          key: guest-cpp-${{ runner.os }}-${{ github.workspace }}-${{ hashFiles('chimera-checkout/extern/chimera-common-minibox/.git') }}-${{ hashFiles('chimera-checkout/extern/chimera-common-minibox/meson.build') }}
+
+      - name: Build miniBox (the sandbox, and its C++ toolchain)
+        run: |
+          mb="$PWD/chimera-checkout/extern/chimera-common-minibox"
+          [ -f "$mb/build/meson-linux/build.ninja" ] || meson setup "$mb/build/meson-linux" "$mb"
+          meson compile -C "$mb/build/meson-linux"
+          [ -f "$mb/build/meson-cpp/build.ninja" ] || meson setup "$mb/build/meson-cpp" "$mb" -Dguest_cpp=true
+          meson compile -C "$mb/build/meson-cpp"
+
+      - name: Cache LLVM and Mesa
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/llvm-native
+            build/llvm-guest
+            build/mesa
+          key: llvm-mesa-${{ runner.os }}-${{ github.workspace }}-${{ hashFiles('waterbox/build-llvm.sh', 'waterbox/guest-toolchain.cmake', 'waterbox/setup-mesa.sh', 'waterbox/mesa-patches/*') }}-${{ hashFiles('chimera-checkout/extern/chimera-common-minibox/.git') }}
+
+      - name: Build LLVM and Mesa (when not cached)
+        run: |
+          mb="$PWD/chimera-checkout/extern/chimera-common-minibox"
+          bash ./waterbox/build-llvm.sh native
+          bash ./waterbox/build-llvm.sh guest -m "$mb"
+          bash ./waterbox/setup-mesa.sh -n
+          bash ./waterbox/setup-mesa.sh -m "$mb"
+
+      - name: Run the test script
+        # It builds Supermodel for both, links both, and runs the tests. A run
+        # in which these did not pass has tested nothing, so they are asked
+        # for by name.
+        run: |
+          rc=0
+          bash ./waterbox/run-gate.sh -m "$PWD/chimera-checkout/extern/chimera-common-minibox" > gate.out 2>&1 || rc=$?
+          grep -v '^miniBox:' gate.out
+          [ "$rc" -eq 0 ]
+          for t in "game list" equivalence rerecord session turbo teeth scale sound 3d controls lag clock "save data" refusals; do
+            grep -q "^PASS $t:" gate.out || { echo "$t did not pass"; exit 1; }
+          done
+
+      - name: Build the package
+        # The commit is the version the package is stamped with: this is the
+        # build that is published, so it is what a movie can name. A package
+        # built by hand is stamped "+local" instead.
+        env:
+          CORE_VERSION: ${{ github.sha }}
+        run: bash ./waterbox/build-package.sh -r "$GITHUB_WORKSPACE/chimera-checkout"
+
+      - name: Run the frontend test
+        # The package through Chimera's headless runner and its window
+        # (run headless), against the native reference.
+        run: |
+          rc=0
+          bash ./tests/run-frontend.sh --chimera-root "$GITHUB_WORKSPACE/chimera-checkout" --qt "$HOME/qt/6.12.0/gcc_64/lib" > window.out 2>&1 || rc=$?
+          cat window.out
+          [ "$rc" -eq 0 ]
+          for t in package engine:movie engine:project engine:memory window:project window:keybinds; do
+            grep -q "^$t  *PASS " window.out || { echo "$t did not pass"; exit 1; }
+          done
+
+      - name: Package contract tests
+        env:
+          CHIMERA_CORES_DIR: ${{ github.workspace }}/chimera-checkout/build/Cores
+        run: chimera-checkout/build/meson-linux/source/ui/test-packages
+
+      - name: Upload the package
+        uses: actions/upload-artifact@v7
+        with:
+          name: supermodel-${{ github.sha }}
+          path: chimera-checkout/build/Cores/supermodel.chimeraCore
+          if-no-files-found: error
+
+      - name: Upload the test output on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-logs
+          path: |
+            gate.out
+            window.out
+            build/*.log
+
+  publish:
+    # What passed above, published as this core's own release: a rolling `dev`
+    # on every push to main, a dated `nightly-YYYY-MM-DD` from the scheduled
+    # run, through the one workflow every Chimera core publishes with.
+    name: publish
+    needs: [ gate ]
+    if: github.event_name != 'pull_request'
+    permissions:
+      contents: write
+    uses: ToolAssisted-run/chimera/.github/workflows/publish-core.yml@main
+    with:
+      core-id: supermodel
+      artifact: supermodel-${{ github.sha }}
+      package: supermodel.chimeraCore
+      kind: ${{ github.event.inputs.kind }}
