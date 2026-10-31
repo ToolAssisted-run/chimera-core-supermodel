@@ -6,6 +6,8 @@
 		"error.not_a_game": "Supermodel nie znalazł w tym pliku zip żadnej znanej sobie gry na Model 3: %1",
 		"error.not_model3": "%1 nie jest grą na Model 3; ten rdzeń uruchamia tylko gry na Model 3.",
 		"error.renderer_failed": "Nie udało się uruchomić renderera Supermodela: %1",
+		"setting.drawingscale": "Skala rysowania",
+		"setting.drawingscale.about": "Ile razy większy od własnych 496x384 Model 3 jest rysowany obraz: przy 2x to 992x768, z ostrzejszym 3D. Rdzeń rysuje na procesorze, więc każdy stopień wyżej jest wolniejszy (2x rysuje cztery razy więcej pikseli). Zmienia tylko obraz.",
 		"setting.idleskip": "Pomijanie oczekiwania",
 		"setting.idleskip.about": "Gdy procesor gry czeka w pętli, aż coś się stanie, Supermodel przeskakuje naprzód zamiast wykonywać każde przejście pętli, tak jak domyślnie robi oryginał. Przyspiesza to rdzeń. Gra powinna przebiec tak samo w obu przypadkach, ale procesor inaczej spędza swój czas. Jest częścią maszyny, więc nagranie potrzebuje tej samej wartości.",
 		"setting.starttime": "Zegar startowy",

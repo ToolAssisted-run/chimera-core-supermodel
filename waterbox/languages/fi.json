@@ -6,6 +6,8 @@
 		"error.not_a_game": "Supermodel ei löytänyt tästä zip-tiedostosta yhtään tuntemaansa Model 3 -peliä: %1",
 		"error.not_model3": "%1 ei ole Model 3 -peli; tämä ydin ajaa vain Model 3 -pelejä.",
 		"error.renderer_failed": "Supermodelin piirtäjää ei voitu käynnistää: %1",
+		"setting.drawingscale": "Piirtomittakaava",
+		"setting.drawingscale.about": "Kuinka monikertaisena Model 3:n omaan 496x384-kokoon nähden kuva piirretään: 2x on 992x768, terävämpi 3D. Ydin piirtää suorittimella, joten jokainen porras ylöspäin on hitaampi (2x piirtää nelinkertaisen määrän pikseleitä). Muuttaa vain kuvaa.",
 		"setting.idleskip": "Ohita odotus",
 		"setting.idleskip.about": "Kun pelin suoritin odottaa silmukassa jonkin tapahtuvan, Supermodel hyppää eteenpäin sen sijaan, että ajaisi silmukan joka kierroksen, kuten alkuperäinen tekee oletuksena. Se tekee ytimestä nopeamman. Pelin pitäisi kulkea samoin kummin vain, mutta suoritin käyttää aikansa eri tavalla. Tämä kuuluu koneeseen, joten tallenne tarvitsee saman arvon.",
 		"setting.starttime": "Alkukello",

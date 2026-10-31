@@ -6,6 +6,8 @@
 		"error.not_a_game": "A Supermodel nem talált ebben a zipben általa ismert Model 3 játékot: %1",
 		"error.not_model3": "A(z) %1 nem Model 3 játék; ez a mag csak Model 3 játékokat futtat.",
 		"error.renderer_failed": "A Supermodel megjelenítője nem indult el: %1",
+		"setting.drawingscale": "Rajzolási lépték",
+		"setting.drawingscale.about": "Hányszorosára rajzolódik a kép a Model 3 saját 496x384-es méretéhez képest: 2x esetén 992x768, élesebb 3D-vel. A mag a processzoron rajzol, így minden fokozattal feljebb lassabb (2x négyszer annyi képpontot rajzol). Csak a képet változtatja meg.",
 		"setting.idleskip": "Várakozás átugrása",
 		"setting.idleskip.about": "Amikor a játék processzora egy ciklusban vár, hogy történjen valami, a Supermodel előreugrik ahelyett, hogy a ciklus minden körét lefuttatná, ahogy az eredeti alapértelmezésben teszi. Ettől gyorsabb a mag. A játéknak mindkét esetben ugyanúgy kellene alakulnia, de a processzor másképp tölti az idejét. A gép része, ezért a felvételhez ugyanez az érték kell.",
 		"setting.starttime": "Kezdő óra",

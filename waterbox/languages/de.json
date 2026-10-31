@@ -6,6 +6,8 @@
 		"error.not_a_game": "Supermodel hat in dieser Zip-Datei kein Model-3-Spiel gefunden, das es kennt: %1",
 		"error.not_model3": "%1 ist kein Model-3-Spiel; dieser Core spielt nur Model-3-Spiele.",
 		"error.renderer_failed": "Der Renderer von Supermodel konnte nicht gestartet werden: %1",
+		"setting.drawingscale": "Zeichenmaßstab",
+		"setting.drawingscale.about": "Wie viele Male die eigenen 496x384 des Model 3 das Bild gezeichnet wird: bei 2x sind es 992x768, mit schärferem 3D. Der Core zeichnet auf dem Prozessor, daher ist jede Stufe höher langsamer (2x zeichnet viermal so viele Pixel). Es ändert nur das Bild.",
 		"setting.idleskip": "Leerlauf überspringen",
 		"setting.idleskip.about": "Wenn der Prozessor des Spiels in einer Schleife auf etwas wartet, springt Supermodel vor, statt jeden Durchlauf der Schleife auszuführen, wie es das Original standardmäßig tut. Das macht den Core schneller. Das Spiel soll in beiden Fällen gleich ablaufen, aber der Prozessor verbringt seine Zeit anders. Es gehört zur Maschine, daher braucht ein Film denselben Wert.",
 		"setting.starttime": "Startzeit der Uhr",

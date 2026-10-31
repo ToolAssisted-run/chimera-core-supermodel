@@ -6,6 +6,8 @@
 		"error.not_a_game": "Supermodel はこの zip の中に、知っている Model 3 のゲームを見つけられませんでした: %1",
 		"error.not_model3": "%1 は Model 3 のゲームではありません。このコアは Model 3 のゲームだけを動かします。",
 		"error.renderer_failed": "Supermodel のレンダラーを起動できませんでした: %1",
+		"setting.drawingscale": "描画倍率",
+		"setting.drawingscale.about": "Model 3 本来の 496x384 の何倍で画面を描くか。2x では 992x768 になり、3D がよりくっきりします。このコアはプロセッサーで描くので、一段上げるごとに遅くなります (2x では4倍のピクセルを描きます)。変わるのは画面だけです。",
 		"setting.idleskip": "待機のスキップ",
 		"setting.idleskip.about": "ゲームのプロセッサーが何かが起こるのをループで待っているとき、Supermodel はループを一周ずつ実行せずに先へ進みます。本家の既定の動作と同じです。コアが速くなります。どちらでもゲームは同じ結果になるはずですが、プロセッサーの時間の使い方が変わります。機種の一部なので、ムービーには同じ値が必要です。",
 		"setting.starttime": "開始時刻",

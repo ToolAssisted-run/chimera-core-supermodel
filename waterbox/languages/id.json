@@ -6,6 +6,8 @@
 		"error.not_a_game": "Supermodel tidak menemukan game Model 3 yang dikenalnya di zip ini: %1",
 		"error.not_model3": "%1 bukan game Model 3; core ini hanya menjalankan game Model 3.",
 		"error.renderer_failed": "Renderer Supermodel tidak dapat dijalankan: %1",
+		"setting.drawingscale": "Skala Gambar",
+		"setting.drawingscale.about": "Berapa kali ukuran asli Model 3, 496x384, gambar digambar: pada 2x menjadi 992x768, dengan 3D yang lebih tajam. Core menggambar di prosesor, jadi setiap langkah naik lebih lambat (2x menggambar empat kali piksel). Ini hanya mengubah gambar.",
 		"setting.idleskip": "Lewati Penantian",
 		"setting.idleskip.about": "Saat prosesor game menunggu sesuatu terjadi di dalam sebuah perulangan, Supermodel melompat maju alih-alih menjalankan setiap putaran perulangan, seperti yang dilakukan aslinya secara bawaan. Ini membuat core lebih cepat. Game seharusnya berjalan sama dengan cara mana pun, tetapi prosesor menghabiskan waktunya secara berbeda. Ini bagian dari mesin, sehingga rekaman membutuhkan nilai yang sama.",
 		"setting.starttime": "Jam Awal",

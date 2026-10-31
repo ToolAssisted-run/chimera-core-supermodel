@@ -6,6 +6,8 @@
 		"error.not_a_game": "Supermodel n'a trouvé dans ce zip aucun jeu Model 3 qu'il connaît : %1",
 		"error.not_model3": "%1 n'est pas un jeu Model 3 ; ce cœur ne fait tourner que des jeux Model 3.",
 		"error.renderer_failed": "Le moteur de rendu de Supermodel n'a pas pu démarrer : %1",
+		"setting.drawingscale": "Échelle de dessin",
+		"setting.drawingscale.about": "Combien de fois les 496x384 propres au Model 3 l'image est dessinée : à 2x, 992x768, avec une 3D plus nette. Le cœur dessine sur le processeur, chaque cran au-dessus est donc plus lent (2x dessine quatre fois plus de pixels). Cela ne change que l'image.",
 		"setting.idleskip": "Sauter les attentes",
 		"setting.idleskip.about": "Quand le processeur du jeu attend dans une boucle que quelque chose arrive, Supermodel saute en avant au lieu d'exécuter chaque tour de la boucle, comme le fait l'original par défaut. Le cœur va plus vite. Le jeu devrait se dérouler de la même façon dans les deux cas, mais le processeur emploie son temps autrement. Il fait partie de la machine : un film a besoin de la même valeur.",
 		"setting.starttime": "Horloge de départ",

@@ -6,6 +6,8 @@
 		"error.not_a_game": "Supermodel이 이 zip에서 아는 Model 3 게임을 찾지 못했습니다: %1",
 		"error.not_model3": "%1은(는) Model 3 게임이 아닙니다. 이 코어는 Model 3 게임만 실행합니다.",
 		"error.renderer_failed": "Supermodel의 렌더러를 시작하지 못했습니다: %1",
+		"setting.drawingscale": "그리기 배율",
+		"setting.drawingscale.about": "Model 3 고유의 496x384의 몇 배로 화면을 그릴지 정합니다. 2x에서는 992x768이며 3D가 더 선명합니다. 이 코어는 프로세서로 그리므로 한 단계 올릴 때마다 느려집니다(2x는 네 배의 픽셀을 그립니다). 화면만 바뀝니다.",
 		"setting.idleskip": "대기 건너뛰기",
 		"setting.idleskip.about": "게임의 프로세서가 무언가가 일어나기를 루프에서 기다릴 때, Supermodel은 원본이 기본으로 그러듯이 루프를 한 바퀴씩 실행하지 않고 앞으로 건너뜁니다. 코어가 빨라집니다. 어느 쪽이든 게임은 같게 흘러가야 하지만 프로세서가 시간을 쓰는 방식이 달라집니다. 이것은 머신의 일부이므로 무비에는 같은 값이 필요합니다.",
 		"setting.starttime": "시작 시계",

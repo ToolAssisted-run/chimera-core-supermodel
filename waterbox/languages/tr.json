@@ -6,6 +6,8 @@
 		"error.not_a_game": "Supermodel bu zip içinde tanıdığı bir Model 3 oyunu bulamadı: %1",
 		"error.not_model3": "%1 bir Model 3 oyunu değil; bu çekirdek yalnızca Model 3 oyunlarını çalıştırır.",
 		"error.renderer_failed": "Supermodel'in çizicisi başlatılamadı: %1",
+		"setting.drawingscale": "Çizim Ölçeği",
+		"setting.drawingscale.about": "Görüntünün, Model 3'ün kendi 496x384 boyutunun kaç katında çizildiği: 2x'te 992x768'dir, 3D daha nettir. Çekirdek işlemci üzerinde çizer, bu yüzden her üst adım daha yavaştır (2x dört kat piksel çizer). Yalnızca görüntüyü değiştirir.",
 		"setting.idleskip": "Beklemeyi atla",
 		"setting.idleskip.about": "Oyunun işlemcisi bir şey olmasını bir döngüde beklediğinde Supermodel, özgün sürümün varsayılan olarak yaptığı gibi, döngünün her turunu çalıştırmak yerine ileri atlar. Bu çekirdeği hızlandırır. Oyun her iki durumda da aynı sonuçlanmalıdır, ama işlemci zamanını farklı harcar. Makinenin bir parçasıdır, bu yüzden bir film aynı değeri ister.",
 		"setting.starttime": "Başlangıç Saati",

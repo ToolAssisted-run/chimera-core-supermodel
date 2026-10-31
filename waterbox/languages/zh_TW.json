@@ -6,6 +6,8 @@
 		"error.not_a_game": "Supermodel 在此 zip 中沒有找到它認識的 Model 3 遊戲：%1",
 		"error.not_model3": "%1 不是 Model 3 遊戲；此核心只執行 Model 3 遊戲。",
 		"error.renderer_failed": "無法啟動 Supermodel 的算繪器：%1",
+		"setting.drawingscale": "繪製倍數",
+		"setting.drawingscale.about": "以 Model 3 原本的 496x384 的幾倍來繪製畫面：2x 為 992x768，3D 更清晰。此核心用處理器繪製，因此每提高一級都會更慢（2x 要繪製四倍的像素）。只改變畫面。",
 		"setting.idleskip": "略過等待",
 		"setting.idleskip.about": "當遊戲的處理器在迴圈中等待某件事發生時，Supermodel 會直接往前跳，而不是逐圈執行迴圈，與原版的預設做法相同。這能讓核心更快。兩種方式下遊戲的結果應該相同，但處理器使用時間的方式不同。它屬於機器的一部分，因此錄影需要相同的值。",
 		"setting.starttime": "開機時鐘",

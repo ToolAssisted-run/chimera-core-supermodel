@@ -6,6 +6,8 @@
 		"error.not_a_game": "Supermodel no encontró en este zip ningún juego de Model 3 que conozca: %1",
 		"error.not_model3": "%1 no es un juego de Model 3; este núcleo solo ejecuta juegos de Model 3.",
 		"error.renderer_failed": "No se pudo iniciar el renderizador de Supermodel: %1",
+		"setting.drawingscale": "Escala de dibujo",
+		"setting.drawingscale.about": "Cuántas veces los 496x384 propios del Model 3 se dibuja la imagen: a 2x son 992x768, con un 3D más nítido. El núcleo dibuja en el procesador, así que cada paso más es más lento (2x dibuja cuatro veces los píxeles). Cambia solo la imagen.",
 		"setting.idleskip": "Saltar esperas",
 		"setting.idleskip.about": "Cuando el procesador del juego espera en un bucle a que ocurra algo, Supermodel salta hacia delante en lugar de ejecutar cada vuelta del bucle, como hace el original por defecto. Hace el núcleo más rápido. El juego debería salir igual de cualquier manera, pero el procesador reparte su tiempo de otra forma. Forma parte de la máquina, así que una película necesita el mismo valor.",
 		"setting.starttime": "Reloj de inicio",

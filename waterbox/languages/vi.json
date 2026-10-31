@@ -6,6 +6,8 @@
 		"error.not_a_game": "Supermodel không tìm thấy trò chơi Model 3 nào mà nó biết trong tệp zip này: %1",
 		"error.not_model3": "%1 không phải là trò chơi Model 3; lõi này chỉ chạy trò chơi Model 3.",
 		"error.renderer_failed": "Không khởi động được bộ dựng hình của Supermodel: %1",
+		"setting.drawingscale": "Tỉ lệ vẽ",
+		"setting.drawingscale.about": "Hình được vẽ lớn gấp bao nhiêu lần kích thước gốc 496x384 của Model 3: ở 2x là 992x768, với 3D sắc nét hơn. Lõi vẽ bằng bộ xử lý, nên mỗi bậc lên sẽ chậm hơn (2x vẽ gấp bốn lần số điểm ảnh). Chỉ thay đổi hình ảnh.",
 		"setting.idleskip": "Bỏ qua chờ",
 		"setting.idleskip.about": "Khi bộ xử lý của trò chơi chờ trong một vòng lặp cho đến khi có việc xảy ra, Supermodel nhảy tới thay vì chạy từng vòng của vòng lặp, như bản gốc làm theo mặc định. Điều này làm lõi nhanh hơn. Trò chơi lẽ ra diễn ra giống nhau dù chọn cách nào, nhưng bộ xử lý dùng thời gian của nó khác đi. Đây là một phần của máy, nên một bản ghi cần cùng giá trị.",
 		"setting.starttime": "Đồng hồ khi bắt đầu",

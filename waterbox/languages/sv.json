@@ -6,6 +6,8 @@
 		"error.not_a_game": "Supermodel hittade inget Model 3-spel som det känner till i den här zip-filen: %1",
 		"error.not_model3": "%1 är inget Model 3-spel; den här kärnan kör bara Model 3-spel.",
 		"error.renderer_failed": "Supermodels renderare kunde inte startas: %1",
+		"setting.drawingscale": "Ritskala",
+		"setting.drawingscale.about": "Hur många gånger Model 3:s egna 496x384 bilden ritas: vid 2x är den 992x768, med skarpare 3D. Kärnan ritar på processorn, så varje steg upp är långsammare (2x ritar fyra gånger så många bildpunkter). Det ändrar bara bilden.",
 		"setting.idleskip": "Hoppa över väntan",
 		"setting.idleskip.about": "När spelets processor väntar i en slinga på att något ska hända hoppar Supermodel framåt i stället för att köra varje varv i slingan, som originalet gör som standard. Det gör kärnan snabbare. Spelet ska bli detsamma i båda fallen, men processorn använder sin tid annorlunda. Den hör till maskinen, så en inspelning behöver samma värde.",
 		"setting.starttime": "Startklocka",

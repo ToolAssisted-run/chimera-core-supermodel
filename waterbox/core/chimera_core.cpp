@@ -35,6 +35,7 @@
 
 #include <cstdarg>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <ctime>
 #include <memory>
@@ -57,9 +58,12 @@ const char *chimera_slot_name(const char *id, int index, char *out, int outsz);
 
 namespace
 {
-	// The Model 3's picture: 496x384 (upstream's XResolution/YResolution).
-	const unsigned kWidth = 496;
-	const unsigned kHeight = 384;
+	// The Model 3's picture: 496x384, drawn at the Drawing Scale setting's
+	// multiple of it (upstream's XResolution/YResolution, its -res option).
+	const unsigned kBaseWidth = 496;
+	const unsigned kBaseHeight = 384;
+	unsigned g_width = kBaseWidth;
+	unsigned g_height = kBaseHeight;
 
 	// The refresh rate of the hardware: 57.524160 Hz. The main board runs a
 	// frame's share of that in cycles whatever this says; the sound board
@@ -149,8 +153,8 @@ namespace
 		config->Set("ForceFeedback", false);
 		config->Set("New3DEngine", true);
 		config->Set("QuadRendering", true);
-		config->Set("XResolution", (int)kWidth);
-		config->Set("YResolution", (int)kHeight);
+		config->Set("XResolution", (int)g_width);
+		config->Set("YResolution", (int)g_height);
 		config->Set("FullScreen", false);
 		config->Set("Supersampling", 1);
 		config->Set("CRTcolors", 0);
@@ -234,6 +238,18 @@ ECL_EXPORT int Init(void)
 	if (!chimera_slot_name("parent", 0, g_parentName, sizeof g_parentName))
 		g_parentName[0] = 0;
 
+	// Drawing Scale: 1x is the Model 3's own 496x384; 2x to 4x draw the 3D at
+	// that multiple (the 2D layers are scaled up), as upstream's -res does
+	{
+		char scale[16];
+		int n = 1;
+		if (chimera_setting_str("drawingScale", scale, sizeof scale))
+			n = atoi(scale);
+		if (n < 1 || n > 4)
+			n = 1;
+		g_width = kBaseWidth * (unsigned)n;
+		g_height = kBaseHeight * (unsigned)n;
+	}
 	g_config = make_config();
 
 	// the game: its zip, found in the game list by the CRCs of its files
@@ -254,7 +270,7 @@ ECL_EXPORT int Init(void)
 	fprintf(stderr, "supermodel: %s (%s), %s\n", g_game.title.c_str(), g_game.name.c_str(), g_game.version.c_str());
 
 	// the OpenGL the renderers draw with
-	if (!chimera_gl_create(kWidth, kHeight))
+	if (!chimera_gl_create(g_width, g_height))
 	{
 		fail("error.no_opengl");
 		return 0;
@@ -277,11 +293,11 @@ ECL_EXPORT int Init(void)
 	}
 
 	g_superAA = new SuperAA(1, CRTcolor::None);
-	g_superAA->Init(kWidth, kHeight);
+	g_superAA->Init(g_width, g_height);
 	g_render2D = new CRender2D(*g_config);
 	g_render3D = new New3D::CNew3D(*g_config, g_game.name);
-	if (Result::OKAY != g_render2D->Init(0, 0, kWidth, kHeight, kWidth, kHeight, g_superAA->GetTargetID(), UpscaleMode::Bilinear) ||
-	    Result::OKAY != g_render3D->Init(0, 0, kWidth, kHeight, kWidth, kHeight, g_superAA->GetTargetID()))
+	if (Result::OKAY != g_render2D->Init(0, 0, g_width, g_height, g_width, g_height, g_superAA->GetTargetID(), UpscaleMode::Bilinear) ||
+	    Result::OKAY != g_render3D->Init(0, 0, g_width, g_height, g_width, g_height, g_superAA->GetTargetID()))
 	{
 		fail("error.renderer_failed");
 		return 0;

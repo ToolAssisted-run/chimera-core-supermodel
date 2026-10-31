@@ -6,6 +6,8 @@
 		"error.not_a_game": "Supermodel nu a găsit în acest zip niciun joc Model 3 pe care să-l cunoască: %1",
 		"error.not_model3": "%1 nu este un joc Model 3; acest nucleu rulează doar jocuri Model 3.",
 		"error.renderer_failed": "Randorul Supermodel nu a putut porni: %1",
+		"setting.drawingscale": "Scara de desenare",
+		"setting.drawingscale.about": "De câte ori cei 496x384 proprii ai Model 3 este desenată imaginea: la 2x este 992x768, cu 3D mai clar. Nucleul desenează pe procesor, deci fiecare treaptă în sus e mai lentă (2x desenează de patru ori mai mulți pixeli). Schimbă doar imaginea.",
 		"setting.idleskip": "Sari peste așteptare",
 		"setting.idleskip.about": "Când procesorul jocului așteaptă într-o buclă să se întâmple ceva, Supermodel sare înainte în loc să ruleze fiecare trecere a buclei, cum face originalul în mod implicit. Face nucleul mai rapid. Jocul ar trebui să iasă la fel în ambele cazuri, dar procesorul își petrece timpul altfel. Face parte din mașină, deci o înregistrare are nevoie de aceeași valoare.",
 		"setting.starttime": "Ceasul de pornire",

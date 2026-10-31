@@ -6,6 +6,8 @@
 		"error.not_a_game": "Supermodel v tomto zipu nenašel žádnou hru pro Model 3, kterou zná: %1",
 		"error.not_model3": "%1 není hra pro Model 3; toto jádro spouští jen hry pro Model 3.",
 		"error.renderer_failed": "Renderer Supermodelu se nepodařilo spustit: %1",
+		"setting.drawingscale": "Měřítko kreslení",
+		"setting.drawingscale.about": "Kolikrát větší než vlastních 496x384 Model 3 se obraz kreslí: při 2x je to 992x768, s ostřejším 3D. Jádro kreslí na procesoru, takže každý stupeň výš je pomalejší (2x kreslí čtyřikrát víc pixelů). Mění pouze obraz.",
 		"setting.idleskip": "Přeskakovat čekání",
 		"setting.idleskip.about": "Když procesor hry čeká ve smyčce, až se něco stane, Supermodel přeskočí dopředu místo toho, aby prováděl každý průchod smyčkou, jak to ve výchozím stavu dělá originál. Jádro je tak rychlejší. Hra by měla dopadnout stejně tak i tak, ale procesor tráví svůj čas jinak. Je součástí stroje, takže film potřebuje stejnou hodnotu.",
 		"setting.starttime": "Počáteční hodiny",

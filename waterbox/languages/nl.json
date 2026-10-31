@@ -6,6 +6,8 @@
 		"error.not_a_game": "Supermodel vond in deze zip geen Model 3-spel dat het kent: %1",
 		"error.not_model3": "%1 is geen Model 3-spel; deze core speelt alleen Model 3-spellen.",
 		"error.renderer_failed": "De renderer van Supermodel kon niet worden gestart: %1",
+		"setting.drawingscale": "Tekenschaal",
+		"setting.drawingscale.about": "Hoeveel keer de eigen 496x384 van de Model 3 het beeld getekend wordt: bij 2x is het 992x768, met scherpere 3D. De core tekent op de processor, dus elke stap hoger is trager (2x tekent vier keer zoveel pixels). Het verandert alleen het beeld.",
 		"setting.idleskip": "Wachten overslaan",
 		"setting.idleskip.about": "Als de processor van het spel in een lus op iets wacht, springt Supermodel vooruit in plaats van elke ronde van de lus uit te voeren, zoals het origineel standaard doet. Dat maakt de core sneller. Het spel hoort er hoe dan ook hetzelfde uit te komen, maar de processor besteedt zijn tijd anders. Het hoort bij de machine, dus een movie heeft dezelfde waarde nodig.",
 		"setting.starttime": "Startklok",

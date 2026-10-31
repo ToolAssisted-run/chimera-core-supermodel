@@ -6,6 +6,8 @@
 		"error.not_a_game": "Supermodel found no Model 3 game it knows in this zip: %1",
 		"error.not_model3": "%1 is not a Model 3 game; this core runs Model 3 games only.",
 		"error.renderer_failed": "Supermodel's renderer could not be started: %1",
+		"setting.drawingscale": "Drawing Scale",
+		"setting.drawingscale.about": "How many times the Model 3's own 496x384 the picture is drawn: at 2x it is 992x768, with sharper 3D. The core draws on the processor, so each step up is slower (2x draws four times the pixels). It changes the picture only.",
 		"setting.idleskip": "Idle Skip",
 		"setting.idleskip.about": "When the game's processor waits in a loop for something to happen, Supermodel skips ahead instead of running every pass of the loop, as upstream does by default. It makes the core faster. The game is meant to come out the same either way, but the processor spends its time differently. It is part of the machine, so a movie needs the same value.",
 		"setting.starttime": "Starting Clock",

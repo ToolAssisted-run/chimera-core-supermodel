@@ -206,3 +206,19 @@ Measured (2026-10-31, Chimera 3f8ea7e2):
 - The package is 31 MB (core.wbx 88 MB before packing).
 - `waterbox/run-gate.sh` again after patch 0006: 16 passed, 0 failed, 4
   skipped.
+
+## Drawing Scale (2026-10-31)
+
+The issue mentions upstream's `-res` (a larger internal resolution). The
+core has it as a setting, Drawing Scale: 1x (the Model 3's own 496x384, the
+default), 2x, 3x or 4x, the picture that many times wider and taller (the
+2D layers scaled up bilinearly, as upstream does at any size but 1x). The
+package's picture capacity is 4x (1984x1536); the live size is reported
+each frame. It changes the picture only: the gate's scale test compares a
+2x run with a 1x run in everything but the pictures (steps, sound, cycles,
+lag: the same) and native with the sandbox at 2x; with the setting ignored
+on purpose its size check failed (496x384, not 992x768). On llvmpipe, 2x is
+four times the pixels to draw.
+
+Measured: `waterbox/run-gate.sh` 18 passed, 0 failed, 4 skipped; contract
+tests 21 passed.

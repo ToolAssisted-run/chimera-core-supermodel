@@ -19,6 +19,8 @@
 #                sound, steps, cycles), and the first half's pictures not
 #                there; so drawing does not change the machine
 #   teeth        the comparison sees a press one frame later
+#   scale        Drawing Scale 2x: a 992x768 picture, native = sandbox, and
+#                the same machine as at 1x (steps, sound, cycles, lag)
 #   controls     a press reaches the program through the Model 3's input
 #                registers, and the controls a cabinet lacks are not shown
 #   lag          a frame in which the program did not read its controls (one
@@ -151,6 +153,21 @@ if [ -n "$(value "$work/late.txt" videoHash)" ] && [ "$(value "$work/late.txt" v
 	pass "teeth: Right one frame later is another run (the comparison sees it)"
 else
 	fail "teeth: Right one frame later gave the same pictures"
+fi
+
+echo "== drawing scale"
+mkwork tp2x "$testzip" '{"drawingScale": "2x"}'
+"$native" "$work/tp2x" --frames 300 "${movie[@]}" --screenshot 299:"$work/s2.tga" > "$work/s2n.txt" 2> /dev/null
+"$wbx" "$core" "$work/tp2x" --frames 300 "${movie[@]}" > "$work/s2w.txt" 2> /dev/null
+"$native" "$work/tp" --frames 300 "${movie[@]}" > "$work/s1n.txt" 2> /dev/null
+same scale "$work/s2n.txt" "$work/s2w.txt" "Drawing Scale 2x: native = sandbox, 300 frames"
+digests "$work/s2n.txt" | grep -v 'ideoHash=' > "$work/s2.d"
+digests "$work/s1n.txt" | grep -v 'ideoHash=' > "$work/s1.d"
+size2="$(od -An -tu2 -j12 -N4 "$work/s2.tga" 2>/dev/null | tr -s ' ' | sed 's/^ //')"
+if grep -q '^frames=' "$work/s2.d" && cmp -s "$work/s2.d" "$work/s1.d" && [ "$size2" = "992 768" ]; then
+	pass "scale: at 2x the picture is 992x768 and the machine is the one at 1x (steps, sound, cycles, lag)"
+else
+	fail "scale: picture $size2; $(diff "$work/s2.d" "$work/s1.d" | head -5 | tr '\n' ' ')"
 fi
 
 echo "== controls"
