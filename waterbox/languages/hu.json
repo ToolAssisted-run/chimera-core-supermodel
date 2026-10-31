@@ -1,0 +1,18 @@
+{
+	"texts": {
+		"error.init_failed": "A Supermodel nem tudta előkészíteni a Model 3-at ehhez a játékhoz: %1",
+		"error.no_game": "A projektben nincs játék: adja meg a játék ROM-készletét, egy .zip fájlt, a Játék mezőben.",
+		"error.no_opengl": "A mag saját OpenGL-je nem indult el: %1",
+		"error.not_a_game": "A Supermodel nem talált ebben a zipben általa ismert Model 3 játékot: %1",
+		"error.not_model3": "A(z) %1 nem Model 3 játék; ez a mag csak Model 3 játékokat futtat.",
+		"error.renderer_failed": "A Supermodel megjelenítője nem indult el: %1",
+		"setting.idleskip": "Várakozás átugrása",
+		"setting.idleskip.about": "Amikor a játék processzora egy ciklusban vár, hogy történjen valami, a Supermodel előreugrik ahelyett, hogy a ciklus minden körét lefuttatná, ahogy az eredeti alapértelmezésben teszi. Ettől gyorsabb a mag. A játéknak mindkét esetben ugyanúgy kellene alakulnia, de a processzor másképp tölti az idejét. A gép része, ezért a felvételhez ugyanez az érték kell.",
+		"setting.starttime": "Kezdő óra",
+		"setting.starttime.about": "A dátum és az idő, amelyet a Model 3 valós idejű órája bekapcsoláskor mutat, UTC szerint; utána a képkockákkal együtt halad (másodpercenként 57,524, mint a hardveré). Alapértelmezés: 2000. január 1. Ez egy beállítás, nem a számítógépe órája, hogy egy felvétel bármelyik napon ugyanúgy játszódjon le. A gép része, ezért a felvételhez ugyanez az érték kell.",
+		"slot.game": "Játék",
+		"slot.game.help": "A játék ROM-készlete: a .zip fájl azon a néven, ahogy a Supermodel és a MAME nevezi (például vf3.zip, scud.zip vagy srally2.zip). A Supermodel a játék fájljait a tartalmuk alapján ismeri fel, így a benne lévő fájlok neve nem számít.",
+		"slot.parent": "Szülő ROM-készlet",
+		"slot.parent.help": "Csak klónhoz (egy játék olyan változatához, amelynek készlete csak az eltérő fájlokat tartalmazza, mint a vf3a.zip): annak a készletnek a zipje, amelynek a változata (vf3a.zip esetén vf3.zip). Egy játéknak, amely nem klón, itt semmi sem kell."
+	}
+}

@@ -1,0 +1,18 @@
+{
+	"texts": {
+		"error.init_failed": "Supermodel kunne ikke gjøre Model 3 klar for dette spillet: %1",
+		"error.no_game": "Prosjektet har ikke noe spill: oppgi spillets ROM-sett, en .zip, i feltet Spill.",
+		"error.no_opengl": "Kjernens egen OpenGL kunne ikke startes: %1",
+		"error.not_a_game": "Supermodel fant ikke noe Model 3-spill det kjenner i denne zip-filen: %1",
+		"error.not_model3": "%1 er ikke et Model 3-spill; denne kjernen kjører bare Model 3-spill.",
+		"error.renderer_failed": "Supermodels renderer kunne ikke startes: %1",
+		"setting.idleskip": "Hopp over venting",
+		"setting.idleskip.about": "Når spillets prosessor venter i en løkke på at noe skal skje, hopper Supermodel fram i stedet for å kjøre hver runde av løkken, slik originalen gjør som standard. Det gjør kjernen raskere. Spillet skal bli likt uansett, men prosessoren bruker tiden sin annerledes. Den er en del av maskinen, så en filmfil trenger samme verdi.",
+		"setting.starttime": "Startklokke",
+		"setting.starttime.about": "Datoen og klokkeslettet som sanntidsklokken i Model 3 viser når maskinen slås på, i UTC; deretter går den med bildene (57,524 i sekundet, som maskinvarens). Standard er 1. januar 2000. Dette er en innstilling og ikke klokken på datamaskinen din, slik at en filmfil spilles av likt hvilken dag som helst. Den er en del av maskinen, så en filmfil trenger samme verdi.",
+		"slot.game": "Spill",
+		"slot.game.help": "Spillets ROM-sett: .zip-filen med navnet Supermodel og MAME gir den (for eksempel vf3.zip, scud.zip eller srally2.zip). Supermodel kjenner igjen et spills filer på innholdet, så navnene på filene inni spiller ingen rolle.",
+		"slot.parent": "Overordnet ROM-sett",
+		"slot.parent.help": "Bare for en klone (en versjon av et spill der settet bare har filene som er annerledes, som vf3a.zip): zip-filen til settet den er en versjon av (vf3.zip for vf3a.zip). Et spill som ikke er en klone, trenger ingenting her."
+	}
+}

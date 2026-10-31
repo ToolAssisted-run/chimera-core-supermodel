@@ -1,0 +1,18 @@
+{
+	"texts": {
+		"error.init_failed": "Supermodel không thể chuẩn bị Model 3 cho trò chơi này: %1",
+		"error.no_game": "Dự án chưa có trò chơi: hãy đưa bộ ROM của trò chơi, một tệp .zip, vào ô Trò chơi.",
+		"error.no_opengl": "Không khởi động được OpenGL riêng của lõi: %1",
+		"error.not_a_game": "Supermodel không tìm thấy trò chơi Model 3 nào mà nó biết trong tệp zip này: %1",
+		"error.not_model3": "%1 không phải là trò chơi Model 3; lõi này chỉ chạy trò chơi Model 3.",
+		"error.renderer_failed": "Không khởi động được bộ dựng hình của Supermodel: %1",
+		"setting.idleskip": "Bỏ qua chờ",
+		"setting.idleskip.about": "Khi bộ xử lý của trò chơi chờ trong một vòng lặp cho đến khi có việc xảy ra, Supermodel nhảy tới thay vì chạy từng vòng của vòng lặp, như bản gốc làm theo mặc định. Điều này làm lõi nhanh hơn. Trò chơi lẽ ra diễn ra giống nhau dù chọn cách nào, nhưng bộ xử lý dùng thời gian của nó khác đi. Đây là một phần của máy, nên một bản ghi cần cùng giá trị.",
+		"setting.starttime": "Đồng hồ khi bắt đầu",
+		"setting.starttime.about": "Ngày và giờ mà đồng hồ thời gian thực của Model 3 hiện khi máy được bật, theo UTC; sau đó nó chạy cùng các khung hình (57,524 mỗi giây, như của phần cứng). Mặc định là ngày 1 tháng 1 năm 2000. Đây là một thiết lập, không phải đồng hồ máy tính của bạn, để một bản ghi phát lại giống nhau vào bất kỳ ngày nào. Đây là một phần của máy, nên một bản ghi cần cùng giá trị.",
+		"slot.game": "Trò chơi",
+		"slot.game.help": "Bộ ROM của trò chơi: tệp .zip mang tên mà Supermodel và MAME đặt cho nó (ví dụ vf3.zip, scud.zip hoặc srally2.zip). Supermodel nhận ra các tệp của trò chơi qua nội dung của chúng, nên tên các tệp bên trong không quan trọng.",
+		"slot.parent": "Bộ ROM gốc",
+		"slot.parent.help": "Chỉ dành cho bản sao (một phiên bản của trò chơi mà bộ ROM chỉ chứa các tệp khác biệt, như vf3a.zip): tệp zip của bộ mà nó là một phiên bản (vf3.zip cho vf3a.zip). Trò chơi không phải bản sao thì không cần gì ở đây."
+	}
+}

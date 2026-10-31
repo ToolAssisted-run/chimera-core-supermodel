@@ -27,6 +27,6 @@ patches/ directory modifies Supermodel and is offered under Supermodel's own
 terms (GPL-3.0-or-later). The built core contains Supermodel (with the
 Musashi 68000 core and the Z80 core it carries, both under its GPL, and
 GLEW, minizip, tinyxml2 and minimp3, under their own permissive terms),
-Mesa (MIT) with the zlib and expat it builds, and LLVM (Apache-2.0 with the
+Mesa (MIT) with the zlib it builds, and LLVM (Apache-2.0 with the
 LLVM exception); the package as a whole is therefore distributed under the
 GPL-3.0-or-later. See waterbox/package-licenses.json.

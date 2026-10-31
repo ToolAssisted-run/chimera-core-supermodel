@@ -1,0 +1,18 @@
+{
+	"texts": {
+		"error.init_failed": "Supermodel konnte das Model 3 für dieses Spiel nicht einrichten: %1",
+		"error.no_game": "Das Projekt hat kein Spiel: Geben Sie im Feld Spiel den ROM-Satz des Spiels an, eine .zip-Datei.",
+		"error.no_opengl": "Das eigene OpenGL des Cores konnte nicht gestartet werden: %1",
+		"error.not_a_game": "Supermodel hat in dieser Zip-Datei kein Model-3-Spiel gefunden, das es kennt: %1",
+		"error.not_model3": "%1 ist kein Model-3-Spiel; dieser Core spielt nur Model-3-Spiele.",
+		"error.renderer_failed": "Der Renderer von Supermodel konnte nicht gestartet werden: %1",
+		"setting.idleskip": "Leerlauf überspringen",
+		"setting.idleskip.about": "Wenn der Prozessor des Spiels in einer Schleife auf etwas wartet, springt Supermodel vor, statt jeden Durchlauf der Schleife auszuführen, wie es das Original standardmäßig tut. Das macht den Core schneller. Das Spiel soll in beiden Fällen gleich ablaufen, aber der Prozessor verbringt seine Zeit anders. Es gehört zur Maschine, daher braucht ein Film denselben Wert.",
+		"setting.starttime": "Startzeit der Uhr",
+		"setting.starttime.about": "Datum und Uhrzeit, die die Echtzeituhr des Model 3 beim Einschalten zeigt, in UTC; danach läuft sie mit den Bildern (57,524 pro Sekunde, wie bei der Hardware). Vorgabe ist der 1. Januar 2000. Das ist eine Einstellung und nicht die Uhr Ihres Computers, damit ein Film an jedem Tag gleich abläuft. Es gehört zur Maschine, daher braucht ein Film denselben Wert.",
+		"slot.game": "Spiel",
+		"slot.game.help": "Der ROM-Satz des Spiels: die .zip-Datei, benannt wie bei Supermodel und MAME (zum Beispiel vf3.zip, scud.zip oder srally2.zip). Supermodel erkennt die Dateien eines Spiels an ihrem Inhalt, daher spielen die Namen der Dateien darin keine Rolle.",
+		"slot.parent": "Übergeordneter ROM-Satz",
+		"slot.parent.help": "Nur für einen Klon (eine Version eines Spiels, deren Satz nur die abweichenden Dateien enthält, etwa vf3a.zip): die Zip-Datei des Satzes, von dem er eine Version ist (vf3.zip für vf3a.zip). Ein Spiel, das kein Klon ist, braucht hier nichts."
+	}
+}

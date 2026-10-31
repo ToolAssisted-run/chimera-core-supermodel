@@ -1,0 +1,18 @@
+{
+	"texts": {
+		"error.init_failed": "Supermodel はこのゲームのために Model 3 を準備できませんでした: %1",
+		"error.no_game": "プロジェクトにゲームがありません。ゲームの ROM セット (.zip) を「ゲーム」の欄に指定してください。",
+		"error.no_opengl": "コア独自の OpenGL を起動できませんでした: %1",
+		"error.not_a_game": "Supermodel はこの zip の中に、知っている Model 3 のゲームを見つけられませんでした: %1",
+		"error.not_model3": "%1 は Model 3 のゲームではありません。このコアは Model 3 のゲームだけを動かします。",
+		"error.renderer_failed": "Supermodel のレンダラーを起動できませんでした: %1",
+		"setting.idleskip": "待機のスキップ",
+		"setting.idleskip.about": "ゲームのプロセッサーが何かが起こるのをループで待っているとき、Supermodel はループを一周ずつ実行せずに先へ進みます。本家の既定の動作と同じです。コアが速くなります。どちらでもゲームは同じ結果になるはずですが、プロセッサーの時間の使い方が変わります。機種の一部なので、ムービーには同じ値が必要です。",
+		"setting.starttime": "開始時刻",
+		"setting.starttime.about": "機械の電源を入れたときに Model 3 のリアルタイムクロックが示す日付と時刻 (UTC)。そこからフレームと一緒に進みます (ハードウェアと同じく毎秒 57.524 フレーム)。既定値は2000年1月1日です。これは設定であり、お使いのコンピューターの時計ではありません。そのため、どの日でもムービーが同じように再生されます。機種の一部なので、ムービーには同じ値が必要です。",
+		"slot.game": "ゲーム",
+		"slot.game.help": "ゲームの ROM セット: Supermodel と MAME が付ける名前の .zip ファイル (例: vf3.zip、scud.zip、srally2.zip)。Supermodel はゲームのファイルを中身で見分けるので、中のファイル名は関係ありません。",
+		"slot.parent": "親 ROM セット",
+		"slot.parent.help": "クローン (vf3a.zip のように、異なるファイルだけを持つゲームの版) の場合のみ: その元になるセットの zip (vf3a.zip なら vf3.zip)。クローンでないゲームには、ここは不要です。"
+	}
+}

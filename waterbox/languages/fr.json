@@ -1,0 +1,18 @@
+{
+	"texts": {
+		"error.init_failed": "Supermodel n'a pas pu préparer le Model 3 pour ce jeu : %1",
+		"error.no_game": "Le projet n'a pas de jeu : indiquez le jeu de ROM du jeu, un .zip, dans la case Jeu.",
+		"error.no_opengl": "L'OpenGL propre au cœur n'a pas pu démarrer : %1",
+		"error.not_a_game": "Supermodel n'a trouvé dans ce zip aucun jeu Model 3 qu'il connaît : %1",
+		"error.not_model3": "%1 n'est pas un jeu Model 3 ; ce cœur ne fait tourner que des jeux Model 3.",
+		"error.renderer_failed": "Le moteur de rendu de Supermodel n'a pas pu démarrer : %1",
+		"setting.idleskip": "Sauter les attentes",
+		"setting.idleskip.about": "Quand le processeur du jeu attend dans une boucle que quelque chose arrive, Supermodel saute en avant au lieu d'exécuter chaque tour de la boucle, comme le fait l'original par défaut. Le cœur va plus vite. Le jeu devrait se dérouler de la même façon dans les deux cas, mais le processeur emploie son temps autrement. Il fait partie de la machine : un film a besoin de la même valeur.",
+		"setting.starttime": "Horloge de départ",
+		"setting.starttime.about": "La date et l'heure qu'affiche l'horloge temps réel du Model 3 à la mise sous tension, en UTC ; elle avance ensuite avec les images (57,524 par seconde, comme celle du matériel). Par défaut, le 1er janvier 2000. C'est un réglage, et non l'horloge de votre ordinateur, pour qu'un film se rejoue de la même façon n'importe quel jour. Il fait partie de la machine : un film a besoin de la même valeur.",
+		"slot.game": "Jeu",
+		"slot.game.help": "Le jeu de ROM du jeu : le .zip nommé comme le nomment Supermodel et MAME (par exemple vf3.zip, scud.zip ou srally2.zip). Supermodel reconnaît les fichiers d'un jeu à leur contenu, les noms des fichiers qu'il contient n'ont donc pas d'importance.",
+		"slot.parent": "Jeu de ROM parent",
+		"slot.parent.help": "Seulement pour un clone (une version d'un jeu dont le jeu de ROM ne contient que les fichiers qui diffèrent, comme vf3a.zip) : le zip du jeu dont il est une version (vf3.zip pour vf3a.zip). Un jeu qui n'est pas un clone n'a besoin de rien ici."
+	}
+}

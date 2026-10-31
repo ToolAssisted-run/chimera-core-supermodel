@@ -1,0 +1,18 @@
+{
+	"texts": {
+		"error.init_failed": "Supermodel이 이 게임을 위해 Model 3를 준비하지 못했습니다: %1",
+		"error.no_game": "프로젝트에 게임이 없습니다. 게임의 ROM 세트(.zip)를 '게임' 칸에 지정하세요.",
+		"error.no_opengl": "코어 자체의 OpenGL을 시작하지 못했습니다: %1",
+		"error.not_a_game": "Supermodel이 이 zip에서 아는 Model 3 게임을 찾지 못했습니다: %1",
+		"error.not_model3": "%1은(는) Model 3 게임이 아닙니다. 이 코어는 Model 3 게임만 실행합니다.",
+		"error.renderer_failed": "Supermodel의 렌더러를 시작하지 못했습니다: %1",
+		"setting.idleskip": "대기 건너뛰기",
+		"setting.idleskip.about": "게임의 프로세서가 무언가가 일어나기를 루프에서 기다릴 때, Supermodel은 원본이 기본으로 그러듯이 루프를 한 바퀴씩 실행하지 않고 앞으로 건너뜁니다. 코어가 빨라집니다. 어느 쪽이든 게임은 같게 흘러가야 하지만 프로세서가 시간을 쓰는 방식이 달라집니다. 이것은 머신의 일부이므로 무비에는 같은 값이 필요합니다.",
+		"setting.starttime": "시작 시계",
+		"setting.starttime.about": "기계를 켤 때 Model 3의 실시간 시계가 보여 주는 날짜와 시각(UTC)입니다. 그 후 프레임과 함께 흐릅니다(하드웨어처럼 초당 57.524 프레임). 기본값은 2000년 1월 1일입니다. 이것은 설정이며 컴퓨터의 시계가 아니므로, 무비는 어느 날에나 똑같이 재생됩니다. 이것은 머신의 일부이므로 무비에는 같은 값이 필요합니다.",
+		"slot.game": "게임",
+		"slot.game.help": "게임의 ROM 세트: Supermodel과 MAME가 붙이는 이름의 .zip 파일(예: vf3.zip, scud.zip, srally2.zip). Supermodel은 게임의 파일을 내용으로 알아보므로 안에 있는 파일 이름은 상관없습니다.",
+		"slot.parent": "부모 ROM 세트",
+		"slot.parent.help": "클론(vf3a.zip처럼 다른 파일만 담은 게임의 버전)인 경우에만: 그 버전의 원본 세트 zip(vf3a.zip이면 vf3.zip). 클론이 아닌 게임은 여기에 아무것도 필요 없습니다."
+	}
+}

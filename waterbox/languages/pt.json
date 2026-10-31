@@ -1,0 +1,18 @@
+{
+	"texts": {
+		"error.init_failed": "O Supermodel não conseguiu preparar o Model 3 para este jogo: %1",
+		"error.no_game": "O projeto não tem jogo: informe o conjunto de ROM do jogo, um .zip, no campo Jogo.",
+		"error.no_opengl": "Não foi possível iniciar o OpenGL próprio do núcleo: %1",
+		"error.not_a_game": "O Supermodel não encontrou neste zip nenhum jogo de Model 3 que conheça: %1",
+		"error.not_model3": "%1 não é um jogo de Model 3; este núcleo executa apenas jogos de Model 3.",
+		"error.renderer_failed": "Não foi possível iniciar o renderizador do Supermodel: %1",
+		"setting.idleskip": "Pular esperas",
+		"setting.idleskip.about": "Quando o processador do jogo espera em um laço que algo aconteça, o Supermodel pula adiante em vez de executar cada volta do laço, como o original faz por padrão. Isso deixa o núcleo mais rápido. O jogo deve sair igual de qualquer forma, mas o processador gasta o seu tempo de outro jeito. Faz parte da máquina, então um filme precisa do mesmo valor.",
+		"setting.starttime": "Relógio inicial",
+		"setting.starttime.about": "A data e a hora que o relógio de tempo real do Model 3 mostra quando a máquina é ligada, em UTC; depois ele avança com os quadros (57,524 por segundo, como o do hardware). O padrão é 1º de janeiro de 2000. É uma configuração, e não o relógio do seu computador, para que um filme seja reproduzido igual em qualquer dia. Faz parte da máquina, então um filme precisa do mesmo valor.",
+		"slot.game": "Jogo",
+		"slot.game.help": "O conjunto de ROM do jogo: o .zip com o nome que o Supermodel e o MAME lhe dão (por exemplo vf3.zip, scud.zip ou srally2.zip). O Supermodel reconhece os arquivos de um jogo pelo conteúdo, então os nomes dos arquivos dentro não importam.",
+		"slot.parent": "Conjunto de ROM pai",
+		"slot.parent.help": "Só para um clone (uma versão de um jogo cujo conjunto contém apenas os arquivos que mudam, como vf3a.zip): o zip do conjunto do qual ele é uma versão (vf3.zip para vf3a.zip). Um jogo que não é clone não precisa de nada aqui."
+	}
+}

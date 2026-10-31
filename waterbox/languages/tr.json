@@ -1,0 +1,18 @@
+{
+	"texts": {
+		"error.init_failed": "Supermodel, Model 3'ü bu oyun için hazırlayamadı: %1",
+		"error.no_game": "Projede oyun yok: Oyun alanına oyunun ROM setini, bir .zip dosyasını verin.",
+		"error.no_opengl": "Çekirdeğin kendi OpenGL'i başlatılamadı: %1",
+		"error.not_a_game": "Supermodel bu zip içinde tanıdığı bir Model 3 oyunu bulamadı: %1",
+		"error.not_model3": "%1 bir Model 3 oyunu değil; bu çekirdek yalnızca Model 3 oyunlarını çalıştırır.",
+		"error.renderer_failed": "Supermodel'in çizicisi başlatılamadı: %1",
+		"setting.idleskip": "Beklemeyi atla",
+		"setting.idleskip.about": "Oyunun işlemcisi bir şey olmasını bir döngüde beklediğinde Supermodel, özgün sürümün varsayılan olarak yaptığı gibi, döngünün her turunu çalıştırmak yerine ileri atlar. Bu çekirdeği hızlandırır. Oyun her iki durumda da aynı sonuçlanmalıdır, ama işlemci zamanını farklı harcar. Makinenin bir parçasıdır, bu yüzden bir film aynı değeri ister.",
+		"setting.starttime": "Başlangıç Saati",
+		"setting.starttime.about": "Model 3'ün gerçek zamanlı saatinin makine açıldığında gösterdiği tarih ve saat, UTC olarak; sonra karelerle birlikte ilerler (donanımınki gibi saniyede 57,524). Varsayılan 1 Ocak 2000'dir. Bu, bilgisayarınızın saati değil bir ayardır; böylece bir film her gün aynı oynar. Makinenin bir parçasıdır, bu yüzden bir film aynı değeri ister.",
+		"slot.game": "Oyun",
+		"slot.game.help": "Oyunun ROM seti: Supermodel ve MAME'nin verdiği adla .zip dosyası (örneğin vf3.zip, scud.zip ya da srally2.zip). Supermodel bir oyunun dosyalarını içeriklerinden tanır, bu yüzden içindeki dosyaların adları önemli değildir.",
+		"slot.parent": "Ana ROM seti",
+		"slot.parent.help": "Yalnızca bir klon için (seti yalnızca farklı olan dosyaları içeren bir oyun sürümü, örneğin vf3a.zip): sürümü olduğu setin zip dosyası (vf3a.zip için vf3.zip). Klon olmayan bir oyunun burada bir şeye ihtiyacı yoktur."
+	}
+}

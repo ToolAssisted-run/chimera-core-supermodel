@@ -1,0 +1,18 @@
+{
+	"texts": {
+		"error.init_failed": "Supermodel nu a putut pregăti Model 3 pentru acest joc: %1",
+		"error.no_game": "Proiectul nu are niciun joc: indicați setul de ROM al jocului, un .zip, în câmpul Joc.",
+		"error.no_opengl": "OpenGL-ul propriu al nucleului nu a putut porni: %1",
+		"error.not_a_game": "Supermodel nu a găsit în acest zip niciun joc Model 3 pe care să-l cunoască: %1",
+		"error.not_model3": "%1 nu este un joc Model 3; acest nucleu rulează doar jocuri Model 3.",
+		"error.renderer_failed": "Randorul Supermodel nu a putut porni: %1",
+		"setting.idleskip": "Sari peste așteptare",
+		"setting.idleskip.about": "Când procesorul jocului așteaptă într-o buclă să se întâmple ceva, Supermodel sare înainte în loc să ruleze fiecare trecere a buclei, cum face originalul în mod implicit. Face nucleul mai rapid. Jocul ar trebui să iasă la fel în ambele cazuri, dar procesorul își petrece timpul altfel. Face parte din mașină, deci o înregistrare are nevoie de aceeași valoare.",
+		"setting.starttime": "Ceasul de pornire",
+		"setting.starttime.about": "Data și ora pe care le arată ceasul de timp real al Model 3 la pornirea mașinii, în UTC; apoi merge odată cu cadrele (57,524 pe secundă, ca al hardware-ului). Implicit este 1 ianuarie 2000. Este o setare, și nu ceasul calculatorului dumneavoastră, ca o înregistrare să se redea la fel în orice zi. Face parte din mașină, deci o înregistrare are nevoie de aceeași valoare.",
+		"slot.game": "Joc",
+		"slot.game.help": "Setul de ROM al jocului: fișierul .zip cu numele pe care i-l dau Supermodel și MAME (de exemplu vf3.zip, scud.zip sau srally2.zip). Supermodel recunoaște fișierele unui joc după conținut, deci numele fișierelor dinăuntru nu contează.",
+		"slot.parent": "Setul de ROM părinte",
+		"slot.parent.help": "Doar pentru o clonă (o versiune a unui joc al cărei set conține doar fișierele care diferă, ca vf3a.zip): zip-ul setului a cărui versiune este (vf3.zip pentru vf3a.zip). Un joc care nu este o clonă nu are nevoie de nimic aici."
+	}
+}

@@ -1,0 +1,18 @@
+{
+	"texts": {
+		"error.init_failed": "Supermodel kon de Model 3 niet voor dit spel klaarzetten: %1",
+		"error.no_game": "Het project heeft geen spel: geef de ROM-set van het spel, een .zip, op in het vak Spel.",
+		"error.no_opengl": "De eigen OpenGL van de core kon niet worden gestart: %1",
+		"error.not_a_game": "Supermodel vond in deze zip geen Model 3-spel dat het kent: %1",
+		"error.not_model3": "%1 is geen Model 3-spel; deze core speelt alleen Model 3-spellen.",
+		"error.renderer_failed": "De renderer van Supermodel kon niet worden gestart: %1",
+		"setting.idleskip": "Wachten overslaan",
+		"setting.idleskip.about": "Als de processor van het spel in een lus op iets wacht, springt Supermodel vooruit in plaats van elke ronde van de lus uit te voeren, zoals het origineel standaard doet. Dat maakt de core sneller. Het spel hoort er hoe dan ook hetzelfde uit te komen, maar de processor besteedt zijn tijd anders. Het hoort bij de machine, dus een movie heeft dezelfde waarde nodig.",
+		"setting.starttime": "Startklok",
+		"setting.starttime.about": "De datum en tijd die de realtimeklok van de Model 3 toont als de machine aangaat, in UTC; daarna loopt hij mee met de frames (57,524 per seconde, zoals die van de hardware). Standaard is 1 januari 2000. Dit is een instelling, en niet de klok van uw computer, zodat een movie op elke dag hetzelfde afspeelt. Het hoort bij de machine, dus een movie heeft dezelfde waarde nodig.",
+		"slot.game": "Spel",
+		"slot.game.help": "De ROM-set van het spel: de .zip met de naam die Supermodel en MAME eraan geven (bijvoorbeeld vf3.zip, scud.zip of srally2.zip). Supermodel herkent de bestanden van een spel aan hun inhoud, dus de namen van de bestanden erin doen er niet toe.",
+		"slot.parent": "Ouder-ROM-set",
+		"slot.parent.help": "Alleen voor een kloon (een versie van een spel waarvan de set alleen de afwijkende bestanden bevat, zoals vf3a.zip): de zip van de set waarvan het een versie is (vf3.zip voor vf3a.zip). Een spel dat geen kloon is, heeft hier niets nodig."
+	}
+}

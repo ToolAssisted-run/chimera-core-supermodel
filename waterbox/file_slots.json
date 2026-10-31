@@ -1,0 +1,25 @@
+{
+  "_comment": "This file lists the kinds of file a Supermodel project can hold. Chimera's New Project window is built from it.",
+  "slots": [
+    {
+      "id": "game",
+      "title": "slot.game",
+      "min": 1,
+      "max": 1,
+      "formats": [
+        "zip"
+      ],
+      "help": "slot.game.help"
+    },
+    {
+      "id": "parent",
+      "title": "slot.parent",
+      "min": 0,
+      "max": 1,
+      "formats": [
+        "zip"
+      ],
+      "help": "slot.parent.help"
+    }
+  ]
+}

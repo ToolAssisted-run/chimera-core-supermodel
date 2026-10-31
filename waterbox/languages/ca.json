@@ -1,0 +1,18 @@
+{
+	"texts": {
+		"error.init_failed": "Supermodel no ha pogut preparar el Model 3 per a aquest joc: %1",
+		"error.no_game": "El projecte no té cap joc: indiqueu el conjunt de ROM del joc, un .zip, a la casella Joc.",
+		"error.no_opengl": "No s'ha pogut iniciar l'OpenGL propi del nucli: %1",
+		"error.not_a_game": "Supermodel no ha trobat en aquest zip cap joc de Model 3 que conegui: %1",
+		"error.not_model3": "%1 no és un joc de Model 3; aquest nucli només executa jocs de Model 3.",
+		"error.renderer_failed": "No s'ha pogut iniciar el renderitzador de Supermodel: %1",
+		"setting.idleskip": "Saltar esperes",
+		"setting.idleskip.about": "Quan el processador del joc espera en un bucle que passi alguna cosa, Supermodel salta endavant en lloc d'executar cada volta del bucle, com fa l'original per defecte. Fa el nucli més ràpid. El joc hauria de sortir igual de totes maneres, però el processador fa servir el seu temps d'una altra manera. Forma part de la màquina, de manera que una pel·lícula necessita el mateix valor.",
+		"setting.starttime": "Rellotge inicial",
+		"setting.starttime.about": "La data i l'hora que mostra el rellotge de temps real del Model 3 en engegar la màquina, en UTC; després avança amb els fotogrames (57,524 per segon, com el del maquinari). Per defecte és l'1 de gener de 2000. És un ajust, i no el rellotge del vostre ordinador, perquè una pel·lícula es reprodueixi igual qualsevol dia. Forma part de la màquina, de manera que una pel·lícula necessita el mateix valor.",
+		"slot.game": "Joc",
+		"slot.game.help": "El conjunt de ROM del joc: el .zip amb el nom que li donen Supermodel i MAME (per exemple vf3.zip, scud.zip o srally2.zip). Supermodel reconeix els fitxers d'un joc pel contingut, així que els noms dels fitxers de dins no importen.",
+		"slot.parent": "Conjunt de ROM pare",
+		"slot.parent.help": "Només per a un clon (una versió d'un joc el conjunt del qual només conté els fitxers que canvien, com vf3a.zip): el zip del conjunt del qual és una versió (vf3.zip per a vf3a.zip). Un joc que no és un clon no necessita res aquí."
+	}
+}

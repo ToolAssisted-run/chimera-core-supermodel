@@ -1,0 +1,21 @@
+From: Chimera core
+Subject: [PATCH] the core's memory tools see the RAM
+
+With SUPERMODEL_CHIMERA, CModel3 hands the core pointers to its main RAM
+and its backup RAM, which the core publishes as memory domains for
+Chimera's memory tools (RAM Watch, RAM Search, Lua's memory functions).
+---
+--- a/Src/Model3/Model3.h
++++ b/Src/Model3/Model3.h
+@@ -99,6 +99,11 @@
+   Result Init(const Game &game, const ROMSet &rom_set) override;
+   // For Scripting tweaks
+   Util::Config::Node& GetConfig() { return this->m_config; }
++#ifdef SUPERMODEL_CHIMERA
++  // the Chimera core's memory tools (RAM Watch, RAM Search) read these
++  UINT8 *ChimeraRAM(void) { return ram; }
++  UINT8 *ChimeraBackupRAM(void) { return backupRAM; }
++#endif
+ 
+   // IPCIDevice interface
+   UINT32 ReadPCIConfigSpace(unsigned device, unsigned reg, unsigned bits, unsigned offset) const override;

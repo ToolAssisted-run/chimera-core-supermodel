@@ -1,0 +1,241 @@
+{
+  "_comment": [
+    "Supermodel's own default keys (1 and 2 start, 3 and 4 are the coins,",
+    "5 to 8 the service and test buttons, the arrows and A S D F for player",
+    "1), the first game controller as player 1's panel and the second as",
+    "player 2's, the wheel and pedals on the first controller's left stick",
+    "and triggers, the light gun on the mouse. Controls of different",
+    "cabinets share keys, as upstream's do: a game has only its own.",
+    "Written by tools/gen-inputs.py."
+  ],
+  "AllTrollers": {
+    "Model 3 Cabinet": {
+      "P1 Coin": "Number3, X1 Back",
+      "P1 Start": "Number1, X1 Start",
+      "P2 Coin": "Number4, X2 Back",
+      "P2 Start": "Number2, X2 Start",
+      "Service A": "Number5",
+      "Test A": "Number6",
+      "Service B": "Number7",
+      "Test B": "Number8",
+      "P1 Up": "Up, X1 DpadUp",
+      "P1 Down": "Down, X1 DpadDown",
+      "P1 Left": "Left, X1 DpadLeft",
+      "P1 Right": "Right, X1 DpadRight",
+      "P2 Up": "X2 DpadUp",
+      "P2 Down": "X2 DpadDown",
+      "P2 Left": "X2 DpadLeft",
+      "P2 Right": "X2 DpadRight",
+      "P1 Punch": "A, X1 X",
+      "P1 Kick": "S, X1 A",
+      "P1 Guard": "D, X1 B",
+      "P1 Escape": "F, X1 Y",
+      "P2 Punch": "X2 X",
+      "P2 Kick": "X2 A",
+      "P2 Guard": "X2 B",
+      "P2 Escape": "X2 Y",
+      "P1 Shift": "A, X1 X",
+      "P1 Beat": "S, X1 A",
+      "P1 Charge": "D, X1 B",
+      "P1 Jump": "F, X1 Y",
+      "P1 Short Pass": "A, X1 X",
+      "P1 Long Pass": "S, X1 A",
+      "P1 Shoot": "D, X1 B",
+      "P2 Short Pass": "X2 X",
+      "P2 Long Pass": "X2 A",
+      "P2 Shoot": "X2 B",
+      "P1 Shift Up": "Y, X1 RightShoulder",
+      "P1 Shift Down": "H, X1 LeftShoulder",
+      "P1 Gear 1": "Q",
+      "P1 Gear 2": "W",
+      "P1 Gear 3": "E",
+      "P1 Gear 4": "R",
+      "P1 Gear Neutral": "T",
+      "P1 View Change": "A, X1 X",
+      "P1 View 1": "A, X1 X",
+      "P1 View 2": "S, X1 A",
+      "P1 View 3": "D, X1 B",
+      "P1 View 4": "F, X1 Y",
+      "P1 Hand Brake": "S, X1 A",
+      "P1 Music Select": "D, X1 B",
+      "P1 Left Stick Up": "X1 LStickUp",
+      "P1 Left Stick Down": "X1 LStickDown",
+      "P1 Left Stick Left": "X1 LStickLeft",
+      "P1 Left Stick Right": "X1 LStickRight",
+      "P1 Right Stick Up": "X1 RStickUp",
+      "P1 Right Stick Down": "X1 RStickDown",
+      "P1 Right Stick Left": "X1 RStickLeft",
+      "P1 Right Stick Right": "X1 RStickRight",
+      "P1 Left Shot": "A, X1 LeftShoulder",
+      "P1 Right Shot": "S, X1 RightShoulder",
+      "P1 Left Turbo": "Z, X1 LeftTrigger",
+      "P1 Right Turbo": "X, X1 RightTrigger",
+      "P1 Stick Trigger 1": "A, X1 A",
+      "P1 Stick Trigger 2": "D, X1 X",
+      "P1 Event 1": "S, X1 B",
+      "P1 Event 2": "",
+      "P1 Trigger": "A, WMouse L, X1 A",
+      "P1 Trigger 2": "S, WMouse R, X1 B",
+      "P1 Off-screen": "S, WMouse R, X1 B",
+      "P2 Trigger": "X2 A",
+      "P2 Trigger 2": "X2 B",
+      "P2 Off-screen": "X2 B",
+      "P1 Ski Pole Left": "A, X1 A",
+      "P1 Ski Pole Right": "S, X1 B",
+      "P1 Ski Select 1": "Q, X1 X",
+      "P1 Ski Select 2": "W, X1 Y",
+      "P1 Ski Select 3": "E, X1 RightShoulder",
+      "P1 Pedal": "A, X1 A",
+      "P2 Pedal": "X2 A",
+      "P1 Cast": "Z, X1 A",
+      "P1 Select": "X, X1 B"
+    }
+  },
+  "AllTrollersAutoFire": {
+    "Model 3 Cabinet": {}
+  },
+  "AllTrollersAnalog": {
+    "Model 3 Cabinet": {
+      "P1 Steering": {
+        "Value": "X1 LeftThumbX Axis",
+        "Mult": 1.0,
+        "Deadzone": 0.1,
+        "ButtonBindPositive": "Right",
+        "ButtonBindNegative": "Left"
+      },
+      "P1 Accelerator": {
+        "Value": "X1 RightTrigger Axis",
+        "Mult": 1.0,
+        "Deadzone": 0.0,
+        "ButtonBindPositive": "Up",
+        "ButtonBindNegative": ""
+      },
+      "P1 Brake": {
+        "Value": "X1 LeftTrigger Axis",
+        "Mult": 1.0,
+        "Deadzone": 0.0,
+        "ButtonBindPositive": "Down",
+        "ButtonBindNegative": ""
+      },
+      "P1 Rear Brake": {
+        "Value": "",
+        "Mult": 1.0,
+        "Deadzone": 0.0,
+        "ButtonBindPositive": "S",
+        "ButtonBindNegative": ""
+      },
+      "P1 Joystick X": {
+        "Value": "X1 LeftThumbX Axis",
+        "Mult": 1.0,
+        "Deadzone": 0.1,
+        "ButtonBindPositive": "Right",
+        "ButtonBindNegative": "Left"
+      },
+      "P1 Joystick Y": {
+        "Value": "X1 LeftThumbY Axis",
+        "Mult": 1.0,
+        "Deadzone": 0.1,
+        "ButtonBindPositive": "Down",
+        "ButtonBindNegative": "Up"
+      },
+      "P1 Gun X": {
+        "Value": "WMouse X",
+        "Mult": 1.0,
+        "Deadzone": 0.0,
+        "ButtonBindPositive": "",
+        "ButtonBindNegative": ""
+      },
+      "P1 Gun Y": {
+        "Value": "WMouse Y",
+        "Mult": 1.0,
+        "Deadzone": 0.0,
+        "ButtonBindPositive": "",
+        "ButtonBindNegative": ""
+      },
+      "P2 Gun X": {
+        "Value": "",
+        "Mult": 1.0,
+        "Deadzone": 0.0,
+        "ButtonBindPositive": "",
+        "ButtonBindNegative": ""
+      },
+      "P2 Gun Y": {
+        "Value": "",
+        "Mult": 1.0,
+        "Deadzone": 0.0,
+        "ButtonBindPositive": "",
+        "ButtonBindNegative": ""
+      },
+      "P1 Ski X": {
+        "Value": "X1 LeftThumbX Axis",
+        "Mult": 1.0,
+        "Deadzone": 0.1,
+        "ButtonBindPositive": "Right",
+        "ButtonBindNegative": "Left"
+      },
+      "P1 Ski Y": {
+        "Value": "X1 LeftThumbY Axis",
+        "Mult": 1.0,
+        "Deadzone": 0.1,
+        "ButtonBindPositive": "Down",
+        "ButtonBindNegative": "Up"
+      },
+      "P1 Lever": {
+        "Value": "X1 LeftThumbY Axis",
+        "Mult": 1.0,
+        "Deadzone": 0.1,
+        "ButtonBindPositive": "Down",
+        "ButtonBindNegative": "Up"
+      },
+      "P2 Lever": {
+        "Value": "X2 LeftThumbY Axis",
+        "Mult": 1.0,
+        "Deadzone": 0.1,
+        "ButtonBindPositive": "",
+        "ButtonBindNegative": ""
+      },
+      "P1 Rod X": {
+        "Value": "X1 LeftThumbX Axis",
+        "Mult": 1.0,
+        "Deadzone": 0.1,
+        "ButtonBindPositive": "Right",
+        "ButtonBindNegative": "Left"
+      },
+      "P1 Rod Y": {
+        "Value": "X1 LeftThumbY Axis",
+        "Mult": 1.0,
+        "Deadzone": 0.1,
+        "ButtonBindPositive": "Down",
+        "ButtonBindNegative": "Up"
+      },
+      "P1 Stick X": {
+        "Value": "X1 RightThumbX Axis",
+        "Mult": 1.0,
+        "Deadzone": 0.1,
+        "ButtonBindPositive": "D",
+        "ButtonBindNegative": "A"
+      },
+      "P1 Stick Y": {
+        "Value": "X1 RightThumbY Axis",
+        "Mult": 1.0,
+        "Deadzone": 0.1,
+        "ButtonBindPositive": "S",
+        "ButtonBindNegative": "W"
+      },
+      "P1 Reel": {
+        "Value": "X1 RightTrigger Axis",
+        "Mult": 1.0,
+        "Deadzone": 0.0,
+        "ButtonBindPositive": "Space",
+        "ButtonBindNegative": ""
+      },
+      "P1 Tension": {
+        "Value": "X1 LeftTrigger Axis",
+        "Mult": 1.0,
+        "Deadzone": 0.0,
+        "ButtonBindPositive": "T",
+        "ButtonBindNegative": ""
+      }
+    }
+  }
+}

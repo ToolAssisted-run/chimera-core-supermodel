@@ -4,6 +4,7 @@
 Writes, from the table below:
   waterbox/core/chimera_inputs.inc   the C++ table chimera_input.cpp walks
   waterbox/input-names.h             the test harness's tokens
+  waterbox/default_keybinds.json     the default bindings
   the "input" object of waterbox/waterbox.config (the rest of the file is
   kept as it is)
 
@@ -152,6 +153,64 @@ AXES = [
     ("P1 Tension", "FISHING", "pedal", "Tens", [("fishingTension", 0x00, 0x00, 0xFF)]),
 ]
 
+# Default bindings: Supermodel's own default keys (Src/OSD/SDL/Main.cpp,
+# DefaultConfig), and the first and second game controllers as the arcade
+# panels of players 1 and 2. Controls of different cabinets share keys, as
+# upstream's do: a game has only its own.
+BINDS = {
+    "P1 Coin": "Number3, X1 Back", "P1 Start": "Number1, X1 Start",
+    "P2 Coin": "Number4, X2 Back", "P2 Start": "Number2, X2 Start",
+    "Service A": "Number5", "Test A": "Number6", "Service B": "Number7", "Test B": "Number8",
+    "P1 Up": "Up, X1 DpadUp", "P1 Down": "Down, X1 DpadDown", "P1 Left": "Left, X1 DpadLeft", "P1 Right": "Right, X1 DpadRight",
+    "P2 Up": "X2 DpadUp", "P2 Down": "X2 DpadDown", "P2 Left": "X2 DpadLeft", "P2 Right": "X2 DpadRight",
+    "P1 Punch": "A, X1 X", "P1 Kick": "S, X1 A", "P1 Guard": "D, X1 B", "P1 Escape": "F, X1 Y",
+    "P2 Punch": "X2 X", "P2 Kick": "X2 A", "P2 Guard": "X2 B", "P2 Escape": "X2 Y",
+    "P1 Shift": "A, X1 X", "P1 Beat": "S, X1 A", "P1 Charge": "D, X1 B", "P1 Jump": "F, X1 Y",
+    "P1 Short Pass": "A, X1 X", "P1 Long Pass": "S, X1 A", "P1 Shoot": "D, X1 B",
+    "P2 Short Pass": "X2 X", "P2 Long Pass": "X2 A", "P2 Shoot": "X2 B",
+    "P1 Shift Up": "Y, X1 RightShoulder", "P1 Shift Down": "H, X1 LeftShoulder",
+    "P1 Gear 1": "Q", "P1 Gear 2": "W", "P1 Gear 3": "E", "P1 Gear 4": "R", "P1 Gear Neutral": "T",
+    "P1 View Change": "A, X1 X", "P1 View 1": "A, X1 X", "P1 View 2": "S, X1 A", "P1 View 3": "D, X1 B", "P1 View 4": "F, X1 Y",
+    "P1 Hand Brake": "S, X1 A", "P1 Music Select": "D, X1 B",
+    "P1 Left Stick Up": "X1 LStickUp", "P1 Left Stick Down": "X1 LStickDown",
+    "P1 Left Stick Left": "X1 LStickLeft", "P1 Left Stick Right": "X1 LStickRight",
+    "P1 Right Stick Up": "X1 RStickUp", "P1 Right Stick Down": "X1 RStickDown",
+    "P1 Right Stick Left": "X1 RStickLeft", "P1 Right Stick Right": "X1 RStickRight",
+    "P1 Left Shot": "A, X1 LeftShoulder", "P1 Right Shot": "S, X1 RightShoulder",
+    "P1 Left Turbo": "Z, X1 LeftTrigger", "P1 Right Turbo": "X, X1 RightTrigger",
+    "P1 Stick Trigger 1": "A, X1 A", "P1 Stick Trigger 2": "D, X1 X", "P1 Event 1": "S, X1 B", "P1 Event 2": "",
+    "P1 Trigger": "A, WMouse L, X1 A", "P1 Trigger 2": "S, WMouse R, X1 B", "P1 Off-screen": "S, WMouse R, X1 B",
+    "P2 Trigger": "X2 A", "P2 Trigger 2": "X2 B", "P2 Off-screen": "X2 B",
+    "P1 Ski Pole Left": "A, X1 A", "P1 Ski Pole Right": "S, X1 B",
+    "P1 Ski Select 1": "Q, X1 X", "P1 Ski Select 2": "W, X1 Y", "P1 Ski Select 3": "E, X1 RightShoulder",
+    "P1 Pedal": "A, X1 A", "P2 Pedal": "X2 A",
+    "P1 Cast": "Z, X1 A", "P1 Select": "X, X1 B",
+}
+
+# (game controller axis, key for the negative end, key for the positive end)
+ANALOG_BINDS = {
+    "P1 Steering": ("X1 LeftThumbX Axis", "Left", "Right"),
+    "P1 Accelerator": ("X1 RightTrigger Axis", "", "Up"),
+    "P1 Brake": ("X1 LeftTrigger Axis", "", "Down"),
+    "P1 Rear Brake": ("", "", "S"),
+    "P1 Joystick X": ("X1 LeftThumbX Axis", "Left", "Right"),
+    "P1 Joystick Y": ("X1 LeftThumbY Axis", "Up", "Down"),
+    "P1 Gun X": ("WMouse X", "", ""),
+    "P1 Gun Y": ("WMouse Y", "", ""),
+    "P2 Gun X": ("", "", ""),
+    "P2 Gun Y": ("", "", ""),
+    "P1 Ski X": ("X1 LeftThumbX Axis", "Left", "Right"),
+    "P1 Ski Y": ("X1 LeftThumbY Axis", "Up", "Down"),
+    "P1 Lever": ("X1 LeftThumbY Axis", "Up", "Down"),
+    "P2 Lever": ("X2 LeftThumbY Axis", "", ""),
+    "P1 Rod X": ("X1 LeftThumbX Axis", "Left", "Right"),
+    "P1 Rod Y": ("X1 LeftThumbY Axis", "Up", "Down"),
+    "P1 Stick X": ("X1 RightThumbX Axis", "A", "D"),
+    "P1 Stick Y": ("X1 RightThumbY Axis", "W", "S"),
+    "P1 Reel": ("X1 RightTrigger Axis", "", "Space"),
+    "P1 Tension": ("X1 LeftTrigger Axis", "", "T"),
+}
+
 RANGES = {
     "signed": (-32768, 32767, 0),
     "pedal": (0, 32767, 0),
@@ -230,11 +289,54 @@ def input_decl():
     }
 
 
+def write_keybinds():
+    name = "Model 3 Cabinet"
+    analog = {}
+    for a in AXES:
+        value, neg, pos = ANALOG_BINDS[a[0]]
+        dead = 0.1 if a[2] == "signed" and value.startswith("X") else 0.0
+        analog[a[0]] = {"Value": value, "Mult": 1.0, "Deadzone": dead, "ButtonBindPositive": pos, "ButtonBindNegative": neg}
+    doc = {
+        "_comment": [
+            "Supermodel's own default keys (1 and 2 start, 3 and 4 are the coins,",
+            "5 to 8 the service and test buttons, the arrows and A S D F for player",
+            "1), the first game controller as player 1's panel and the second as",
+            "player 2's, the wheel and pedals on the first controller's left stick",
+            "and triggers, the light gun on the mouse. Controls of different",
+            "cabinets share keys, as upstream's do: a game has only its own.",
+            "Written by tools/gen-inputs.py.",
+        ],
+        "AllTrollers": {name: {b[0]: BINDS[b[0]] for b in BUTTONS}},
+        "AllTrollersAutoFire": {name: {}},
+        "AllTrollersAnalog": {name: analog},
+    }
+    return json.dumps(doc, indent=2) + "\n"
+
+
+def check_letters():
+    groups = {}
+    for b in BUTTONS:
+        player = b[0][:2] if b[0][:2] in ("P1", "P2") else "console"
+        groups.setdefault(player, []).append(b[3])
+    for player, letters in groups.items():
+        dup = sorted({c for c in letters if letters.count(c) > 1})
+        if dup:
+            raise SystemExit(f"gen-inputs: {player} has letters used twice: {dup}")
+        bad = [c for c in letters if len(c) != 1 or c in ".|" or not 33 <= ord(c) < 127]
+        if bad:
+            raise SystemExit(f"gen-inputs: unusable letters: {bad}")
+    missing = [b[0] for b in BUTTONS if b[0] not in BINDS] + [a[0] for a in AXES if a[0] not in ANALOG_BINDS]
+    if missing:
+        raise SystemExit(f"gen-inputs: no default binding for {missing}")
+
+
 def main():
     check = "--check" in sys.argv
+    check_letters()
     files = {
         os.path.join(ROOT, "waterbox/core/chimera_inputs.inc"): write_inc(),
         os.path.join(ROOT, "waterbox/input-names.h"): write_names(),
+        os.path.join(ROOT, "waterbox/default_keybinds.json"): write_keybinds(),
     }
     cfg_path = os.path.join(ROOT, "waterbox/waterbox.config")
     if os.path.exists(cfg_path):

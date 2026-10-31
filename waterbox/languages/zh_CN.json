@@ -1,0 +1,18 @@
+{
+	"texts": {
+		"error.init_failed": "Supermodel 无法为此游戏准备 Model 3：%1",
+		"error.no_game": "项目中没有游戏：请在“游戏”栏中提供游戏的 ROM 组（一个 .zip 文件）。",
+		"error.no_opengl": "无法启动核心自带的 OpenGL：%1",
+		"error.not_a_game": "Supermodel 在此 zip 中没有找到它认识的 Model 3 游戏：%1",
+		"error.not_model3": "%1 不是 Model 3 游戏；此核心只运行 Model 3 游戏。",
+		"error.renderer_failed": "无法启动 Supermodel 的渲染器：%1",
+		"setting.idleskip": "跳过等待",
+		"setting.idleskip.about": "当游戏的处理器在循环中等待某件事发生时，Supermodel 会直接向前跳过，而不是逐圈执行循环，这与原版的默认做法相同。这能让核心更快。两种方式下游戏的结果应当相同，但处理器使用时间的方式不同。它属于机型的一部分，因此录像需要相同的值。",
+		"setting.starttime": "起始时钟",
+		"setting.starttime.about": "开机时 Model 3 的实时时钟所显示的日期和时间（UTC）；此后它随帧一起运行（与硬件一样每秒 57.524 帧）。默认为 2000 年 1 月 1 日。这是一项设置，而不是您电脑的时钟，因此录像在任何一天回放结果都相同。它属于机型的一部分，因此录像需要相同的值。",
+		"slot.game": "游戏",
+		"slot.game.help": "游戏的 ROM 组：按 Supermodel 和 MAME 的命名方式命名的 .zip 文件（例如 vf3.zip、scud.zip 或 srally2.zip）。Supermodel 根据内容识别游戏的文件，因此其中文件的名称无关紧要。",
+		"slot.parent": "父 ROM 组",
+		"slot.parent.help": "仅用于克隆版（只包含不同文件的游戏版本，例如 vf3a.zip）：它所派生自的 ROM 组的 zip（vf3a.zip 对应 vf3.zip）。不是克隆版的游戏在此无需提供任何文件。"
+	}
+}

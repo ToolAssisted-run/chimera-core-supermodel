@@ -1,0 +1,18 @@
+{
+	"texts": {
+		"error.init_failed": "Supermodel nemohl připravit Model 3 pro tuto hru: %1",
+		"error.no_game": "Projekt nemá hru: zadejte sadu ROM hry, soubor .zip, do pole Hra.",
+		"error.no_opengl": "Vlastní OpenGL jádra se nepodařilo spustit: %1",
+		"error.not_a_game": "Supermodel v tomto zipu nenašel žádnou hru pro Model 3, kterou zná: %1",
+		"error.not_model3": "%1 není hra pro Model 3; toto jádro spouští jen hry pro Model 3.",
+		"error.renderer_failed": "Renderer Supermodelu se nepodařilo spustit: %1",
+		"setting.idleskip": "Přeskakovat čekání",
+		"setting.idleskip.about": "Když procesor hry čeká ve smyčce, až se něco stane, Supermodel přeskočí dopředu místo toho, aby prováděl každý průchod smyčkou, jak to ve výchozím stavu dělá originál. Jádro je tak rychlejší. Hra by měla dopadnout stejně tak i tak, ale procesor tráví svůj čas jinak. Je součástí stroje, takže film potřebuje stejnou hodnotu.",
+		"setting.starttime": "Počáteční hodiny",
+		"setting.starttime.about": "Datum a čas, které hodiny reálného času Model 3 ukazují po zapnutí stroje, v UTC; potom běží se snímky (57,524 za sekundu, jako hardwarové). Výchozí je 1. ledna 2000. Je to nastavení, a ne hodiny vašeho počítače, aby se film přehrál stejně kterýkoli den. Je součástí stroje, takže film potřebuje stejnou hodnotu.",
+		"slot.game": "Hra",
+		"slot.game.help": "Sada ROM hry: soubor .zip pojmenovaný tak, jak ho pojmenovávají Supermodel a MAME (například vf3.zip, scud.zip nebo srally2.zip). Supermodel pozná soubory hry podle jejich obsahu, takže na názvech souborů uvnitř nezáleží.",
+		"slot.parent": "Nadřazená sada ROM",
+		"slot.parent.help": "Jen pro klon (verzi hry, jejíž sada obsahuje jen odlišné soubory, například vf3a.zip): zip sady, jejíž je verzí (vf3.zip pro vf3a.zip). Hra, která není klon, zde nic nepotřebuje."
+	}
+}

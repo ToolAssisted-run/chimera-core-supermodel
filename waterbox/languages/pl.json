@@ -1,0 +1,18 @@
+{
+	"texts": {
+		"error.init_failed": "Supermodel nie mógł przygotować Model 3 do tej gry: %1",
+		"error.no_game": "Projekt nie ma gry: podaj zestaw ROM gry, plik .zip, w polu Gra.",
+		"error.no_opengl": "Nie udało się uruchomić własnego OpenGL rdzenia: %1",
+		"error.not_a_game": "Supermodel nie znalazł w tym pliku zip żadnej znanej sobie gry na Model 3: %1",
+		"error.not_model3": "%1 nie jest grą na Model 3; ten rdzeń uruchamia tylko gry na Model 3.",
+		"error.renderer_failed": "Nie udało się uruchomić renderera Supermodela: %1",
+		"setting.idleskip": "Pomijanie oczekiwania",
+		"setting.idleskip.about": "Gdy procesor gry czeka w pętli, aż coś się stanie, Supermodel przeskakuje naprzód zamiast wykonywać każde przejście pętli, tak jak domyślnie robi oryginał. Przyspiesza to rdzeń. Gra powinna przebiec tak samo w obu przypadkach, ale procesor inaczej spędza swój czas. Jest częścią maszyny, więc nagranie potrzebuje tej samej wartości.",
+		"setting.starttime": "Zegar startowy",
+		"setting.starttime.about": "Data i godzina, które zegar czasu rzeczywistego Model 3 pokazuje po włączeniu maszyny, w UTC; potem biegnie razem z klatkami (57,524 na sekundę, jak sprzętowy). Domyślnie 1 stycznia 2000. To ustawienie, a nie zegar twojego komputera, aby nagranie odtwarzało się tak samo każdego dnia. Jest częścią maszyny, więc nagranie potrzebuje tej samej wartości.",
+		"slot.game": "Gra",
+		"slot.game.help": "Zestaw ROM gry: plik .zip o nazwie nadanej mu przez Supermodel i MAME (na przykład vf3.zip, scud.zip lub srally2.zip). Supermodel rozpoznaje pliki gry po ich zawartości, więc nazwy plików w środku nie mają znaczenia.",
+		"slot.parent": "Nadrzędny zestaw ROM",
+		"slot.parent.help": "Tylko dla klonu (wersji gry, której zestaw zawiera tylko różniące się pliki, jak vf3a.zip): plik zip zestawu, którego jest wersją (vf3.zip dla vf3a.zip). Gra, która nie jest klonem, nie potrzebuje tu niczego."
+	}
+}

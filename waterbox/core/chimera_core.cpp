@@ -228,7 +228,7 @@ ECL_EXPORT int Init(void)
 	char gameName[512];
 	if (!chimera_slot_name("game", 0, gameName, sizeof gameName))
 	{
-		fail("error.no_game", "-");
+		snprintf(g_loadError, sizeof g_loadError, "error.no_game");
 		return 0;
 	}
 	if (!chimera_slot_name("parent", 0, g_parentName, sizeof g_parentName))
@@ -317,3 +317,35 @@ ECL_EXPORT uint64_t GetCycleCount(void) { return chimera_ppc_cycles(); }
 // the controls the game's cabinet has; the others are not shown
 ECL_EXPORT int IsButtonActive(int32_t index) { return chimera_button_active(index, &g_game); }
 ECL_EXPORT int IsAxisActive(int32_t index) { return chimera_axis_active(index, &g_game); }
+
+/* ------------------------------------------------------------ memory, for the tools */
+
+// The main board's RAM and the backup RAM, as Supermodel keeps them: in
+// 32-bit words in the computer's byte order, so a 32-bit value the PowerPC
+// keeps at address A is read little-endian at A, and the PowerPC's byte at
+// address A is the domain's byte A ^ 3.
+namespace
+{
+	struct Domain { const char *name; int64_t size; };
+	const Domain kDomains[] = {
+		{ "Main RAM", 0x800000 },
+		{ "Backup RAM", 0x20000 },
+	};
+	const int kDomainCount = (int)(sizeof kDomains / sizeof kDomains[0]);
+}
+
+ECL_EXPORT int GetMemoryDomainCount(void) { return g_model3 ? kDomainCount : 0; }
+ECL_EXPORT const char *GetMemoryDomainName(int index) { return index >= 0 && index < kDomainCount ? kDomains[index].name : nullptr; }
+ECL_EXPORT int64_t GetMemoryDomainSize(int index) { return index >= 0 && index < kDomainCount ? kDomains[index].size : 0; }
+ECL_EXPORT int GetMemoryDomainWritable(int index) { return index >= 0 && index < kDomainCount; }
+ECL_EXPORT uint8_t *GetMemoryDomainPtr(int index)
+{
+	if (!g_model3)
+		return nullptr;
+	switch (index)
+	{
+	case 0: return g_model3->ChimeraRAM();
+	case 1: return g_model3->ChimeraBackupRAM();
+	default: return nullptr;
+	}
+}
