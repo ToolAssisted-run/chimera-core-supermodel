@@ -1,0 +1,3 @@
+[submodule "extern/supermodel"]
+	path = extern/supermodel
+	url = https://github.com/trzy/supermodel.git

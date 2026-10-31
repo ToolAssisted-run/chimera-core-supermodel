@@ -1,0 +1,23 @@
+  <!-- chimera-core-supermodel's own test program (tests/testprog), not a Sega game -->
+  <game name="chimeratest">
+    <identity>
+      <title>Chimera Model 3 test program</title>
+      <version>tests/testprog/testprog.s</version>
+      <manufacturer>chimera-core-supermodel</manufacturer>
+      <year>2026</year>
+    </identity>
+    <hardware>
+      <platform>Sega Model 3</platform>
+      <stepping>1.0</stepping>
+      <inputs>
+        <input type="common" />
+        <input type="joystick1" />
+        <input type="fighting" />
+      </inputs>
+    </hardware>
+    <roms>
+      <region name="crom" stride="4" chunk_size="4">
+        <file offset="0" name="chimeratest-crom.bin" crc32="0x344FF07C" />
+      </region>
+    </roms>
+  </game>

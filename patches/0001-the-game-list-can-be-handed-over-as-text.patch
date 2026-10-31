@@ -1,0 +1,31 @@
+From: Chimera core
+Subject: [PATCH] the game list can be handed over as text
+
+With SUPERMODEL_CHIMERA, GameLoader parses a definition that starts with
+'<' as XML text instead of a file name: the core carries Games.xml in
+itself, and the sandbox has no Config folder to read it from.
+---
+--- a/Src/GameLoader.cpp
++++ b/Src/GameLoader.cpp
+@@ -602,6 +602,21 @@
+ {
+   m_xml_filename = filename;
+   Util::Config::Node xml("xml");
++#ifdef SUPERMODEL_CHIMERA
++  // The Chimera core carries the game list in itself and hands over its text
++  // (the sandbox has no Config folder): text that starts as XML is parsed as
++  // it is, anything else is a file name, as upstream reads it.
++  if (filename.compare(0, 1, "<") == 0)
++  {
++    m_xml_filename = "Games.xml";
++    if (Util::Config::FromXML(&xml, filename))
++    {
++      ErrorLog("Game and ROM set definitions could not be loaded! ROMs will not be detected.");
++      return true;
++    }
++    return ParseXML(xml);
++  }
++#endif
+   if (Util::Config::FromXMLFile(&xml, filename))
+   {
+     ErrorLog("Game and ROM set definitions could not be loaded! ROMs will not be detected.");

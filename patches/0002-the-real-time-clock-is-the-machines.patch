@@ -1,0 +1,46 @@
+From: Chimera core
+Subject: [PATCH] the real-time clock is the machine's
+
+With SUPERMODEL_CHIMERA, the RTC-72421 real-time clock reads the time
+from the core (chimera_machine_time: the project's Starting Clock plus
+the frames run) and breaks it down in UTC, instead of reading the
+computer's clock in its time zone. A movie then sees the same date on
+every computer and in every run.
+---
+--- a/Src/Model3/RTC72421.cpp
++++ b/Src/Model3/RTC72421.cpp
+@@ -36,6 +36,10 @@
+ #include <ctime>
+ #include "Supermodel.h"
+ 
++#ifdef SUPERMODEL_CHIMERA
++extern "C" time_t chimera_machine_time(void);
++#endif
++
+ 
+ /******************************************************************************
+  Emulation Functions
+@@ -47,12 +51,23 @@
+ 	time_t currentTime;
+ 	static struct tm *Time;
+ 
++#ifdef SUPERMODEL_CHIMERA
++	// The machine's own clock (the core's Starting Clock and the frames run),
++	// in UTC: never the computer's, which would make every run differ.
++	currentTime = chimera_machine_time();
++	if (currentTime != oldTime || Time == nullptr)
++	{
++		Time = gmtime(&currentTime);
++		oldTime = currentTime;
++	}
++#else
+ 	time(&currentTime);
+ 	if (currentTime != oldTime)
+ 	{
+ 		Time = localtime(&currentTime);
+ 		oldTime = currentTime;
+ 	}
++#endif
+ 
+ 	switch (reg&0xF)
+ 	{

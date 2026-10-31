@@ -1,0 +1,24 @@
+From: Chimera core
+Subject: [PATCH] New3D draws into the core's one buffer
+
+With SUPERMODEL_CHIMERA, New3D gives the window back its front buffer,
+not its back buffer, when it has finished with its own frame buffers.
+The core draws with OSMesa, whose window has one buffer and no back
+buffer: drawing to GL_BACK there draws nothing, and every frame read
+back after it was black.
+---
+--- a/Src/Graphics/New3D/R3DFrameBuffers.cpp
++++ b/Src/Graphics/New3D/R3DFrameBuffers.cpp
+@@ -180,7 +180,12 @@
+ 	case Layer::none:
+ 	{
+ 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
++#ifdef SUPERMODEL_CHIMERA
++		// the Chimera core's window is OSMesa's one buffer (no back buffer)
++		glDrawBuffer(GL_FRONT);
++#else
+ 		glDrawBuffer(GL_BACK);
++#endif
+ 		break;
+ 	}
+ 	default:

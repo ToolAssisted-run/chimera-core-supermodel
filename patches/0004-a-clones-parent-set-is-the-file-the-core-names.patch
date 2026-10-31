@@ -1,0 +1,34 @@
+From: Chimera core
+Subject: [PATCH] a clone's parent set is the file the core names
+
+With SUPERMODEL_CHIMERA, a clone's missing ROMs are looked for in the
+file the core names (chimera_parent_zip: the project's parent set),
+and only when it names none in <parent>.zip beside the game's zip, as
+upstream does. A project's files keep the names they have on the
+user's disk, so the parent's zip need not be called vf3.zip.
+---
+--- a/Src/GameLoader.cpp
++++ b/Src/GameLoader.cpp
+@@ -4,6 +4,9 @@
+ #include "Util/ConfigBuilders.h"
+ #include "Util/ByteSwap.h"
+ #include "Util/Format.h"
++#ifdef SUPERMODEL_CHIMERA
++extern "C" const char *chimera_parent_zip(const char *parent);
++#endif
+ #include <algorithm>
+ #include <cctype>
+ #include <cstring>
+@@ -1049,6 +1052,12 @@
+   if (missing_parent_roms)
+   {
+     std::string parent_zipfilename = StripFilename(zipfilename) + game->parent + ".zip";
++#ifdef SUPERMODEL_CHIMERA
++    // In a Chimera project the parent's zip is a file of its own slot, under
++    // whatever name it has there; the core says which file that is.
++    if (const char *mounted = chimera_parent_zip(game->parent.c_str()))
++      parent_zipfilename = mounted;
++#endif
+     if (LoadZipArchive(&zip, parent_zipfilename))
+     {
+       ErrorLog("Expected to find parent ROM set of '%s' at '%s'.", game->name.c_str(), parent_zipfilename.c_str());

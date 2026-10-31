@@ -1,0 +1,30 @@
+From: Chimera core
+Subject: [PATCH] a read of the controls is told to the core
+
+With SUPERMODEL_CHIMERA, every read of the Model 3's input registers
+(0xF0040000: the switch banks, the analog channels, the light gun and
+the serial ports of the control panel) tells the core, which counts a
+frame in which none was read as a lag frame.
+---
+--- a/Src/Model3/Model3.cpp
++++ b/Src/Model3/Model3.cpp
+@@ -243,11 +243,19 @@
+  Game controls. The EEPROM is mapped here as well.
+ ******************************************************************************/
+ 
++#ifdef SUPERMODEL_CHIMERA
++extern "C" void chimera_inputs_read(void);
++#endif
++
+ UINT8 CModel3::ReadInputs(unsigned reg)
+ {
+   UINT8 adc[8];
+   UINT8 data;
+   reg &= 0x3F;
++#ifdef SUPERMODEL_CHIMERA
++  // the game looked at its controls: this frame is no lag frame
++  chimera_inputs_read();
++#endif
+   switch (reg)
+   {
+   case 0x00:  // input bank
