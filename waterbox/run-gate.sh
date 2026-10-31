@@ -21,6 +21,8 @@
 #   teeth        the comparison sees a press one frame later
 #   scale        Drawing Scale 2x: a 992x768 picture, native = sandbox, and
 #                the same machine as at 1x (steps, sound, cycles, lag)
+#   sound        the sound board's 68000 runs the program's sound program: a
+#                441 Hz square wave from the SCSP, 766.6 samples a frame
 #   3d           the Real3D's polygon (the program's one quad) is drawn by
 #                New3D where its vertices put it, coloured as the program
 #                sets it each frame, and nothing around it
@@ -45,10 +47,11 @@
 #
 # What the test program does not stand in for: the 3D renderer with a real
 # game's models, textures, lights and fog (it draws one flat, unlit, untextured
-# quad), the sound board's sound (it gives the sound board no program,
-# so the sound is silence, compared all the same), the MPEG board, the
-# drive boards, the analog controls, the light guns, and a real game's
-# timing. The real game tests are where those are seen.
+# quad), the sound board as a game drives it (its program plays one looped
+# square wave on one slot: no samples from ROM, no DSP effects, no MIDI from
+# the PowerPC), the MPEG board, the drive boards, the analog controls, the
+# light guns, and a real game's timing. The real game tests are where those
+# are seen.
 #
 # usage: run-gate.sh -m <miniBox checkout>
 set -u
@@ -178,6 +181,16 @@ if grep -q '^frames=' "$work/s2.d" && cmp -s "$work/s2.d" "$work/s1.d" && [ "$si
 	pass "scale: at 2x the picture is 992x768 and the machine is the one at 1x (steps, sound, cycles, lag)"
 else
 	fail "scale: picture $size2; $(diff "$work/s2.d" "$work/s1.d" | head -5 | tr '\n' ' ')"
+fi
+
+echo "== sound"
+"$native" "$work/tp" --frames 120 --audio "$work/tone.raw" > /dev/null 2> /dev/null
+tone="$(python3 "$root/tests/tone.py" "$work/tone.raw")"
+hz="$(echo "$tone" | sed -n 's/.* hz=\([0-9]*\).*/\1/p')"; peak="$(echo "$tone" | sed -n 's/.* peak=\([0-9]*\) .*/\1/p')"
+if echo "$tone" | grep -q "^samples=91996 " && [ "${peak:-0}" -gt 4000 ] && [ "${hz:-0}" -ge 438 ] && [ "${hz:-0}" -le 444 ]; then
+	pass "sound: the sound board plays the program's square wave, $tone (120 frames are 91996 samples at 44100 Hz and 57.524 frames a second)"
+else
+	fail "sound: $tone (91996 samples, a 441 Hz tone)"
 fi
 
 echo "== 3d"

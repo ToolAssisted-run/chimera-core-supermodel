@@ -281,3 +281,20 @@ Measured: `waterbox/run-gate.sh` 22 passed, 0 failed, 4 skipped, with 3D in
 every comparison now (native = sandbox, save and load before every frame,
 a session, turbo, 2x). The new 3d test checks the quad's inside (its
 colour, changing a frame later), a corner and two pixels just outside.
+
+## The sound test (2026-10-31)
+
+The test program has a sound program now: a few hand-encoded 68000
+instructions (in `make-testprog.py`) in the sound board's program ROM, which
+write 100 samples of a square wave into the first SCSP's RAM, set slot 0 to
+loop them at full level in the middle and key it on. The board plays a 441
+Hz square wave, 8192 at its peak, on both sides; 120 frames give 91996
+stereo samples (44100 / 57.524 a frame, the remainder carried). So every
+comparison of the gate (native = sandbox, save and load before every frame,
+a session, turbo, 2x) now compares real sound from the 68000 and the SCSP,
+not silence. The new sound test measures the length, the peak and the
+pitch. Seen to fail: the first version of the sound program branched into
+the middle of an instruction (a 68000 dbra's displacement counts from the
+word after the opcode) and stopped; that run measured peak 0 and 0 Hz.
+
+Measured: `waterbox/run-gate.sh` 23 passed, 0 failed, 4 skipped.

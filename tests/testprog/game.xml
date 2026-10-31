@@ -19,5 +19,8 @@
       <region name="crom" stride="4" chunk_size="4">
         <file offset="0" name="chimeratest-crom.bin" crc32="0x8950C224" />
       </region>
+      <region name="sound_program" stride="2" chunk_size="2">
+        <file offset="0" name="chimeratest-snd.bin" crc32="0xFAF11642" />
+      </region>
     </roms>
   </game>
