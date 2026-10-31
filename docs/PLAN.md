@@ -308,9 +308,8 @@ game's own order. The core now publishes Main RAM and Backup RAM as buses
 in the PowerPC's order (PeekBus, PokeBus, ReadBus in memory no state
 holds), and keeps the two memory domains (which Chimera requires) under the
 names "Main RAM words" and "Backup RAM words", hidden from the memory tools
-(GetMemoryDomainHidden). (Awaiting the owner: whether the words should be
-shown too; hidden is the default here, as the ares core hides the copy a
-person should not search.)
+(GetMemoryDomainHidden), as the ares core hides the copy a person should
+not search. (The owner kept them hidden: see "The owner's answers".)
 
 Measured: `tests/run-frontend.sh` 6 ok (new: engine:memory, the program's
 frame count after 300 frames reads 0000012c through chimera-run's dump of
@@ -367,39 +366,31 @@ feedback (off): no test cabinet has them, and no game was tried.
 
 Measured: `waterbox/run-gate.sh` 25 passed, 0 failed, 4 skipped.
 
-## Awaiting the owner (2026-10-31)
+## The owner's answers (user-decided, 2026-10-31)
 
-Defaults were taken so the work could go on; each is the owner's to
-confirm or change:
+The owner accepted every default the first round took while waiting for an
+answer. None of them changes the core: each was already how it was built.
 
-1. **Publishing.** A public repository (`chimera-core-supermodel`), its CI,
-   a row in Chimera's roster and README, and the reply to issue 354.
-   Nothing has left this machine.
-2. **The pin.** Upstream's master at 036af1c (2026-10-29); upstream's last
-   release (0.3a, 2017) is far behind. Master moves fast (several commits
-   a week), so the pin will want moving with care.
-3. **Idle Skip on by default**, as upstream has it. It is part of the
-   machine (a movie names it); off would make the PowerPC run every pass of
-   an idle loop: slower, and the same game.
-4. **The RAM's word-order copies hidden.** The tools see Main RAM and Backup
-   RAM in the PowerPC's byte order (buses); the domains in Supermodel's own
-   word order are hidden. Showing both lists every byte twice.
-5. **New3D only.** The Legacy3D renderer (OpenGL 2.1 with the fixed
-   function pipeline) is not built. Upstream's default is New3D; Legacy3D
-   is an option there for games New3D draws wrongly.
-6. **A clone's parent set as a second slot** ("Parent ROM set"), not as
-   firmware asked for by the game (the MAME core's way, `gameFirmware`).
-   The slot is simpler and works for the 64 sets Supermodel knows; the
-   firmware way would let the New Project window ask for exactly the
-   parent's name.
-7. **The two test sets in the shipped game list.** `chimeratest` and
-   `chimeratestgun` (this repository's own program, not Sega's) are in the
-   game list the package carries, so that the tests run on the package
-   Chimera loads. They match only this repository's ROMs.
-8. **The GPU bridge**, and when: the core draws on llvmpipe only. The
-   bridge would make a game fast but gives the renderer a new OpenGL
-   context at every load of a state, and New3D keeps textures and model
-   caches that it would have to rebuild from the machine's memory.
+1. **The upstream version.** The core builds Supermodel's master branch at
+   036af1c (2026-10-29), not the 0.3a release of 2017. It is moved only on
+   purpose, with the tests run again, since master changes several times a
+   week.
+2. **Idle Skip on by default**, as upstream has it. It is part of the
+   machine, so a movie names it.
+3. **The RAM in the PowerPC's byte order is what the memory tools show.**
+   The two copies in Supermodel's own word order ("Main RAM words",
+   "Backup RAM words") stay hidden.
+4. **New3D only.** The older Legacy3D renderer is not built.
+5. **A clone's parent zip stays a second file of the project** (the
+   "Parent ROM set" slot), not a firmware file the game asks for.
+6. **The two test sets stay in the game list the package carries**
+   (`chimeratest`, `chimeratestgun`: this repository's own program, which
+   matches only this repository's ROMs).
+7. **The GPU bridge comes after real games.** First real games are run and
+   their speed on llvmpipe (the software OpenGL) measured; then the bridge.
+8. **Publishing comes after vf3** (Virtua Fighter 3), and if possible scud
+   (Scud Race), has run with the native build and the sandbox the same and
+   looks right by eye. Until then the repository stays on this machine.
 
 ## Where this stands (2026-10-31)
 
