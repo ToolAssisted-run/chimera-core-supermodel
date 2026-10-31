@@ -46,6 +46,7 @@
 #                is refused
 #   refusals     a zip that holds no Model 3 game, and a project without a
 #                game, each say why
+#   names        no name is translated or bent in the 26 language tables
 #   real games   (SKIP without SUPERMODEL_ROMS) native = sandbox and a
 #                session, on each ROM set named below that is there
 #
@@ -134,6 +135,15 @@ mkwork() { # mkwork <dir> <zip> [<settings JSON>]
 	printf '{"game":["%s"]}' "$(basename "$2")" > "$work/$1/slots"
 	printf '%s' "${3:-{\}}" > "$work/$1/settings"
 }
+
+# ---------------------------------------------------------------- the language tables
+# no name (Supermodel, Model 3, MAME, OpenGL, Chimera's own...) translated or
+# given an ending in any of the 26 tables (tools/check-names.py says which)
+if python3 "$root/tools/check-names.py" > "$work/names.txt" 2>&1; then
+	pass "names: $(tail -1 "$work/names.txt")"
+else
+	fail "names: a name is changed in the language tables"; head -20 "$work/names.txt"
+fi
 
 # ---------------------------------------------------------------- the test program
 testzip="$root/build/tests/chimeratest.zip"

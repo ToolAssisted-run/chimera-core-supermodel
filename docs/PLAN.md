@@ -392,6 +392,40 @@ answer. None of them changes the core: each was already how it was built.
    (Scud Race), has run with the native build and the sandbox the same and
    looks right by eye. Until then the repository stays on this machine.
 
+## Names are never translated or bent (owner's rule, 2026-10-31)
+
+The owner's rule for every language table: a name (Supermodel, Model 3,
+MAME, OpenGL, Chimera and any other program, chip, machine, game or
+company) is written as it is, in every language. A language that puts
+endings on names says the sentence with a common noun beside the name
+instead ("emulatoru Supermodel", "Model 3 -koneen", "NVRAM-mappen i
+Supermodel"). Particles in Korean and Japanese,
+in their own script, leave the name whole.
+
+- Fixed by hand: 33 texts in ten tables. Czech and Polish had case endings
+  ("Supermodelu", "Supermodela"); Danish, Norwegian and Swedish a genitive
+  "s" ("Supermodels", "Model 3:s", "Model 3s"); Finnish case endings after
+  a colon ("Model 3:n", "Supermodelin"); Hungarian and
+  Romanian endings after a hyphen ("Model 3-at", "OpenGL-je", "OpenGL-ul");
+  Turkish endings after an apostrophe ("Supermodel'in", "MAME'nin"); German
+  wrote "Model-3-Spiel".
+- `tools/check-names.py` checks the 26 tables: every name an English text
+  holds is in its translations as written, and no letter (Latin, Greek or
+  Cyrillic), no apostrophe or colon with letters, and no hyphen with one to
+  three letters is attached to a name. A hyphen with a longer word is a
+  compound with a common noun ("Model 3-spel") and is allowed, as Chimera's
+  own tables have "Chimera-ohjelman". The names are the core's coreName
+  (from waterbox.config), the names its texts use, and those Chimera's
+  `tools/check-proper-nouns.py` knows.
+- The test script runs it as the "names" test (CI asks for it by name).
+
+Measured: the check found 44 problems (33 texts; a text missing a name is
+also counted as bent). With every text fixed but one (Swedish
+`setting.starttime.about`, "Model 3:s"), `waterbox/run-gate.sh` gave 25
+passed, 1 failed (names, naming that text), 4 skipped; with it fixed, 26
+passed, 0 failed, 4 skipped. Chimera's own `check-proper-nouns.py` run on
+these tables: 0 problems.
+
 ## Where this stands (2026-10-31)
 
 **Works, on the test program, on Linux, native = sandbox:** the Model 3

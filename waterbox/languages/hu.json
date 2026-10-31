@@ -1,8 +1,8 @@
 {
 	"texts": {
-		"error.init_failed": "A Supermodel nem tudta előkészíteni a Model 3-at ehhez a játékhoz: %1",
+		"error.init_failed": "A Supermodel nem tudta előkészíteni a Model 3 gépet ehhez a játékhoz: %1",
 		"error.no_game": "A projektben nincs játék: adja meg a játék ROM-készletét, egy .zip fájlt, a Játék mezőben.",
-		"error.no_opengl": "A mag saját OpenGL-je nem indult el: %1",
+		"error.no_opengl": "A mag saját OpenGL-megvalósítása nem indult el: %1",
 		"error.not_a_game": "A Supermodel nem talált ebben a zipben általa ismert Model 3 játékot: %1",
 		"error.not_model3": "A(z) %1 nem Model 3 játék; ez a mag csak Model 3 játékokat futtat.",
 		"error.renderer_failed": "A Supermodel megjelenítője nem indult el: %1",

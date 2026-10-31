@@ -2,7 +2,7 @@
 	"texts": {
 		"error.init_failed": "Supermodel nu a putut pregăti Model 3 pentru acest joc: %1",
 		"error.no_game": "Proiectul nu are niciun joc: indicați setul de ROM al jocului, un .zip, în câmpul Joc.",
-		"error.no_opengl": "OpenGL-ul propriu al nucleului nu a putut porni: %1",
+		"error.no_opengl": "Implementarea OpenGL proprie a nucleului nu a putut porni: %1",
 		"error.not_a_game": "Supermodel nu a găsit în acest zip niciun joc Model 3 pe care să-l cunoască: %1",
 		"error.not_model3": "%1 nu este un joc Model 3; acest nucleu rulează doar jocuri Model 3.",
 		"error.renderer_failed": "Randorul Supermodel nu a putut porni: %1",

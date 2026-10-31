@@ -66,6 +66,10 @@ core, with a frontend of the core's own. The user brings a game's ROM set
 - Every new test is broken on purpose once and seen to fail.
 - No commercial ROM in the repository, its history or its tests; real game
   tests read `SUPERMODEL_ROMS` and SKIP without it.
+- Names (Supermodel, Model 3, MAME, OpenGL, Chimera...) are never translated
+  or given an ending in the language tables: a common noun goes beside the
+  name instead. `tools/check-names.py` (the gate's "names" test) holds it;
+  a new name in a text goes in its list.
 - Write in plain language; prose is ASCII. Commits: `type(supermodel): what
   changed`, body with how it was tested, Chimera's trailers.
 - Run builds and sandboxed runs under a memory cap (`systemd-run --user
