@@ -366,3 +366,109 @@ truck's levers, the fishing controls and the drive boards' force
 feedback (off): no test cabinet has them, and no game was tried.
 
 Measured: `waterbox/run-gate.sh` 25 passed, 0 failed, 4 skipped.
+
+## Awaiting the owner (2026-10-31)
+
+Defaults were taken so the work could go on; each is the owner's to
+confirm or change:
+
+1. **Publishing.** A public repository (`chimera-core-supermodel`), its CI,
+   a row in Chimera's roster and README, and the reply to issue 354.
+   Nothing has left this machine.
+2. **The pin.** Upstream's master at 036af1c (2026-10-29); upstream's last
+   release (0.3a, 2017) is far behind. Master moves fast (several commits
+   a week), so the pin will want moving with care.
+3. **Idle Skip on by default**, as upstream has it. It is part of the
+   machine (a movie names it); off would make the PowerPC run every pass of
+   an idle loop: slower, and the same game.
+4. **The RAM's word-order copies hidden.** The tools see Main RAM and Backup
+   RAM in the PowerPC's byte order (buses); the domains in Supermodel's own
+   word order are hidden. Showing both lists every byte twice.
+5. **New3D only.** The Legacy3D renderer (OpenGL 2.1 with the fixed
+   function pipeline) is not built. Upstream's default is New3D; Legacy3D
+   is an option there for games New3D draws wrongly.
+6. **A clone's parent set as a second slot** ("Parent ROM set"), not as
+   firmware asked for by the game (the MAME core's way, `gameFirmware`).
+   The slot is simpler and works for the 64 sets Supermodel knows; the
+   firmware way would let the New Project window ask for exactly the
+   parent's name.
+7. **The two test sets in the shipped game list.** `chimeratest` and
+   `chimeratestgun` (this repository's own program, not Sega's) are in the
+   game list the package carries, so that the tests run on the package
+   Chimera loads. They match only this repository's ROMs.
+8. **The GPU bridge**, and when: the core draws on llvmpipe only. The
+   bridge would make a game fast but gives the renderer a new OpenGL
+   context at every load of a state, and New3D keeps textures and model
+   caches that it would have to rebuild from the machine's memory.
+
+## Where this stands (2026-10-31)
+
+**Works, on the test program, on Linux, native = sandbox:** the Model 3
+boots from its program ROM with every board on one thread; the PowerPC,
+the tile generator's 2D layer, the Real3D drawing a quad through New3D on
+llvmpipe (OpenGL 4.1 core inside the core), the sound board's 68000 and
+SCSP playing a tone, the controls (switches with lag frames, the wheel,
+pedals and light gun through the ADC and the serial port), the real-time
+clock on the machine's own time, the backup RAM. Savestates (save and load
+before every frame; a state loaded into a new host), turbo, Drawing Scale
+1x to 4x, save data in upstream's NVRAM format, RAM in the PowerPC's byte
+order for the tools. The package passes Chimera's contract tests and runs
+in chimera-run and in Chimera's Qt window (headless), the window's picture
+the native reference's to the pixel.
+
+**Measured last** (Chimera 3f8ea7e2, miniBox 7216594, this machine):
+`waterbox/run-gate.sh` 25 passed, 0 failed, 4 skipped (the real games);
+`tests/run-frontend.sh` 6 ok; contract tests 21 passed;
+`check-core-texts.py` 19 keys. Every test was broken on purpose once and
+seen to fail (each section above says how).
+
+**Not tried, and what each needs:**
+
+- **A real game.** None was tried: no ROM set was on hand (none may be
+  looked for on this machine). The gate runs vf3, scud, srally2 and
+  lostwsga from `SUPERMODEL_ROMS` when they are there (native = sandbox
+  for `SUPERMODEL_FRAMES` frames, 1800 by default, and a session); their
+  movie only presses coins, Start and a few directions, so a first look
+  should also be by eye (screenshots) and for speed. What a game brings
+  that the program does not: textured, lit, fogged models; VROM models;
+  the MPEG digital sound board (scud, srally2); the drive board's Z80
+  (Wheel boards); the security board; the Real3D's DMA and ping-pong
+  update buffers; real timing.
+- **Speed of a game on llvmpipe.** The test program's 600 frames take 9.1 s
+  in the sandbox; a game's scenes are far heavier. AVX2 code generation (as
+  the Godot core has it as a setting) is not here yet.
+- **Windows.** Not run. The Windows test would be the frontend test's
+  scenario in the published Windows build: the test program (and a game)
+  from a project, its pictures and sound the Linux native reference's,
+  and a state loaded across sessions. What failed only on Windows in other
+  cores was stacks; Supermodel has no coroutines of its own, so the risk is
+  Mesa's and the guest's usual ones.
+- **The GPU bridge.** Not started (owner's question 8).
+- **Clones**: the "Parent ROM set" slot (patch 0004) has not been tried:
+  no clone set was on hand.
+- **The light gun's crosshair**: upstream draws one in its SDL frontend;
+  the core does not (Chimera shows the pointer).
+
+**Traps met (so the next person does not):**
+
+- The tile generator and the Real3D are little-endian chips on the
+  PowerPC's big-endian bus: the PowerPC's words reach them byte-reversed
+  (palette entries, name-table pairs with the left entry in the second
+  half; Real3D words with `stwbrx`).
+- `glReadPixels` on the OSMesa context gave back zeros; the picture is read
+  from OSMesa's own buffer after `glFinish`.
+- A run-native screenshot path is relative to the work dir (it changes
+  folder): give absolute paths, or an old picture is read.
+- Upstream's sources have CRLF line ends; patches keep them.
+- `__FILE__` is written into upstream's block files (NVRAM): the build
+  maps the source paths away.
+- A 68000 `dbra` counts its displacement from the word after the opcode.
+- Godot's run-native cleared the environment before its harness read
+  `GATE_STALL_US`, so its clock stall did not stall natively; this core's
+  run-native keeps that one variable (the clock test was checked to stall:
+  the control with the computer's clock fails under it).
+
+**Next:** the owner's ROM sets (vf3 first, then scud and srally2, then
+lostwsga) through the gate and by eye; then speed (AVX2 for llvmpipe,
+measured); then the owner's answers above; then Windows; then the GPU
+bridge if wanted.

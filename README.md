@@ -9,7 +9,10 @@ Chimera issue 354.
 ## Status
 
 Local only: not published, no release. Built and tested on Linux with this
-repository's own Model 3 test program; no real game has been tried yet (see
+repository's own Model 3 test program (PowerPC and 68000 code written here:
+the 2D layer, a Real3D polygon, the sound board, the controls, the wheel,
+pedals and light gun, the clock, the backup RAM); no real game has been
+tried yet, and nothing has run on Windows or on a GPU (see
 [docs/PLAN.md](docs/PLAN.md), "Where this stands").
 
 - Supermodel's emulation with every board on one thread (the PowerPC main
@@ -37,6 +40,12 @@ the project's "Parent ROM set" slot. The Model 3 has no BIOS of its own.
   on (movies need the same value).
 - **Idle Skip**: upstream's skipping of the processor's idle loops, on by
   default as upstream has it (part of the machine).
+- **Drawing Scale**: 1x (the Model 3's 496x384) to 4x; the picture only.
+
+What a game remembers (its EEPROM and backup RAM) goes in and out as
+Supermodel's own NVRAM file, `<game>.nv`: Emulator > Export Save Data
+writes it, a project's "Save data" slot takes it. RAM Watch and RAM Search
+see the main RAM and the backup RAM in the PowerPC's byte order.
 
 ## Building and testing
 

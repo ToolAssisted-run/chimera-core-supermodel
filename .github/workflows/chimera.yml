@@ -127,7 +127,7 @@ jobs:
           bash ./waterbox/run-gate.sh -m "$PWD/chimera-checkout/extern/chimera-common-minibox" > gate.out 2>&1 || rc=$?
           grep -v '^miniBox:' gate.out
           [ "$rc" -eq 0 ]
-          for t in "game list" equivalence rerecord session turbo teeth scale sound 3d controls lag clock "save data" refusals; do
+          for t in "game list" equivalence rerecord session turbo teeth scale sound 3d controls analog lag clock "save data" refusals; do
             grep -q "^PASS $t:" gate.out || { echo "$t did not pass"; exit 1; }
           done
 

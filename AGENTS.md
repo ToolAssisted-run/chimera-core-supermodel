@@ -26,9 +26,13 @@ core, with a frontend of the core's own. The user brings a game's ROM set
   `package-licenses.json`, `languages/`), the harness (`gate-harness.h`,
   `run-native.c`, `run-wbx.c`, `input-names.h`), `run-gate.sh`.
 - `tests/testprog/` - the test program: `testprog.s` (Model 3 PowerPC code
-  of this repository's own), `ppcasm.py` (its assembler), `make-testprog.py`
-  (the ROM zip and `game.xml`, its entry in the core's game list).
-- `tests/` - `run-frontend.sh` and its helpers, `pixel.py`.
+  of this repository's own: 2D layer, Real3D quad, controls, ADC, light
+  gun, clock, backup RAM), `ppcasm.py` (its assembler), `make-testprog.py`
+  (the 68000 sound program, the two ROM zips `chimeratest` and
+  `chimeratestgun`, and `game.xml`, their entries in the core's game list).
+- `tests/` - `run-frontend.sh` and its helpers, `pixel.py` (a pixel's
+  colour), `rowbits.py` (the bytes the program shows as rows of tiles),
+  `tone.py` (a sound's length, peak and pitch).
 - `tools/gen-inputs.py` - the one list of controls.
 - `build/` - every output. Ignored by git.
 
