@@ -652,3 +652,22 @@ scud": the owner's to decide.
 each, by eye, speed); Windows; publishing (the owner's: the repository,
 the roster, issue 354); then the GPU bridge, whose first measure should
 be vf3's fight against these llvmpipe numbers.
+
+
+## Published (user-decided, 2026-10-31)
+
+The owner decided to publish once vf3 ran, without waiting for Scud Race
+("No wait, go ahead with publish"), and to leave the AVX2 drawing code out.
+The main session made the repository public (ToolAssisted-run/chimera-core-
+supermodel), the first CI run passed (26 passed, 0 failed, 4 skipped: the
+real-game tests, which need ROM sets), and the first published build is
+"Development build 79e038b8 (made 2026-10-31 17:30 CET)". Chimera lists the
+core (chimera 46c463ed), and so does the website's Tools page.
+
+Windows, run by the main session before publishing: the vf3 fight recorded
+by chimera-run on Linux (build/frontend/vf3/recorded.log), made into a
+project and played for 2400 frames by chimera-run.exe of the published
+Chimera for Windows (Development build cb46d2b7), ends on the native
+reference's picture, every pixel (and byte for byte the Linux replay's).
+Sound was not compared on Windows.
+
