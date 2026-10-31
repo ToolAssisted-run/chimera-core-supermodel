@@ -6,6 +6,7 @@
 		"error.not_a_game": "Supermodel no encontró en este zip ningún juego de Model 3 que conozca: %1",
 		"error.not_model3": "%1 no es un juego de Model 3; este núcleo solo ejecuta juegos de Model 3.",
 		"error.renderer_failed": "No se pudo iniciar el renderizador de Supermodel: %1",
+		"error.save_not_nvram": "%1 no es un archivo NVRAM de Supermodel (un archivo <juego>.nv de la carpeta NVRAM de Supermodel).",
 		"setting.drawingscale": "Escala de dibujo",
 		"setting.drawingscale.about": "Cuántas veces los 496x384 propios del Model 3 se dibuja la imagen: a 2x son 992x768, con un 3D más nítido. El núcleo dibuja en el procesador, así que cada paso más es más lento (2x dibuja cuatro veces los píxeles). Cambia solo la imagen.",
 		"setting.idleskip": "Saltar esperas",
@@ -15,6 +16,8 @@
 		"slot.game": "Juego",
 		"slot.game.help": "El conjunto de ROM del juego: el .zip con el nombre que le dan Supermodel y MAME (por ejemplo vf3.zip, scud.zip o srally2.zip). Supermodel reconoce los archivos de un juego por su contenido, así que los nombres de los archivos de dentro no importan.",
 		"slot.parent": "Conjunto de ROM padre",
-		"slot.parent.help": "Solo para un clon (una versión de un juego cuyo conjunto contiene solo los archivos que cambian, como vf3a.zip): el zip del conjunto del que es versión (vf3.zip para vf3a.zip). Un juego que no es un clon no necesita nada aquí."
+		"slot.parent.help": "Solo para un clon (una versión de un juego cuyo conjunto contiene solo los archivos que cambian, como vf3a.zip): el zip del conjunto del que es versión (vf3.zip para vf3a.zip). Un juego que no es un clon no necesita nada aquí.",
+		"slot.savedata": "Datos guardados",
+		"slot.savedata.help": "Lo que el juego recuerda, tal como Supermodel lo guarda para cada juego: su archivo NVRAM (la EEPROM y la RAM de respaldo, que guardan los ajustes del juego, sus récords y su contabilidad), como Supermodel lo escribe en su carpeta NVRAM o como lo escribió Emulador > Exportar datos guardados (<juego>.nv). Se pone en la máquina antes de que empiece el juego. Sin él, el juego empieza con la memoria en blanco, como una placa nueva."
 	}
 }

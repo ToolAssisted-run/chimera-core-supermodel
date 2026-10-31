@@ -6,6 +6,7 @@
 		"error.not_a_game": "Supermodel found no Model 3 game it knows in this zip: %1",
 		"error.not_model3": "%1 is not a Model 3 game; this core runs Model 3 games only.",
 		"error.renderer_failed": "Supermodel's renderer could not be started: %1",
+		"error.save_not_nvram": "%1 is not a Supermodel NVRAM file (a <game>.nv file from Supermodel's NVRAM folder).",
 		"setting.drawingscale": "Drawing Scale",
 		"setting.drawingscale.about": "How many times the Model 3's own 496x384 the picture is drawn: at 2x it is 992x768, with sharper 3D. The core draws on the processor, so each step up is slower (2x draws four times the pixels). It changes the picture only.",
 		"setting.idleskip": "Idle Skip",
@@ -15,6 +16,8 @@
 		"slot.game": "Game",
 		"slot.game.help": "The game's ROM set: the .zip named as Supermodel and MAME name it (for example vf3.zip, scud.zip or srally2.zip). Supermodel knows a game's files by their contents, so the names of the files inside do not matter.",
 		"slot.parent": "Parent ROM set",
-		"slot.parent.help": "Only for a clone (a version of a game whose set holds only the files that differ, such as vf3a.zip): the zip of the set it is a version of (vf3.zip for vf3a.zip). A game that is not a clone needs nothing here."
+		"slot.parent.help": "Only for a clone (a version of a game whose set holds only the files that differ, such as vf3a.zip): the zip of the set it is a version of (vf3.zip for vf3a.zip). A game that is not a clone needs nothing here.",
+		"slot.savedata": "Save data",
+		"slot.savedata.help": "What the game remembers, as Supermodel keeps it for each game: its NVRAM file (the EEPROM and the backup RAM, which hold the game's settings, its records and its bookkeeping), as Supermodel writes it to its NVRAM folder or as Emulator > Export Save Data wrote it (<game>.nv). It is put in the machine before the game starts. With none, the game starts with blank memory, as a new board does."
 	}
 }

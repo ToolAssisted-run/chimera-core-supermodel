@@ -6,6 +6,7 @@
 		"error.not_a_game": "Supermodel tidak menemukan game Model 3 yang dikenalnya di zip ini: %1",
 		"error.not_model3": "%1 bukan game Model 3; core ini hanya menjalankan game Model 3.",
 		"error.renderer_failed": "Renderer Supermodel tidak dapat dijalankan: %1",
+		"error.save_not_nvram": "%1 bukan file NVRAM Supermodel (file <game>.nv dari folder NVRAM Supermodel).",
 		"setting.drawingscale": "Skala Gambar",
 		"setting.drawingscale.about": "Berapa kali ukuran asli Model 3, 496x384, gambar digambar: pada 2x menjadi 992x768, dengan 3D yang lebih tajam. Core menggambar di prosesor, jadi setiap langkah naik lebih lambat (2x menggambar empat kali piksel). Ini hanya mengubah gambar.",
 		"setting.idleskip": "Lewati Penantian",
@@ -15,6 +16,8 @@
 		"slot.game": "Game",
 		"slot.game.help": "Set ROM game: file .zip dengan nama yang diberikan Supermodel dan MAME (misalnya vf3.zip, scud.zip, atau srally2.zip). Supermodel mengenali file game dari isinya, jadi nama file di dalamnya tidak penting.",
 		"slot.parent": "Set ROM induk",
-		"slot.parent.help": "Hanya untuk klon (versi game yang setnya hanya berisi file yang berbeda, seperti vf3a.zip): zip dari set yang menjadi asalnya (vf3.zip untuk vf3a.zip). Game yang bukan klon tidak memerlukan apa pun di sini."
+		"slot.parent.help": "Hanya untuk klon (versi game yang setnya hanya berisi file yang berbeda, seperti vf3a.zip): zip dari set yang menjadi asalnya (vf3.zip untuk vf3a.zip). Game yang bukan klon tidak memerlukan apa pun di sini.",
+		"slot.savedata": "Data simpanan",
+		"slot.savedata.help": "Apa yang diingat game, seperti Supermodel menyimpannya untuk setiap game: file NVRAM-nya (EEPROM dan RAM cadangan, yang menyimpan pengaturan game, rekor, dan pembukuannya), seperti yang ditulis Supermodel ke folder NVRAM-nya atau seperti yang ditulis Emulator > Ekspor Data Simpan (<game>.nv). File ini dimasukkan ke mesin sebelum game dimulai. Tanpanya, game dimulai dengan memori kosong, seperti papan baru."
 	}
 }

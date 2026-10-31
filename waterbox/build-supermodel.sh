@@ -82,7 +82,10 @@ if not os.path.exists(out) or open(out).read() != new:
     open(out, "w").write(new)
 PYXML
 
-common="-O2 -g -fno-strict-aliasing -fcf-protection=none -Wno-unused-result -Wno-format-truncation"
+# the sources' paths are left out of what the build puts in the objects (__FILE__
+# lands in Supermodel's NVRAM files), so the same commit builds the same core
+# from any folder
+common="-O2 -g -fno-strict-aliasing -fcf-protection=none -Wno-unused-result -Wno-format-truncation -ffile-prefix-map=$src/= -ffile-prefix-map=$here/=waterbox/"
 case "$flavour" in
 	native)
 		cc=gcc

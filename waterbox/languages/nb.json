@@ -6,6 +6,7 @@
 		"error.not_a_game": "Supermodel fant ikke noe Model 3-spill det kjenner i denne zip-filen: %1",
 		"error.not_model3": "%1 er ikke et Model 3-spill; denne kjernen kjører bare Model 3-spill.",
 		"error.renderer_failed": "Supermodels renderer kunne ikke startes: %1",
+		"error.save_not_nvram": "%1 er ikke en NVRAM-fil fra Supermodel (en <spill>.nv-fil fra Supermodels NVRAM-mappe).",
 		"setting.drawingscale": "Tegneskala",
 		"setting.drawingscale.about": "Hvor mange ganger Model 3s egne 496x384 bildet tegnes: ved 2x er det 992x768, med skarpere 3D. Kjernen tegner på prosessoren, så hvert trinn opp er tregere (2x tegner fire ganger så mange piksler). Det endrer bare bildet.",
 		"setting.idleskip": "Hopp over venting",
@@ -15,6 +16,8 @@
 		"slot.game": "Spill",
 		"slot.game.help": "Spillets ROM-sett: .zip-filen med navnet Supermodel og MAME gir den (for eksempel vf3.zip, scud.zip eller srally2.zip). Supermodel kjenner igjen et spills filer på innholdet, så navnene på filene inni spiller ingen rolle.",
 		"slot.parent": "Overordnet ROM-sett",
-		"slot.parent.help": "Bare for en klone (en versjon av et spill der settet bare har filene som er annerledes, som vf3a.zip): zip-filen til settet den er en versjon av (vf3.zip for vf3a.zip). Et spill som ikke er en klone, trenger ingenting her."
+		"slot.parent.help": "Bare for en klone (en versjon av et spill der settet bare har filene som er annerledes, som vf3a.zip): zip-filen til settet den er en versjon av (vf3.zip for vf3a.zip). Et spill som ikke er en klone, trenger ingenting her.",
+		"slot.savedata": "Lagrede data",
+		"slot.savedata.help": "Det spillet husker, slik Supermodel tar vare på det for hvert spill: NVRAM-filen (EEPROM og reserve-RAM, som holder spillets innstillinger, rekorder og regnskap), slik Supermodel skriver den i NVRAM-mappen sin eller slik Emulator > Eksporter lagrede data skrev den (<spill>.nv). Den legges i maskinen før spillet starter. Uten den starter spillet med tomt minne, som et nytt kort."
 	}
 }

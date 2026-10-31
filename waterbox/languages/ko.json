@@ -6,6 +6,7 @@
 		"error.not_a_game": "Supermodel이 이 zip에서 아는 Model 3 게임을 찾지 못했습니다: %1",
 		"error.not_model3": "%1은(는) Model 3 게임이 아닙니다. 이 코어는 Model 3 게임만 실행합니다.",
 		"error.renderer_failed": "Supermodel의 렌더러를 시작하지 못했습니다: %1",
+		"error.save_not_nvram": "%1은(는) Supermodel의 NVRAM 파일(Supermodel의 NVRAM 폴더에 있는 <게임>.nv 파일)이 아닙니다.",
 		"setting.drawingscale": "그리기 배율",
 		"setting.drawingscale.about": "Model 3 고유의 496x384의 몇 배로 화면을 그릴지 정합니다. 2x에서는 992x768이며 3D가 더 선명합니다. 이 코어는 프로세서로 그리므로 한 단계 올릴 때마다 느려집니다(2x는 네 배의 픽셀을 그립니다). 화면만 바뀝니다.",
 		"setting.idleskip": "대기 건너뛰기",
@@ -15,6 +16,8 @@
 		"slot.game": "게임",
 		"slot.game.help": "게임의 ROM 세트: Supermodel과 MAME가 붙이는 이름의 .zip 파일(예: vf3.zip, scud.zip, srally2.zip). Supermodel은 게임의 파일을 내용으로 알아보므로 안에 있는 파일 이름은 상관없습니다.",
 		"slot.parent": "부모 ROM 세트",
-		"slot.parent.help": "클론(vf3a.zip처럼 다른 파일만 담은 게임의 버전)인 경우에만: 그 버전의 원본 세트 zip(vf3a.zip이면 vf3.zip). 클론이 아닌 게임은 여기에 아무것도 필요 없습니다."
+		"slot.parent.help": "클론(vf3a.zip처럼 다른 파일만 담은 게임의 버전)인 경우에만: 그 버전의 원본 세트 zip(vf3a.zip이면 vf3.zip). 클론이 아닌 게임은 여기에 아무것도 필요 없습니다.",
+		"slot.savedata": "저장 데이터",
+		"slot.savedata.help": "게임이 기억하는 것으로, Supermodel이 게임마다 보관하는 형태 그대로의 NVRAM 파일(게임의 설정, 기록, 장부를 담는 EEPROM과 백업 RAM)입니다. Supermodel이 NVRAM 폴더에 쓰는 것이나 '에뮬레이터 > 저장 데이터 내보내기'가 쓴 것(<게임>.nv)입니다. 게임이 시작되기 전에 기계에 넣어집니다. 없으면 게임은 새 기판처럼 빈 메모리로 시작합니다."
 	}
 }

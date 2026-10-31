@@ -64,6 +64,11 @@ static u64fn g_GetCycleCount;
 static voidfn_i g_SetRenderingEnabled;
 typedef int (MB_GUEST_ABI *intfn_i)(int32_t);
 static intfn_i g_IsButtonActive, g_IsAxisActive;
+typedef uintptr_t (MB_GUEST_ABI *ptrfn_i)(int);
+typedef int64_t (MB_GUEST_ABI *i64fn_i)(int);
+static intfn g_GetSaveDataFileCount;
+static ptrfn_i g_GetSaveDataFileName, g_GetSaveDataFileBuffer;
+static i64fn_i g_GetSaveDataFileSize;
 static int g_rerecord;
 static int g_session;
 static long g_sessionAt = -1;
@@ -105,6 +110,10 @@ static int core_vsync_numerator(void) { return g_GetVsyncNumerator(); }
 static int core_vsync_denominator(void) { return g_GetVsyncDenominator(); }
 static uint64_t core_clock(void) { return g_GetCycleCount(); }
 static int core_button_active(int32_t i) { return g_IsButtonActive(i); }
+static int32_t core_savedata_count(void) { return g_GetSaveDataFileCount(); }
+static const char *core_savedata_name(int32_t i) { return (const char *)g_GetSaveDataFileName(i); }
+static int64_t core_savedata_size(int32_t i) { return g_GetSaveDataFileSize(i); }
+static const uint8_t *core_savedata_buffer(int32_t i) { return (const uint8_t *)g_GetSaveDataFileBuffer(i); }
 static int core_axis_active(int32_t i) { return g_IsAxisActive(i); }
 
 static void core_pre_frame(long frame)
@@ -221,6 +230,10 @@ static void resolve_exports(void)
 	g_GetCycleCount = (u64fn)proc(g_host, "GetCycleCount");
 	g_IsButtonActive = (intfn_i)proc(g_host, "IsButtonActive");
 	g_IsAxisActive = (intfn_i)proc(g_host, "IsAxisActive");
+	g_GetSaveDataFileCount = (intfn)proc(g_host, "GetSaveDataFileCount");
+	g_GetSaveDataFileName = (ptrfn_i)proc(g_host, "GetSaveDataFileName");
+	g_GetSaveDataFileSize = (i64fn_i)proc(g_host, "GetSaveDataFileSize");
+	g_GetSaveDataFileBuffer = (ptrfn_i)proc(g_host, "GetSaveDataFileBuffer");
 }
 
 int main(int argc, char **argv)
@@ -262,6 +275,10 @@ int main(int argc, char **argv)
 		.set_rendering = core_set_rendering,
 		.clock = core_clock,
 		.button_active = core_button_active,
+		.savedata_count = core_savedata_count,
+		.savedata_name = core_savedata_name,
+		.savedata_size = core_savedata_size,
+		.savedata_buffer = core_savedata_buffer,
 		.axis_active = core_axis_active,
 	};
 

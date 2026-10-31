@@ -6,6 +6,7 @@
 		"error.not_a_game": "Supermodel はこの zip の中に、知っている Model 3 のゲームを見つけられませんでした: %1",
 		"error.not_model3": "%1 は Model 3 のゲームではありません。このコアは Model 3 のゲームだけを動かします。",
 		"error.renderer_failed": "Supermodel のレンダラーを起動できませんでした: %1",
+		"error.save_not_nvram": "%1 は Supermodel の NVRAM ファイル (Supermodel の NVRAM フォルダーにある <ゲーム>.nv ファイル) ではありません。",
 		"setting.drawingscale": "描画倍率",
 		"setting.drawingscale.about": "Model 3 本来の 496x384 の何倍で画面を描くか。2x では 992x768 になり、3D がよりくっきりします。このコアはプロセッサーで描くので、一段上げるごとに遅くなります (2x では4倍のピクセルを描きます)。変わるのは画面だけです。",
 		"setting.idleskip": "待機のスキップ",
@@ -15,6 +16,8 @@
 		"slot.game": "ゲーム",
 		"slot.game.help": "ゲームの ROM セット: Supermodel と MAME が付ける名前の .zip ファイル (例: vf3.zip、scud.zip、srally2.zip)。Supermodel はゲームのファイルを中身で見分けるので、中のファイル名は関係ありません。",
 		"slot.parent": "親 ROM セット",
-		"slot.parent.help": "クローン (vf3a.zip のように、異なるファイルだけを持つゲームの版) の場合のみ: その元になるセットの zip (vf3a.zip なら vf3.zip)。クローンでないゲームには、ここは不要です。"
+		"slot.parent.help": "クローン (vf3a.zip のように、異なるファイルだけを持つゲームの版) の場合のみ: その元になるセットの zip (vf3a.zip なら vf3.zip)。クローンでないゲームには、ここは不要です。",
+		"slot.savedata": "セーブデータ",
+		"slot.savedata.help": "ゲームが覚えていること。Supermodel がゲームごとに保存している形のままの NVRAM ファイル (ゲームの設定、記録、集計を保つ EEPROM とバックアップ RAM) で、Supermodel が NVRAM フォルダーに書くもの、または「エミュレーター > セーブデータを書き出す」が書いたもの (<ゲーム>.nv) です。ゲームの開始前に機械に入れられます。無い場合、ゲームは新しい基板と同じく空のメモリで始まります。"
 	}
 }

@@ -6,6 +6,7 @@
 		"error.not_a_game": "Supermodel vond in deze zip geen Model 3-spel dat het kent: %1",
 		"error.not_model3": "%1 is geen Model 3-spel; deze core speelt alleen Model 3-spellen.",
 		"error.renderer_failed": "De renderer van Supermodel kon niet worden gestart: %1",
+		"error.save_not_nvram": "%1 is geen NVRAM-bestand van Supermodel (een <spel>.nv-bestand uit de NVRAM-map van Supermodel).",
 		"setting.drawingscale": "Tekenschaal",
 		"setting.drawingscale.about": "Hoeveel keer de eigen 496x384 van de Model 3 het beeld getekend wordt: bij 2x is het 992x768, met scherpere 3D. De core tekent op de processor, dus elke stap hoger is trager (2x tekent vier keer zoveel pixels). Het verandert alleen het beeld.",
 		"setting.idleskip": "Wachten overslaan",
@@ -15,6 +16,8 @@
 		"slot.game": "Spel",
 		"slot.game.help": "De ROM-set van het spel: de .zip met de naam die Supermodel en MAME eraan geven (bijvoorbeeld vf3.zip, scud.zip of srally2.zip). Supermodel herkent de bestanden van een spel aan hun inhoud, dus de namen van de bestanden erin doen er niet toe.",
 		"slot.parent": "Ouder-ROM-set",
-		"slot.parent.help": "Alleen voor een kloon (een versie van een spel waarvan de set alleen de afwijkende bestanden bevat, zoals vf3a.zip): de zip van de set waarvan het een versie is (vf3.zip voor vf3a.zip). Een spel dat geen kloon is, heeft hier niets nodig."
+		"slot.parent.help": "Alleen voor een kloon (een versie van een spel waarvan de set alleen de afwijkende bestanden bevat, zoals vf3a.zip): de zip van de set waarvan het een versie is (vf3.zip voor vf3a.zip). Een spel dat geen kloon is, heeft hier niets nodig.",
+		"slot.savedata": "Opgeslagen gegevens",
+		"slot.savedata.help": "Wat het spel onthoudt, zoals Supermodel het per spel bewaart: het NVRAM-bestand (de EEPROM en het back-up-RAM, met de instellingen, records en boekhouding van het spel), zoals Supermodel het in zijn NVRAM-map schrijft of zoals Emulator > Opslagdata exporteren het schreef (<spel>.nv). Het wordt in de machine gezet voordat het spel start. Zonder start het spel met leeg geheugen, zoals een nieuwe printplaat."
 	}
 }

@@ -6,6 +6,7 @@
 		"error.not_a_game": "Supermodel bu zip içinde tanıdığı bir Model 3 oyunu bulamadı: %1",
 		"error.not_model3": "%1 bir Model 3 oyunu değil; bu çekirdek yalnızca Model 3 oyunlarını çalıştırır.",
 		"error.renderer_failed": "Supermodel'in çizicisi başlatılamadı: %1",
+		"error.save_not_nvram": "%1 bir Supermodel NVRAM dosyası değil (Supermodel'in NVRAM klasöründen bir <oyun>.nv dosyası).",
 		"setting.drawingscale": "Çizim Ölçeği",
 		"setting.drawingscale.about": "Görüntünün, Model 3'ün kendi 496x384 boyutunun kaç katında çizildiği: 2x'te 992x768'dir, 3D daha nettir. Çekirdek işlemci üzerinde çizer, bu yüzden her üst adım daha yavaştır (2x dört kat piksel çizer). Yalnızca görüntüyü değiştirir.",
 		"setting.idleskip": "Beklemeyi atla",
@@ -15,6 +16,8 @@
 		"slot.game": "Oyun",
 		"slot.game.help": "Oyunun ROM seti: Supermodel ve MAME'nin verdiği adla .zip dosyası (örneğin vf3.zip, scud.zip ya da srally2.zip). Supermodel bir oyunun dosyalarını içeriklerinden tanır, bu yüzden içindeki dosyaların adları önemli değildir.",
 		"slot.parent": "Ana ROM seti",
-		"slot.parent.help": "Yalnızca bir klon için (seti yalnızca farklı olan dosyaları içeren bir oyun sürümü, örneğin vf3a.zip): sürümü olduğu setin zip dosyası (vf3a.zip için vf3.zip). Klon olmayan bir oyunun burada bir şeye ihtiyacı yoktur."
+		"slot.parent.help": "Yalnızca bir klon için (seti yalnızca farklı olan dosyaları içeren bir oyun sürümü, örneğin vf3a.zip): sürümü olduğu setin zip dosyası (vf3a.zip için vf3.zip). Klon olmayan bir oyunun burada bir şeye ihtiyacı yoktur.",
+		"slot.savedata": "Kayıt verisi",
+		"slot.savedata.help": "Oyunun hatırladıkları, Supermodel'in her oyun için tuttuğu biçimde: NVRAM dosyası (oyunun ayarlarını, rekorlarını ve muhasebesini tutan EEPROM ve yedek RAM), Supermodel'in NVRAM klasörüne yazdığı ya da Emülatör > Kayıt Verisini Dışa Aktar'ın yazdığı biçimde (<oyun>.nv). Oyun başlamadan önce makineye konur. Olmadan, oyun yeni bir kart gibi boş bellekle başlar."
 	}
 }

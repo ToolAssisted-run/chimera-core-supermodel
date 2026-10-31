@@ -6,6 +6,7 @@
 		"error.not_a_game": "Supermodel n'a trouvé dans ce zip aucun jeu Model 3 qu'il connaît : %1",
 		"error.not_model3": "%1 n'est pas un jeu Model 3 ; ce cœur ne fait tourner que des jeux Model 3.",
 		"error.renderer_failed": "Le moteur de rendu de Supermodel n'a pas pu démarrer : %1",
+		"error.save_not_nvram": "%1 n'est pas un fichier NVRAM de Supermodel (un fichier <jeu>.nv du dossier NVRAM de Supermodel).",
 		"setting.drawingscale": "Échelle de dessin",
 		"setting.drawingscale.about": "Combien de fois les 496x384 propres au Model 3 l'image est dessinée : à 2x, 992x768, avec une 3D plus nette. Le cœur dessine sur le processeur, chaque cran au-dessus est donc plus lent (2x dessine quatre fois plus de pixels). Cela ne change que l'image.",
 		"setting.idleskip": "Sauter les attentes",
@@ -15,6 +16,8 @@
 		"slot.game": "Jeu",
 		"slot.game.help": "Le jeu de ROM du jeu : le .zip nommé comme le nomment Supermodel et MAME (par exemple vf3.zip, scud.zip ou srally2.zip). Supermodel reconnaît les fichiers d'un jeu à leur contenu, les noms des fichiers qu'il contient n'ont donc pas d'importance.",
 		"slot.parent": "Jeu de ROM parent",
-		"slot.parent.help": "Seulement pour un clone (une version d'un jeu dont le jeu de ROM ne contient que les fichiers qui diffèrent, comme vf3a.zip) : le zip du jeu dont il est une version (vf3.zip pour vf3a.zip). Un jeu qui n'est pas un clone n'a besoin de rien ici."
+		"slot.parent.help": "Seulement pour un clone (une version d'un jeu dont le jeu de ROM ne contient que les fichiers qui diffèrent, comme vf3a.zip) : le zip du jeu dont il est une version (vf3.zip pour vf3a.zip). Un jeu qui n'est pas un clone n'a besoin de rien ici.",
+		"slot.savedata": "Données de sauvegarde",
+		"slot.savedata.help": "Ce dont le jeu se souvient, tel que Supermodel le garde pour chaque jeu : son fichier NVRAM (l'EEPROM et la RAM de sauvegarde, qui gardent les réglages du jeu, ses records et sa comptabilité), tel que Supermodel l'écrit dans son dossier NVRAM ou tel qu'Émulateur > Exporter les données de sauvegarde l'a écrit (<jeu>.nv). Il est placé dans la machine avant que le jeu démarre. Sans lui, le jeu démarre avec une mémoire vierge, comme une carte neuve."
 	}
 }

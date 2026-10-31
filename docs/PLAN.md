@@ -222,3 +222,33 @@ four times the pixels to draw.
 
 Measured: `waterbox/run-gate.sh` 18 passed, 0 failed, 4 skipped; contract
 tests 21 passed.
+
+## Save data (2026-10-31)
+
+What a Model 3 game remembers (its settings, records, bookkeeping) is in
+its EEPROM and its backup RAM, which upstream keeps per game in its NVRAM
+folder as `<game>.nv`, a block file. The core keeps that format, so a file
+goes between Supermodel and Chimera as it is:
+
+- **Export Save Data** is one file, `<game>.nv`, written by upstream's own
+  code (CModel3::SaveNVRAM) into memory no state holds (patch 0007 lets a
+  block file be written into a stream: the sandbox has no folder). The
+  stream is an `fmemopen` over that memory; the C library allocates and
+  frees its small FILE record while the export runs.
+- **A project's "Save data" slot** takes such a file; it is loaded after
+  the Model 3 is built and before it is reset, as upstream does at start.
+  A file that is not one is refused, naming it.
+- The build leaves the sources' paths out of the objects
+  (`-ffile-prefix-map`): upstream writes `__FILE__` into each block's
+  comment, and an export would otherwise name the folder the core was built
+  in.
+- The test program now counts its boots in the backup RAM.
+
+Measured: `waterbox/run-gate.sh` 21 passed, 0 failed, 4 skipped. The new
+tests: the export is one file in upstream's format, with the EEPROM and
+backup RAM blocks, the same bytes natively, in the sandbox and after a
+session; given back, the program counts its second boot (a new machine its
+first); a file that is not an NVRAM file is refused. With upstream's
+SaveNVRAM and LoadNVRAM taken out on purpose, the first two failed (19
+passed, 2 failed). `tests/run-frontend.sh` 5 ok; contract tests 21 passed;
+check-core-texts 19 keys.

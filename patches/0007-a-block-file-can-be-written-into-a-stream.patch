@@ -1,0 +1,51 @@
+From: Chimera core
+Subject: [PATCH] a block file can be written into a stream
+
+With SUPERMODEL_CHIMERA, a block file (Supermodel's NVRAM and savestate
+format) can be written into a stream the caller opened, as well as into
+a file it names. The Chimera core writes the game's NVRAM file (its
+EEPROM and backup RAM, as upstream's NVRAM/<game>.nv holds them) into
+its own memory for Emulator > Export Save Data: the sandbox has no
+folder to write to.
+---
+--- a/Src/BlockFile.h
++++ b/Src/BlockFile.h
+@@ -206,6 +206,17 @@
+    */
+   Result Create(const std::string &file, const std::string &headerName, const std::string &comment);
+ 
++#ifdef SUPERMODEL_CHIMERA
++  /*
++   * Create(stream, headerName, comment):
++   *
++   * The same, into a stream the caller opened (the Chimera core writes the
++   * NVRAM file into its own memory: the sandbox has no folder to write to).
++   * Close() closes the stream.
++   */
++  Result Create(FILE *stream, const std::string &headerName, const std::string &comment);
++#endif
++
+   /*
+    * Load(file):
+    *
+--- a/Src/BlockFile.cpp
++++ b/Src/BlockFile.cpp
+@@ -245,6 +245,18 @@
+   return Result::OKAY;
+ }
+   
++#ifdef SUPERMODEL_CHIMERA
++Result CBlockFile::Create(FILE *stream, const std::string &headerName, const std::string &comment)
++{
++  fp = stream;
++  if (NULL == fp)
++    return Result::FAIL;
++  mode = 'w';
++  WriteBlockHeader(headerName, comment);
++  return Result::OKAY;
++}
++#endif
++
+ Result CBlockFile::Load(const std::string &file)
+ {
+   fp = fopen(file.c_str(), "rb");

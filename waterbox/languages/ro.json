@@ -6,6 +6,7 @@
 		"error.not_a_game": "Supermodel nu a găsit în acest zip niciun joc Model 3 pe care să-l cunoască: %1",
 		"error.not_model3": "%1 nu este un joc Model 3; acest nucleu rulează doar jocuri Model 3.",
 		"error.renderer_failed": "Randorul Supermodel nu a putut porni: %1",
+		"error.save_not_nvram": "%1 nu este un fișier NVRAM Supermodel (un fișier <joc>.nv din dosarul NVRAM al Supermodel).",
 		"setting.drawingscale": "Scara de desenare",
 		"setting.drawingscale.about": "De câte ori cei 496x384 proprii ai Model 3 este desenată imaginea: la 2x este 992x768, cu 3D mai clar. Nucleul desenează pe procesor, deci fiecare treaptă în sus e mai lentă (2x desenează de patru ori mai mulți pixeli). Schimbă doar imaginea.",
 		"setting.idleskip": "Sari peste așteptare",
@@ -15,6 +16,8 @@
 		"slot.game": "Joc",
 		"slot.game.help": "Setul de ROM al jocului: fișierul .zip cu numele pe care i-l dau Supermodel și MAME (de exemplu vf3.zip, scud.zip sau srally2.zip). Supermodel recunoaște fișierele unui joc după conținut, deci numele fișierelor dinăuntru nu contează.",
 		"slot.parent": "Setul de ROM părinte",
-		"slot.parent.help": "Doar pentru o clonă (o versiune a unui joc al cărei set conține doar fișierele care diferă, ca vf3a.zip): zip-ul setului a cărui versiune este (vf3.zip pentru vf3a.zip). Un joc care nu este o clonă nu are nevoie de nimic aici."
+		"slot.parent.help": "Doar pentru o clonă (o versiune a unui joc al cărei set conține doar fișierele care diferă, ca vf3a.zip): zip-ul setului a cărui versiune este (vf3.zip pentru vf3a.zip). Un joc care nu este o clonă nu are nevoie de nimic aici.",
+		"slot.savedata": "Date salvate",
+		"slot.savedata.help": "Ce își amintește jocul, așa cum Supermodel le păstrează pentru fiecare joc: fișierul său NVRAM (EEPROM-ul și RAM-ul de rezervă, care țin setările jocului, recordurile și contabilitatea lui), așa cum Supermodel îl scrie în dosarul său NVRAM sau cum l-a scris Emulator > Exportă datele de salvare (<joc>.nv). Este pus în mașină înainte să pornească jocul. Fără el, jocul pornește cu memoria goală, ca o placă nouă."
 	}
 }

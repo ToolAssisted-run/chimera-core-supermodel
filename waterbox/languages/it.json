@@ -6,6 +6,7 @@
 		"error.not_a_game": "Supermodel non ha trovato in questo zip nessun gioco Model 3 che conosca: %1",
 		"error.not_model3": "%1 non è un gioco Model 3; questo core esegue solo giochi Model 3.",
 		"error.renderer_failed": "Non è stato possibile avviare il renderer di Supermodel: %1",
+		"error.save_not_nvram": "%1 non è un file NVRAM di Supermodel (un file <gioco>.nv della cartella NVRAM di Supermodel).",
 		"setting.drawingscale": "Scala di disegno",
 		"setting.drawingscale.about": "Quante volte i 496x384 propri del Model 3 viene disegnata l'immagine: a 2x sono 992x768, con un 3D più nitido. Il core disegna sul processore, quindi ogni passo in su è più lento (2x disegna quattro volte i pixel). Cambia solo l'immagine.",
 		"setting.idleskip": "Salta le attese",
@@ -15,6 +16,8 @@
 		"slot.game": "Gioco",
 		"slot.game.help": "Il set di ROM del gioco: lo .zip con il nome che gli danno Supermodel e MAME (per esempio vf3.zip, scud.zip o srally2.zip). Supermodel riconosce i file di un gioco dal loro contenuto, quindi i nomi dei file al suo interno non contano.",
 		"slot.parent": "Set di ROM padre",
-		"slot.parent.help": "Solo per un clone (una versione di un gioco il cui set contiene solo i file che cambiano, come vf3a.zip): lo zip del set di cui è una versione (vf3.zip per vf3a.zip). Un gioco che non è un clone non ha bisogno di niente qui."
+		"slot.parent.help": "Solo per un clone (una versione di un gioco il cui set contiene solo i file che cambiano, come vf3a.zip): lo zip del set di cui è una versione (vf3.zip per vf3a.zip). Un gioco che non è un clone non ha bisogno di niente qui.",
+		"slot.savedata": "Dati di salvataggio",
+		"slot.savedata.help": "Ciò che il gioco ricorda, come Supermodel lo conserva per ogni gioco: il suo file NVRAM (la EEPROM e la RAM di backup, che tengono le impostazioni del gioco, i suoi record e la sua contabilità), come Supermodel lo scrive nella sua cartella NVRAM o come lo ha scritto Emulatore > Esporta dati di salvataggio (<gioco>.nv). Viene messo nella macchina prima che il gioco parta. Senza, il gioco parte con la memoria vuota, come una scheda nuova."
 	}
 }

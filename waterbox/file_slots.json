@@ -20,6 +20,16 @@
         "zip"
       ],
       "help": "slot.parent.help"
+    },
+    {
+      "id": "savedata",
+      "title": "slot.savedata",
+      "min": 0,
+      "max": 1,
+      "formats": [
+        "nv"
+      ],
+      "help": "slot.savedata.help"
     }
   ]
 }

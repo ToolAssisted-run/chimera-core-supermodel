@@ -30,6 +30,8 @@
 #include "OSD/Logger.h"
 #include "CPU/PowerPC/ppc.h"
 #include "Util/NewConfig.h"
+#include "BlockFile.h"
+#include "Version.h"
 
 #include <emulibc.h>
 
@@ -285,6 +287,25 @@ ECL_EXPORT int Init(void)
 	}
 	romSet = ROMSet();
 
+	// what the game remembers (its EEPROM and backup RAM), from the project's
+	// save data: an NVRAM file as upstream writes it (NVRAM/<game>.nv)
+	char saveName[512];
+	if (chimera_slot_name("savedata", 0, saveName, sizeof saveName))
+	{
+		CBlockFile nvram;
+		int32_t version = -1;
+		if (Result::OKAY != nvram.Load(saveName) || Result::OKAY != nvram.FindBlock("Supermodel NVRAM State") ||
+		    nvram.Read(&version, sizeof version) != sizeof version || version != 0)
+		{
+			snprintf(g_loadError, sizeof g_loadError, "error.save_not_nvram" TEXT_ARG "%s", saveName);
+			fprintf(stderr, "supermodel: Init refused: %s is not a Supermodel NVRAM file\n", saveName);
+			return 0;
+		}
+		g_model3->LoadNVRAM(&nvram);
+		nvram.Close();
+		fprintf(stderr, "supermodel: NVRAM from %s\n", saveName);
+	}
+
 	SetAudioType(g_game.audio);
 	if (Result::OKAY != OpenAudio(*g_config))
 	{
@@ -365,3 +386,46 @@ ECL_EXPORT uint8_t *GetMemoryDomainPtr(int index)
 	default: return nullptr;
 	}
 }
+
+/* ------------------------------------------------------------ save data */
+
+// Emulator > Export Save Data: the game's NVRAM file, <game>.nv, as upstream
+// writes it to its NVRAM folder (the EEPROM and the backup RAM), so that it
+// goes back into a project, or into Supermodel, as it is. It is written into
+// memory no state holds: it is the tool's answer, not the machine's.
+namespace
+{
+	ECL_INVISIBLE uint8_t g_nvramFile[0x24000];
+	ECL_INVISIBLE int64_t g_nvramSize;
+	ECL_INVISIBLE char g_nvramName[64];
+
+	void make_nvram_file(void)
+	{
+		g_nvramSize = 0;
+		FILE *stream = fmemopen(g_nvramFile, sizeof g_nvramFile, "w+");
+		if (!stream)
+			return;
+		CBlockFile nvram;
+		if (Result::OKAY != nvram.Create(stream, "Supermodel NVRAM State", "Supermodel Version " SUPERMODEL_VERSION))
+			return;
+		int32_t version = 0;
+		nvram.Write(&version, sizeof version);
+		nvram.Write(g_game.name);
+		g_model3->SaveNVRAM(&nvram);
+		fflush(stream);
+		g_nvramSize = ftell(stream);
+		nvram.Close();
+		snprintf(g_nvramName, sizeof g_nvramName, "%s.nv", g_game.name.c_str());
+	}
+}
+
+ECL_EXPORT int32_t GetSaveDataFileCount(void)
+{
+	if (!g_ready)
+		return 0;
+	make_nvram_file();
+	return g_nvramSize > 0 ? 1 : 0;
+}
+ECL_EXPORT const char *GetSaveDataFileName(int32_t index) { return index == 0 ? g_nvramName : nullptr; }
+ECL_EXPORT int64_t GetSaveDataFileSize(int32_t index) { return index == 0 ? g_nvramSize : 0; }
+ECL_EXPORT const uint8_t *GetSaveDataFileBuffer(int32_t index) { return index == 0 ? g_nvramFile : nullptr; }

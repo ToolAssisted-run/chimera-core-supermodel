@@ -6,6 +6,7 @@
 		"error.not_a_game": "Supermodel v tomto zipu nenašel žádnou hru pro Model 3, kterou zná: %1",
 		"error.not_model3": "%1 není hra pro Model 3; toto jádro spouští jen hry pro Model 3.",
 		"error.renderer_failed": "Renderer Supermodelu se nepodařilo spustit: %1",
+		"error.save_not_nvram": "%1 není soubor NVRAM Supermodelu (soubor <hra>.nv ze složky NVRAM Supermodelu).",
 		"setting.drawingscale": "Měřítko kreslení",
 		"setting.drawingscale.about": "Kolikrát větší než vlastních 496x384 Model 3 se obraz kreslí: při 2x je to 992x768, s ostřejším 3D. Jádro kreslí na procesoru, takže každý stupeň výš je pomalejší (2x kreslí čtyřikrát víc pixelů). Mění pouze obraz.",
 		"setting.idleskip": "Přeskakovat čekání",
@@ -15,6 +16,8 @@
 		"slot.game": "Hra",
 		"slot.game.help": "Sada ROM hry: soubor .zip pojmenovaný tak, jak ho pojmenovávají Supermodel a MAME (například vf3.zip, scud.zip nebo srally2.zip). Supermodel pozná soubory hry podle jejich obsahu, takže na názvech souborů uvnitř nezáleží.",
 		"slot.parent": "Nadřazená sada ROM",
-		"slot.parent.help": "Jen pro klon (verzi hry, jejíž sada obsahuje jen odlišné soubory, například vf3a.zip): zip sady, jejíž je verzí (vf3.zip pro vf3a.zip). Hra, která není klon, zde nic nepotřebuje."
+		"slot.parent.help": "Jen pro klon (verzi hry, jejíž sada obsahuje jen odlišné soubory, například vf3a.zip): zip sady, jejíž je verzí (vf3.zip pro vf3a.zip). Hra, která není klon, zde nic nepotřebuje.",
+		"slot.savedata": "Uložená data",
+		"slot.savedata.help": "Co si hra pamatuje, jak to Supermodel pro každou hru uchovává: její soubor NVRAM (EEPROM a záložní RAM, v nichž jsou nastavení hry, její rekordy a účetnictví), jak ho Supermodel zapisuje do své složky NVRAM nebo jak ho zapsal Emulátor > Exportovat uložená data (<hra>.nv). Vloží se do stroje před startem hry. Bez něj hra začne s prázdnou pamětí, jako nová deska."
 	}
 }

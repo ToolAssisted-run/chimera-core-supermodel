@@ -6,6 +6,7 @@
 		"error.not_a_game": "O Supermodel não encontrou neste zip nenhum jogo de Model 3 que conheça: %1",
 		"error.not_model3": "%1 não é um jogo de Model 3; este núcleo executa apenas jogos de Model 3.",
 		"error.renderer_failed": "Não foi possível iniciar o renderizador do Supermodel: %1",
+		"error.save_not_nvram": "%1 não é um arquivo NVRAM do Supermodel (um arquivo <jogo>.nv da pasta NVRAM do Supermodel).",
 		"setting.drawingscale": "Escala de desenho",
 		"setting.drawingscale.about": "Quantas vezes os 496x384 próprios do Model 3 a imagem é desenhada: em 2x são 992x768, com 3D mais nítido. O núcleo desenha no processador, então cada passo acima é mais lento (2x desenha quatro vezes os pixels). Muda só a imagem.",
 		"setting.idleskip": "Pular esperas",
@@ -15,6 +16,8 @@
 		"slot.game": "Jogo",
 		"slot.game.help": "O conjunto de ROM do jogo: o .zip com o nome que o Supermodel e o MAME lhe dão (por exemplo vf3.zip, scud.zip ou srally2.zip). O Supermodel reconhece os arquivos de um jogo pelo conteúdo, então os nomes dos arquivos dentro não importam.",
 		"slot.parent": "Conjunto de ROM pai",
-		"slot.parent.help": "Só para um clone (uma versão de um jogo cujo conjunto contém apenas os arquivos que mudam, como vf3a.zip): o zip do conjunto do qual ele é uma versão (vf3.zip para vf3a.zip). Um jogo que não é clone não precisa de nada aqui."
+		"slot.parent.help": "Só para um clone (uma versão de um jogo cujo conjunto contém apenas os arquivos que mudam, como vf3a.zip): o zip do conjunto do qual ele é uma versão (vf3.zip para vf3a.zip). Um jogo que não é clone não precisa de nada aqui.",
+		"slot.savedata": "Dados salvos",
+		"slot.savedata.help": "O que o jogo lembra, como o Supermodel guarda para cada jogo: seu arquivo NVRAM (a EEPROM e a RAM de backup, que guardam as configurações do jogo, seus recordes e sua contabilidade), como o Supermodel o escreve na sua pasta NVRAM ou como Emulador > Exportar dados salvos o escreveu (<jogo>.nv). Ele é colocado na máquina antes de o jogo começar. Sem ele, o jogo começa com a memória em branco, como uma placa nova."
 	}
 }

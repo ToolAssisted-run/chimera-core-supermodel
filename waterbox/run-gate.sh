@@ -29,6 +29,12 @@
 #                run; the computer stalling between frames changes nothing;
 #                and the same test sees it when the clock is the computer's
 #                (upstream's RTC72421.cpp linked in instead: the control)
+#   save data    Export Save Data is the game's NVRAM file as upstream writes
+#                it (<game>.nv: the EEPROM and the backup RAM), the same in
+#                both builds and after a session; given back in a project it
+#                is the machine's memory at power-on (the program counts its
+#                boots in the backup RAM: 2, not 1); a file that is not one
+#                is refused
 #   refusals     a zip that holds no Model 3 game, and a project without a
 #                game, each say why
 #   real games   (SKIP without SUPERMODEL_ROMS) native = sandbox and a
@@ -229,6 +235,38 @@ if grep -q '^frames=' "$work/hstall.txt" && [ "$(value "$work/hstall.txt" videoH
 	pass "clock: the control - with upstream's clock (the computer's), the same 3 s stall changes the pictures"
 else
 	fail "clock: the control - upstream's clock with a stall gave the same pictures (the test could not see a clock)"
+fi
+
+echo "== save data"
+mkdir -p "$work/sdn" "$work/sdw" "$work/sds"
+"$native" "$work/tp" --frames 30 --savedata-out "$work/sdn" --screenshot 20:"$work/boot1.tga" > "$work/sdn.txt" 2> /dev/null
+"$wbx" "$core" "$work/tp" --frames 30 --savedata-out "$work/sdw" > "$work/sdw.txt" 2> /dev/null
+"$wbx" "$core" "$work/tp" --frames 30 --session-at 10 --savedata-out "$work/sds" > "$work/sds.txt" 2> /dev/null
+if [ -s "$work/sdn/chimeratest.nv" ] && cmp -s "$work/sdn/chimeratest.nv" "$work/sdw/chimeratest.nv" && cmp -s "$work/sdn/chimeratest.nv" "$work/sds/chimeratest.nv" &&
+   [ "$(find "$work/sdn" -type f | wc -l)" = 1 ] && head -c 64 "$work/sdn/chimeratest.nv" | grep -q "Supermodel NVRAM State" && grep -q "Backup RAM" "$work/sdn/chimeratest.nv" && grep -q "93C46" "$work/sdn/chimeratest.nv"; then
+	pass "save data: Export Save Data is one file, chimeratest.nv, Supermodel's NVRAM format with the EEPROM and the backup RAM ($(stat -c %s "$work/sdn/chimeratest.nv") bytes); native = sandbox = a session"
+else
+	fail "save data: export: $(cd "$work/sdn" 2>/dev/null && find . -type f | tr '\n' ' ')"
+fi
+mkdir -p "$work/sdin"
+cp "$testzip" "$work/sdn/chimeratest.nv" "$work/sdin/"
+printf '{"game":["chimeratest.zip"],"savedata":["chimeratest.nv"]}' > "$work/sdin/slots"; printf '{}' > "$work/sdin/settings"
+"$wbx" "$core" "$work/sdin" --frames 30 --screenshot 20:"$work/boot2.tga" > "$work/sdin.txt" 2> /dev/null
+b1="$(pixel "$work/boot1.tga" 18 362)$(pixel "$work/boot1.tga" 26 362)"
+b2="$(pixel "$work/boot2.tga" 18 362)$(pixel "$work/boot2.tga" 26 362)"
+if [ "$b1" = ff00000000ff ] && [ "$b2" = 0000ffff0000 ]; then
+	pass "save data: given back in a project (in the sandbox), the backup RAM is the earlier run's: the program counts its second boot, a new machine its first"
+else
+	fail "save data: boot counts: new $b1 (ff00000000ff), with the NVRAM $b2 (0000ffff0000)"
+fi
+mkdir -p "$work/sdbad"
+cp "$testzip" "$work/sdbad/"; printf 'not an NVRAM file' > "$work/sdbad/other.nv"
+printf '{"game":["chimeratest.zip"],"savedata":["other.nv"]}' > "$work/sdbad/slots"; printf '{}' > "$work/sdbad/settings"
+"$native" "$work/sdbad" --frames 1 > "$work/sdbad.txt" 2> /dev/null
+if grep -q "^loadError=error.save_not_nvram${S}other.nv" "$work/sdbad.txt"; then
+	pass "save data: a file that is not an NVRAM file is refused, naming it"
+else
+	fail "save data: $(grep loadError "$work/sdbad.txt")"
 fi
 
 echo "== refusals"

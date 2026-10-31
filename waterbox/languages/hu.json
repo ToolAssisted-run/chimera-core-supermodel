@@ -6,6 +6,7 @@
 		"error.not_a_game": "A Supermodel nem talált ebben a zipben általa ismert Model 3 játékot: %1",
 		"error.not_model3": "A(z) %1 nem Model 3 játék; ez a mag csak Model 3 játékokat futtat.",
 		"error.renderer_failed": "A Supermodel megjelenítője nem indult el: %1",
+		"error.save_not_nvram": "A(z) %1 nem a Supermodel NVRAM-fájlja (egy <játék>.nv fájl a Supermodel NVRAM mappájából).",
 		"setting.drawingscale": "Rajzolási lépték",
 		"setting.drawingscale.about": "Hányszorosára rajzolódik a kép a Model 3 saját 496x384-es méretéhez képest: 2x esetén 992x768, élesebb 3D-vel. A mag a processzoron rajzol, így minden fokozattal feljebb lassabb (2x négyszer annyi képpontot rajzol). Csak a képet változtatja meg.",
 		"setting.idleskip": "Várakozás átugrása",
@@ -15,6 +16,8 @@
 		"slot.game": "Játék",
 		"slot.game.help": "A játék ROM-készlete: a .zip fájl azon a néven, ahogy a Supermodel és a MAME nevezi (például vf3.zip, scud.zip vagy srally2.zip). A Supermodel a játék fájljait a tartalmuk alapján ismeri fel, így a benne lévő fájlok neve nem számít.",
 		"slot.parent": "Szülő ROM-készlet",
-		"slot.parent.help": "Csak klónhoz (egy játék olyan változatához, amelynek készlete csak az eltérő fájlokat tartalmazza, mint a vf3a.zip): annak a készletnek a zipje, amelynek a változata (vf3a.zip esetén vf3.zip). Egy játéknak, amely nem klón, itt semmi sem kell."
+		"slot.parent.help": "Csak klónhoz (egy játék olyan változatához, amelynek készlete csak az eltérő fájlokat tartalmazza, mint a vf3a.zip): annak a készletnek a zipje, amelynek a változata (vf3a.zip esetén vf3.zip). Egy játéknak, amely nem klón, itt semmi sem kell.",
+		"slot.savedata": "Mentett adatok",
+		"slot.savedata.help": "Amire a játék emlékszik, ahogyan a Supermodel minden játéknál tárolja: az NVRAM-fájlja (az EEPROM és a tartalék RAM, amelyek a játék beállításait, rekordjait és könyvelését tárolják), ahogyan a Supermodel az NVRAM mappájába írja, vagy ahogyan az Emulátor > Mentett adatok exportálása írta (<játék>.nv). A játék indulása előtt bekerül a gépbe. Nélküle a játék üres memóriával indul, mint egy új panel."
 	}
 }

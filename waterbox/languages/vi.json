@@ -6,6 +6,7 @@
 		"error.not_a_game": "Supermodel không tìm thấy trò chơi Model 3 nào mà nó biết trong tệp zip này: %1",
 		"error.not_model3": "%1 không phải là trò chơi Model 3; lõi này chỉ chạy trò chơi Model 3.",
 		"error.renderer_failed": "Không khởi động được bộ dựng hình của Supermodel: %1",
+		"error.save_not_nvram": "%1 không phải là tệp NVRAM của Supermodel (một tệp <trò chơi>.nv từ thư mục NVRAM của Supermodel).",
 		"setting.drawingscale": "Tỉ lệ vẽ",
 		"setting.drawingscale.about": "Hình được vẽ lớn gấp bao nhiêu lần kích thước gốc 496x384 của Model 3: ở 2x là 992x768, với 3D sắc nét hơn. Lõi vẽ bằng bộ xử lý, nên mỗi bậc lên sẽ chậm hơn (2x vẽ gấp bốn lần số điểm ảnh). Chỉ thay đổi hình ảnh.",
 		"setting.idleskip": "Bỏ qua chờ",
@@ -15,6 +16,8 @@
 		"slot.game": "Trò chơi",
 		"slot.game.help": "Bộ ROM của trò chơi: tệp .zip mang tên mà Supermodel và MAME đặt cho nó (ví dụ vf3.zip, scud.zip hoặc srally2.zip). Supermodel nhận ra các tệp của trò chơi qua nội dung của chúng, nên tên các tệp bên trong không quan trọng.",
 		"slot.parent": "Bộ ROM gốc",
-		"slot.parent.help": "Chỉ dành cho bản sao (một phiên bản của trò chơi mà bộ ROM chỉ chứa các tệp khác biệt, như vf3a.zip): tệp zip của bộ mà nó là một phiên bản (vf3.zip cho vf3a.zip). Trò chơi không phải bản sao thì không cần gì ở đây."
+		"slot.parent.help": "Chỉ dành cho bản sao (một phiên bản của trò chơi mà bộ ROM chỉ chứa các tệp khác biệt, như vf3a.zip): tệp zip của bộ mà nó là một phiên bản (vf3.zip cho vf3a.zip). Trò chơi không phải bản sao thì không cần gì ở đây.",
+		"slot.savedata": "Dữ liệu lưu",
+		"slot.savedata.help": "Những gì trò chơi ghi nhớ, như Supermodel giữ cho mỗi trò chơi: tệp NVRAM của nó (EEPROM và RAM dự phòng, nơi giữ cài đặt, kỷ lục và sổ sách của trò chơi), như Supermodel ghi vào thư mục NVRAM của nó hoặc như Trình giả lập > Xuất dữ liệu lưu đã ghi (<trò chơi>.nv). Tệp được đưa vào máy trước khi trò chơi bắt đầu. Không có nó, trò chơi bắt đầu với bộ nhớ trống, như một bo mạch mới."
 	}
 }

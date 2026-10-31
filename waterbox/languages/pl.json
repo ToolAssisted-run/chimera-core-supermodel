@@ -6,6 +6,7 @@
 		"error.not_a_game": "Supermodel nie znalazł w tym pliku zip żadnej znanej sobie gry na Model 3: %1",
 		"error.not_model3": "%1 nie jest grą na Model 3; ten rdzeń uruchamia tylko gry na Model 3.",
 		"error.renderer_failed": "Nie udało się uruchomić renderera Supermodela: %1",
+		"error.save_not_nvram": "%1 nie jest plikiem NVRAM Supermodela (plikiem <gra>.nv z folderu NVRAM Supermodela).",
 		"setting.drawingscale": "Skala rysowania",
 		"setting.drawingscale.about": "Ile razy większy od własnych 496x384 Model 3 jest rysowany obraz: przy 2x to 992x768, z ostrzejszym 3D. Rdzeń rysuje na procesorze, więc każdy stopień wyżej jest wolniejszy (2x rysuje cztery razy więcej pikseli). Zmienia tylko obraz.",
 		"setting.idleskip": "Pomijanie oczekiwania",
@@ -15,6 +16,8 @@
 		"slot.game": "Gra",
 		"slot.game.help": "Zestaw ROM gry: plik .zip o nazwie nadanej mu przez Supermodel i MAME (na przykład vf3.zip, scud.zip lub srally2.zip). Supermodel rozpoznaje pliki gry po ich zawartości, więc nazwy plików w środku nie mają znaczenia.",
 		"slot.parent": "Nadrzędny zestaw ROM",
-		"slot.parent.help": "Tylko dla klonu (wersji gry, której zestaw zawiera tylko różniące się pliki, jak vf3a.zip): plik zip zestawu, którego jest wersją (vf3.zip dla vf3a.zip). Gra, która nie jest klonem, nie potrzebuje tu niczego."
+		"slot.parent.help": "Tylko dla klonu (wersji gry, której zestaw zawiera tylko różniące się pliki, jak vf3a.zip): plik zip zestawu, którego jest wersją (vf3.zip dla vf3a.zip). Gra, która nie jest klonem, nie potrzebuje tu niczego.",
+		"slot.savedata": "Dane zapisu",
+		"slot.savedata.help": "To, co gra pamięta, tak jak Supermodel przechowuje to dla każdej gry: jej plik NVRAM (EEPROM i zapasowa pamięć RAM, które trzymają ustawienia gry, jej rekordy i księgowość), tak jak Supermodel zapisuje go w swoim folderze NVRAM lub jak zapisało go Emulator > Eksportuj dane zapisu (<gra>.nv). Jest wkładany do maszyny przed startem gry. Bez niego gra startuje z pustą pamięcią, jak nowa płyta."
 	}
 }

@@ -6,6 +6,7 @@
 		"error.not_a_game": "Supermodel no ha trobat en aquest zip cap joc de Model 3 que conegui: %1",
 		"error.not_model3": "%1 no és un joc de Model 3; aquest nucli només executa jocs de Model 3.",
 		"error.renderer_failed": "No s'ha pogut iniciar el renderitzador de Supermodel: %1",
+		"error.save_not_nvram": "%1 no és un fitxer NVRAM de Supermodel (un fitxer <joc>.nv de la carpeta NVRAM de Supermodel).",
 		"setting.drawingscale": "Escala de dibuix",
 		"setting.drawingscale.about": "Quantes vegades els 496x384 propis del Model 3 es dibuixa la imatge: a 2x són 992x768, amb un 3D més nítid. El nucli dibuixa al processador, així que cada pas més amunt és més lent (2x dibuixa quatre vegades els píxels). Només canvia la imatge.",
 		"setting.idleskip": "Saltar esperes",
@@ -15,6 +16,8 @@
 		"slot.game": "Joc",
 		"slot.game.help": "El conjunt de ROM del joc: el .zip amb el nom que li donen Supermodel i MAME (per exemple vf3.zip, scud.zip o srally2.zip). Supermodel reconeix els fitxers d'un joc pel contingut, així que els noms dels fitxers de dins no importen.",
 		"slot.parent": "Conjunt de ROM pare",
-		"slot.parent.help": "Només per a un clon (una versió d'un joc el conjunt del qual només conté els fitxers que canvien, com vf3a.zip): el zip del conjunt del qual és una versió (vf3.zip per a vf3a.zip). Un joc que no és un clon no necessita res aquí."
+		"slot.parent.help": "Només per a un clon (una versió d'un joc el conjunt del qual només conté els fitxers que canvien, com vf3a.zip): el zip del conjunt del qual és una versió (vf3.zip per a vf3a.zip). Un joc que no és un clon no necessita res aquí.",
+		"slot.savedata": "Dades desades",
+		"slot.savedata.help": "El que el joc recorda, tal com Supermodel ho guarda per a cada joc: el seu fitxer NVRAM (l'EEPROM i la RAM de reserva, que guarden els ajustos del joc, els seus rècords i la comptabilitat), tal com Supermodel l'escriu a la seva carpeta NVRAM o com el va escriure Emulador > Exporta les dades de desat (<joc>.nv). Es posa a la màquina abans que comenci el joc. Sense, el joc comença amb la memòria en blanc, com una placa nova."
 	}
 }

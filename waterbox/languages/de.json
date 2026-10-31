@@ -6,6 +6,7 @@
 		"error.not_a_game": "Supermodel hat in dieser Zip-Datei kein Model-3-Spiel gefunden, das es kennt: %1",
 		"error.not_model3": "%1 ist kein Model-3-Spiel; dieser Core spielt nur Model-3-Spiele.",
 		"error.renderer_failed": "Der Renderer von Supermodel konnte nicht gestartet werden: %1",
+		"error.save_not_nvram": "%1 ist keine NVRAM-Datei von Supermodel (eine <Spiel>.nv-Datei aus dem NVRAM-Ordner von Supermodel).",
 		"setting.drawingscale": "Zeichenmaßstab",
 		"setting.drawingscale.about": "Wie viele Male die eigenen 496x384 des Model 3 das Bild gezeichnet wird: bei 2x sind es 992x768, mit schärferem 3D. Der Core zeichnet auf dem Prozessor, daher ist jede Stufe höher langsamer (2x zeichnet viermal so viele Pixel). Es ändert nur das Bild.",
 		"setting.idleskip": "Leerlauf überspringen",
@@ -15,6 +16,8 @@
 		"slot.game": "Spiel",
 		"slot.game.help": "Der ROM-Satz des Spiels: die .zip-Datei, benannt wie bei Supermodel und MAME (zum Beispiel vf3.zip, scud.zip oder srally2.zip). Supermodel erkennt die Dateien eines Spiels an ihrem Inhalt, daher spielen die Namen der Dateien darin keine Rolle.",
 		"slot.parent": "Übergeordneter ROM-Satz",
-		"slot.parent.help": "Nur für einen Klon (eine Version eines Spiels, deren Satz nur die abweichenden Dateien enthält, etwa vf3a.zip): die Zip-Datei des Satzes, von dem er eine Version ist (vf3.zip für vf3a.zip). Ein Spiel, das kein Klon ist, braucht hier nichts."
+		"slot.parent.help": "Nur für einen Klon (eine Version eines Spiels, deren Satz nur die abweichenden Dateien enthält, etwa vf3a.zip): die Zip-Datei des Satzes, von dem er eine Version ist (vf3.zip für vf3a.zip). Ein Spiel, das kein Klon ist, braucht hier nichts.",
+		"slot.savedata": "Spielstände",
+		"slot.savedata.help": "Was sich das Spiel merkt, wie Supermodel es für jedes Spiel aufbewahrt: seine NVRAM-Datei (EEPROM und Backup-RAM, mit den Einstellungen, Rekorden und der Buchhaltung des Spiels), wie Supermodel sie in seinen NVRAM-Ordner schreibt oder wie Emulator > Spielstand-Daten exportieren sie geschrieben hat (<Spiel>.nv). Sie wird vor dem Start des Spiels in die Maschine gelegt. Ohne sie startet das Spiel mit leerem Speicher, wie eine neue Platine."
 	}
 }

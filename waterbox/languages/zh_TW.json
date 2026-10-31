@@ -6,6 +6,7 @@
 		"error.not_a_game": "Supermodel 在此 zip 中沒有找到它認識的 Model 3 遊戲：%1",
 		"error.not_model3": "%1 不是 Model 3 遊戲；此核心只執行 Model 3 遊戲。",
 		"error.renderer_failed": "無法啟動 Supermodel 的算繪器：%1",
+		"error.save_not_nvram": "%1 不是 Supermodel 的 NVRAM 檔（Supermodel NVRAM 資料夾中的 <遊戲>.nv 檔）。",
 		"setting.drawingscale": "繪製倍數",
 		"setting.drawingscale.about": "以 Model 3 原本的 496x384 的幾倍來繪製畫面：2x 為 992x768，3D 更清晰。此核心用處理器繪製，因此每提高一級都會更慢（2x 要繪製四倍的像素）。只改變畫面。",
 		"setting.idleskip": "略過等待",
@@ -15,6 +16,8 @@
 		"slot.game": "遊戲",
 		"slot.game.help": "遊戲的 ROM 組：以 Supermodel 與 MAME 的命名方式命名的 .zip 檔（例如 vf3.zip、scud.zip 或 srally2.zip）。Supermodel 依內容辨認遊戲的檔案，因此其中檔案的名稱無關緊要。",
 		"slot.parent": "父 ROM 組",
-		"slot.parent.help": "僅用於複製版（只含不同檔案的遊戲版本，例如 vf3a.zip）：它所衍生自的 ROM 組的 zip（vf3a.zip 對應 vf3.zip）。不是複製版的遊戲在此不需要任何檔案。"
+		"slot.parent.help": "僅用於複製版（只含不同檔案的遊戲版本，例如 vf3a.zip）：它所衍生自的 ROM 組的 zip（vf3a.zip 對應 vf3.zip）。不是複製版的遊戲在此不需要任何檔案。",
+		"slot.savedata": "存檔資料",
+		"slot.savedata.help": "遊戲所記住的內容，即 Supermodel 為每個遊戲保存的 NVRAM 檔（EEPROM 與備份 RAM，保存遊戲的設定、紀錄與帳目），與 Supermodel 寫入其 NVRAM 資料夾中的或「模擬器 > 匯出存檔資料」所寫出的（<遊戲>.nv）相同。它會在遊戲開始前放入機器。沒有它時，遊戲會像新的基板一樣以空白記憶體啟動。"
 	}
 }

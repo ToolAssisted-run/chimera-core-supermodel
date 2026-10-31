@@ -12,7 +12,12 @@
 ;   - draws, on tile layer A: the block; a green mark on row 0 at column
 ;     (frame mod 62); the eight bits of each control byte on rows 46 and 47
 ;     (blue = pressed); the real-time clock's seconds (two digits, as tiles
-;     6 to 15) and minutes on row 2.
+;     6 to 15) and minutes on row 2; the low bits of the boot count on
+;     row 45 (red = 1, blue = 0).
+;
+; At power-on it counts the boot in the backup RAM (0xF00C0004), which a
+; game's NVRAM keeps: a machine started with the NVRAM of an earlier run
+; shows 2 there, a new one 1.
 ;
 ; Assemble with ppcasm.py (make-testprog.py does, and zips the ROM).
 
@@ -26,6 +31,7 @@
 .equ INPUTS, 0xF0040000
 .equ SYSREG, 0xF0100000
 .equ RTC, 0xF0140000
+.equ BACKUP, 0xF00C0000
 
 .org 0xFFF00100
 reset:
@@ -47,6 +53,13 @@ reset:
 	li r3, 0xFF
 	stb r3, 12(r31)
 	stb r3, 16(r31)
+
+	; the boot count, in the backup RAM
+	lis r3, BACKUP@h
+	lwz r4, 4(r3)
+	addi r4, r4, 1
+	stw r4, 4(r3)
+	stw r4, 20(r31)
 
 	; the palette's first sixteen colours, from the table below
 	lis r3, PAL@h
@@ -197,6 +210,9 @@ clr:
 	bl bits
 	lbz r10, 12(r31)
 	li r11, 47
+	bl bits
+	lbz r10, 23(r31)    ; the boot count's low byte (red where 1)
+	li r11, 45
 	bl bits
 
 	; the clock: seconds' tens and ones, minutes' tens and ones on row 2,
