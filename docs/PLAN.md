@@ -465,69 +465,177 @@ repository's sources and wrote nothing in the other checkout, but its
 libOSMesa.so does not link (as setup-mesa.sh expects: the core links the
 archives).
 
-## Where this stands (2026-10-31)
+## The first real game: vf3 (2026-10-31)
 
-**Works, on the test program, on Linux, native = sandbox:** the Model 3
-boots from its program ROM with every board on one thread; the PowerPC,
-the tile generator's 2D layer, the Real3D drawing a quad through New3D on
-llvmpipe (OpenGL 4.1 core inside the core), the sound board's 68000 and
-SCSP playing a tone, the controls (switches with lag frames, the wheel,
-pedals and light gun through the ADC and the serial port), the real-time
-clock on the machine's own time, the backup RAM. Savestates (save and load
-before every frame; a state loaded into a new host), turbo, Drawing Scale
-1x to 4x, save data in upstream's NVRAM format, RAM in the PowerPC's byte
-order for the tools. The package passes Chimera's contract tests and runs
-in chimera-run and in Chimera's Qt window (headless), the window's picture
-the native reference's to the pixel.
+The owner gave the first ROM set, vf3 (Virtua Fighter 3, Japan, Revision
+D: Model 3 Step 1.0, a billboard drive board, no MPEG sound board). It is
+the first real game this core has run. Its zip stays outside the
+repository; the tests copy it from the folder `SUPERMODEL_ROMS` names.
+
+**What was done.** The gate's real game tests (`waterbox/run-gate.sh`,
+"real games") now give each set a movie of its own. vf3's plays a fight:
+two coins during the warning screen (the game's default is two coins a
+credit), Start once the title is up (frame 960; Start before about frame
+900 is ignored), the cursor one to the right and Punch to pick that
+fighter, then from frame 1800 walks, punches, kicks, a guard and a crouch;
+the fight itself begins about frame 1600. 2400 frames. For each set that
+is there the gate runs native = sandbox (and prints both speeds), saved
+and loaded before every frame (new for real games), saved at 5/6 of the
+movie into a new host, and checks that the last picture is a drawn scene
+(`tests/colours.py`: more than 2000 colours; a black or blank screen has
+one or two). It keeps the native run's pictures at a few frames in
+`build/gate/vf3-*.tga` to be looked at. The frontend test
+(`tests/run-frontend.sh`) has three vf3 checks with `SUPERMODEL_ROMS` set,
+each SKIP without it: the fight as a project in chimera-run, which also
+records the movie it played; that recording made into a new project and
+played by a new chimera-run process; and the first project opened in
+Chimera's window (headless).
+
+**What it looks like, by eye** (native pictures at 496x384, looked at
+every 50 to 100 frames from power-on to frame 4000):
+
+- Frames 0 to about 300 black, then a white screen: the boot.
+- Frames about 400 to 900: the warning text, white on black, readable.
+- About 950 on: the attract mode. The white SEGA logo screen with "Insert
+  Coin(s)" and "Credit 0/2"; after the coins "Credit 2/2" and "Press
+  Start Button". Then the attract scenes: close-ups of fighters and
+  fights on a beach stage, textured and lit, with sky, clouds, sea, sand
+  and palm trees, the SEGA copyright line at the bottom right.
+- After Start (a run with Start at 1060): the fighter select screen
+  (frame about 1200), the 12 portraits, the large textured portrait and
+  the fighter's profile text, the countdown; P1 Right moved the cursor
+  one portrait, Punch picked (the countdown went to 00). Then the "FIRST
+  MATCH" screen with the opponent's face, and the fight on the beach
+  stage: the two energy bars, the timer with hundredths, the names, the
+  stage number, a line of Japanese text at the top right, shadows on the
+  sand, the sea, the palm trees, hit sparks; "Excellent!!" on a round
+  won, a replay with black bars, round 2.
+- Inputs reach the game: the picked fighter walks, punches, kicks and
+  knocks the opponent down when the movie says so; with no input in the
+  fight (an earlier run) the fighter stands and loses the round.
+- Nothing was seen drawn wrong. Every picture has a black border two
+  pixels wide: upstream's own window clips the same two pixels (Main.cpp,
+  "due to the 2D layer compensation"), and the core does as upstream
+  does. A line of text sliding in is cut at the screen's edge mid-slide
+  (frame 1300, "FIRST MATC"), as a slide is. What could not be judged
+  here: whether colours, fog and lighting match a real cabinet (there is
+  none to compare with), and the sound by ear.
+- The sound: not silent. Over 2400 frames of the fight movie, the first
+  8 seconds are silent (the boot and warning screen), then the attract
+  mode's and the fight's sound, peaks up to 14903 of 32767 and a loudness
+  (RMS) of 900 to 1900 in each 4-second stretch. Nobody has listened to
+  it.
+
+**Nothing in the core had to be fixed** for vf3: no patch was added, and
+no change was made to the core's code this round.
+
+**Measured** (this machine, an Intel Core Ultra 7 265KF shared with other
+jobs; load average 3 to 11 during the timed runs; llvmpipe at its one
+baseline CPU (128-bit vectors); the 2400-frame fight movie, no
+screenshots; the Model 3 runs 57.524 frames a second):
+
+| | run 1 | run 2 | share of full speed |
+|---|---|---|---|
+| native | 23.1 fps (104.0 s) | 22.6 fps (106.0 s) | about 40% |
+| sandbox | 17.7 fps (135.4 s) | 18.1 fps (132.7 s) | about 31% |
+
+- Memory: the native process peaks at 0.52 GB, the sandboxed one at 1.19
+  GB. A state is 21.6 MB at frame 100 and 78.9 MB during the fight.
+  Saving and loading before every frame costs about 15 ms a frame.
+- AVX2 again (the earlier experiment's two builds of each, the same core
+  code with the drawing code's choice the only difference): native 22.8
+  fps without, 27.5 with (+21%); sandbox 18.3 without, 20.9 with (+14%).
+  On vf3 the pictures with AVX2 are different from those without at 1x
+  too (another video digest; the steps and the sound the same). So a
+  movie's pictures would depend on the computer, as at 2x on the test
+  program. It is still not added: it is the owner's to decide whether a
+  seventh faster is worth that (see "AVX2 drawing code" above).
+- Lag frames (frames the game did not read its controls in): 63 in the
+  2400 frames of the fight, the same 63 as in the first 1800 frames of a
+  run with no input, so none came after frame 1800.
+
+**The tests** (Chimera main cb46d2b7 at ~/chimera-scratch-bump, miniBox
+7216594): `waterbox/run-gate.sh` with `SUPERMODEL_ROMS` 30 passed, 0
+failed, 3 skipped (scud, srally2, lostwsga: not here); vf3's four: native
+= sandbox over 2400 frames (every picture, the sound, the steps, the lag,
+the cycles), saved and loaded before every frame = straight, saved at
+frame 2000 and loaded into a new host = straight, the last picture drawn
+(64645 colours). `tests/run-frontend.sh` 9 ok, 0 failed: engine:vf3 (the
+last picture of the fight from a project, every pixel the native
+reference's), engine:vf3-replay (the recorded movie, 2400 entries with
+the presses in it, replayed in a new process: the same picture),
+window:vf3 (after 2400 frames in Chimera's window, the same picture).
+Seen to fail: the recorded movie with the walk to the right at frames
+2300 to 2329 taken out, made into a project and played, gave a last
+picture with 380 of 384 rows different, which the comparison refuses;
+the colour check gives 2 colours for the white boot screen (frame 299),
+under its 2000.
+
+## Where this stands (2026-10-31, after vf3)
+
+**Works, on Linux, native = sandbox:** the test program (every board on
+one thread, the tile generator, the Real3D through New3D on llvmpipe, the
+sound board, the controls, the clock, the backup RAM) and now **vf3
+(Virtua Fighter 3), the first real game**: from power-on through the
+warning screen, the attract mode, coins, Start, the fighter select and a
+fight with punches, kicks, a guard and a crouch, 2400 frames. Proved for
+vf3: native = sandbox in every picture, the sound, the steps, the lag and
+the cycles; saved and loaded before every frame, and saved into a new
+host at frame 2000, the same as straight; the fight from a project in
+chimera-run, the movie chimera-run recorded replayed by a new process,
+and the project in Chimera's window (headless), each last picture the
+native reference's to the pixel; by eye, the pictures right in every
+screen looked at (see "The first real game: vf3"). Not proved for vf3:
+the sound by ear, colours and lighting against a real cabinet, more than
+the first round of the first fight, the other stages and fighters,
+Windows, a GPU. Savestates, turbo, Drawing Scale, save data, RAM for the
+tools, the package (Chimera's contract tests) as before.
+
+**Speed of vf3 on llvmpipe:** native about 23 frames a second, sandbox
+about 18 (40% and 31% of the Model 3's 57.524); AVX2 drawing code would
+make them about 27.5 and 21 but makes the pictures depend on the
+computer, and is not added (the owner's to decide).
 
 **Measured last** (2026-10-31, Chimera main cb46d2b7 at
 ~/chimera-scratch-bump, miniBox 7216594, this machine):
-`waterbox/run-gate.sh` 26 passed, 0 failed, 4 skipped (the real games: no
-ROM sets here); `tests/run-frontend.sh` (chimera-run and Chimera's Qt
-window, headless) 6 ok; Chimera's contract tests on the package alone 22
-passed, 0 failed; `check-core-texts.py` 19 keys, every one named;
-`tools/check-names.py` and Chimera's `check-proper-nouns.py` 0 names
-changed. Every test was broken on purpose once and seen to fail (each
-section above says how).
+`waterbox/run-gate.sh` with `SUPERMODEL_ROMS` holding vf3.zip: 30 passed,
+0 failed, 3 skipped (scud, srally2, lostwsga: no ROM sets);
+`tests/run-frontend.sh` with `SUPERMODEL_ROMS` (chimera-run and Chimera's
+Qt window, headless): 9 ok, 0 failed; Chimera's contract tests on a
+folder holding only the package: 21 passed, 0 failed;
+`check-core-texts.py` 19 keys, every one named; `tools/check-names.py`
+and Chimera's `check-proper-nouns.py` 0 names changed (no text was
+added this round). Every new test was seen to fail once (see the vf3
+section).
 
 **The owner's answers** (2026-10-31) kept every default; see "The owner's
-answers" above.
+answers" above. Publishing waits for vf3 (done, as above) "and if possible
+scud": the owner's to decide.
 
 **Not tried, and what each needs:**
 
-- **A real game.** None was tried: no ROM set was on hand (none may be
-  looked for on this machine). The gate runs vf3, scud, srally2 and
-  lostwsga from `SUPERMODEL_ROMS` when they are there (native = sandbox
-  for `SUPERMODEL_FRAMES` frames, 1800 by default, and a session); their
-  movie only presses coins, Start and a few directions, so a first look
-  should also be by eye (screenshots) and for speed. What a game brings
-  that the program does not: textured, lit, fogged models; VROM models;
-  the MPEG digital sound board (scud, srally2); the drive board's Z80
-  (Wheel boards); the security board; the Real3D's DMA and ping-pong
-  update buffers; real timing.
-- **Speed of a game on llvmpipe.** The test program's 600 frames take
-  about 9.5 s in the sandbox; a game's scenes are far heavier. AVX2 code
-  was measured on the test program (about a tenth faster) and not added;
-  see "AVX2 drawing code" above. It is to be measured again on vf3.
-- **Windows.** Not run. The Windows test would be the frontend test's
-  scenario in the published Windows build: the test program (and a game)
-  from a project, its pictures and sound the Linux native reference's,
-  and a state loaded across sessions. What failed only on Windows in other
-  cores was stacks; Supermodel has no coroutines of its own, so the risk is
-  Mesa's and the guest's usual ones.
-- **The GPU bridge.** Not started: the owner wants it after real games
-  are proved and their speed on llvmpipe measured.
-- **Clones**: the "Parent ROM set" slot (patch 0004) has not been tried:
-  no clone set was on hand.
+- **The other ROM sets**: scud (Scud Race: the MPEG digital sound board,
+  the drive board's Z80), srally2 (Sega Rally 2: also the MPEG board and
+  the wheel), lostwsga (The Lost World: light guns). Not on hand; the
+  gate runs them when they are in `SUPERMODEL_ROMS` (the frontend test
+  runs vf3 only; their movies only press coins, Start and a few directions until
+  someone writes one per game, as vf3's).
+- **Windows.** Not run. The test would be the frontend test's scenario in
+  the published Windows build: vf3's fight from a project, its pictures
+  and sound the Linux native reference's, and a state loaded across
+  sessions.
+- **The GPU bridge.** Not started: the owner wanted it after real games
+  run and their speed on llvmpipe is measured. Both are now done for vf3.
+- **Clones**: the "Parent ROM set" slot has not been tried (no clone set).
 - **The light gun's crosshair**: upstream draws one in its SDL frontend;
   the core does not (Chimera shows the pointer).
 
 **Traps met (so the next person does not):**
 
+- vf3 takes two coins a credit by default, and ignores Start until the
+  warning screen is over (about frame 900); coins during it are counted.
 - The tile generator and the Real3D are little-endian chips on the
-  PowerPC's big-endian bus: the PowerPC's words reach them byte-reversed
-  (palette entries, name-table pairs with the left entry in the second
-  half; Real3D words with `stwbrx`).
+  PowerPC's big-endian bus: the PowerPC's words reach them byte-reversed.
 - `glReadPixels` on the OSMesa context gave back zeros; the picture is read
   from OSMesa's own buffer after `glFinish`.
 - A run-native screenshot path is relative to the work dir (it changes
@@ -537,13 +645,10 @@ answers" above.
   maps the source paths away.
 - A 68000 `dbra` counts its displacement from the word after the opcode.
 - Godot's run-native cleared the environment before its harness read
-  `GATE_STALL_US`, so its clock stall did not stall natively; this core's
-  run-native keeps that one variable (the clock test was checked to stall:
-  the control with the computer's clock fails under it).
+  `GATE_STALL_US`; this core's run-native keeps that one variable.
+- Every picture has a 2-pixel black border: upstream's, not a bug.
 
-**Next:** the owner's ROM sets (vf3 first, then scud and srally2, then
-lostwsga) through the gate (`SUPERMODEL_ROMS`) and by eye; their speed on
-llvmpipe, with and without AVX2; then Windows; publishing when vf3 (and if
-possible scud) runs the same natively and in the sandbox and looks right
-(the owner's to do: the repository, the roster, issue 354); then the GPU
-bridge. Without a ROM set there is little content-free work left.
+**Next:** scud, srally2 and lostwsga when the owner has them (a movie for
+each, by eye, speed); Windows; publishing (the owner's: the repository,
+the roster, issue 354); then the GPU bridge, whose first measure should
+be vf3's fight against these llvmpipe numbers.

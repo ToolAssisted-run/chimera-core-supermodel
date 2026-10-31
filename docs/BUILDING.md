@@ -66,10 +66,16 @@ A change to the controls is made in `tools/gen-inputs.py`, which writes
   on the test program (native against sandbox, savestates, turbo, the
   controls, lag, the clock, the refusals). Each test says what it compared.
   `SUPERMODEL_ROMS=<folder>` adds the real game tests for the ROM sets named
-  in the script that the folder holds (`SUPERMODEL_FRAMES` sets how long).
+  in the script that the folder holds (`SUPERMODEL_FRAMES` sets how long;
+  vf3's movie plays a fight in 2400 frames, the others 1800 by default).
+  The native run's pictures at a few frames stay in `build/gate`
+  (`<set>-<frame>.tga`; `tools/tga2png.py` makes PNGs of them).
 - `tests/run-frontend.sh --chimera-root <chimera> [--qt <Qt lib folder>]`:
   the package through `chimera-run` and through Chimera's window, headless.
-  It writes nothing in the Chimera checkout.
+  It writes nothing in the Chimera checkout. With `SUPERMODEL_ROMS` naming
+  a folder that holds vf3.zip it also plays vf3's fight from a project,
+  replays the movie chimera-run recorded in a new process, and opens the
+  project in the window.
 - Chimera's contract tests, against a folder holding only the package:
 
       <chimera>/build/meson-linux/source/ui/test-packages <folder>

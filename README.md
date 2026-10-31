@@ -11,9 +11,11 @@ Chimera issue 354.
 Local only: not published, no release. Built and tested on Linux with this
 repository's own Model 3 test program (PowerPC and 68000 code written here:
 the 2D layer, a Real3D polygon, the sound board, the controls, the wheel,
-pedals and light gun, the clock, the backup RAM); no real game has been
-tried yet, and nothing has run on Windows or on a GPU (see
-[docs/PLAN.md](docs/PLAN.md), "Where this stands").
+pedals and light gun, the clock, the backup RAM), and with one real game,
+Virtua Fighter 3 (vf3): attract mode and a fight, the same natively and in
+the sandbox, at about 18 frames a second in the sandbox on a software
+OpenGL. No other game has been tried, and nothing has run on Windows or on
+a GPU (see [docs/PLAN.md](docs/PLAN.md), "Where this stands").
 
 - Supermodel's emulation with every board on one thread (the PowerPC main
   board, the sound board, the digital sound board, the drive boards), its

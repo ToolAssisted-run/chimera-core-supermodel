@@ -32,7 +32,8 @@ core, with a frontend of the core's own. The user brings a game's ROM set
   `chimeratestgun`, and `game.xml`, their entries in the core's game list).
 - `tests/` - `run-frontend.sh` and its helpers, `pixel.py` (a pixel's
   colour), `rowbits.py` (the bytes the program shows as rows of tiles),
-  `tone.py` (a sound's length, peak and pitch).
+  `tone.py` (a sound's length, peak and pitch), `colours.py` (how many
+  colours a picture holds: a drawn scene or a blank screen).
 - `tools/gen-inputs.py` - the one list of controls.
 - `build/` - every output. Ignored by git.
 
