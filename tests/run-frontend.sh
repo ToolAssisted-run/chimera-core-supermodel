@@ -103,12 +103,23 @@ else
 	fi
 
 	( cd "$work" && timeout 900 "$crun" --project "$work/proj/test.chimeraProject" "$pkg" --files "$work/proj" --frames "$frames" \
-		--screenshot "$((frames - 1))=$work/proj.last.tga" --meta "$work/proj.meta" > "$work/proj.log" 2>&1 )
+		--screenshot "$((frames - 1))=$work/proj.last.tga" --dump "Main RAM@1000+4=$work/frame.bus" \
+		--dump "Main RAM words=$work/ram.words" --meta "$work/proj.meta" > "$work/proj.log" 2>&1 )
 	if grep -q '^status=OK' "$work/proj.meta" 2>/dev/null &&
 	   python3 "$here/compare-pictures.py" "$work/native.last.tga" "$work/proj.last.tga" > "$work/proj.pic" 2>&1; then
 		report "engine:project" PASS "the same movie in a project, the zip in its slot: the same last picture"
 	else
 		report "engine:project" FAIL "$(grep -m1 detail= "$work/proj.meta" 2>/dev/null) $(cat "$work/proj.pic" 2>/dev/null) (build/frontend/proj.log)"
+	fi
+	# the program counts its frames at RAM 0x1000: the Main RAM bus reads it in
+	# the PowerPC's byte order, the hidden domain in Supermodel's own
+	bus="$(od -An -tx1 "$work/frame.bus" 2>/dev/null | tr -d ' \n')"
+	words="$(od -An -tx1 -j 4096 -N 4 "$work/ram.words" 2>/dev/null | tr -d ' \n')"
+	want="$(printf '%08x' "$frames")"
+	if [ "$bus" = "$want" ] && [ "$words" = "$(echo "$want" | sed 's/\(..\)\(..\)\(..\)\(..\)/\4\3\2\1/')" ]; then
+		report "engine:memory" PASS "after $frames frames the program's frame count reads $bus on the Main RAM bus (the PowerPC's order) and $words in the hidden domain"
+	else
+		report "engine:memory" FAIL "the frame count reads '$bus' on the bus and '$words' in the domain, not $want"
 	fi
 fi
 

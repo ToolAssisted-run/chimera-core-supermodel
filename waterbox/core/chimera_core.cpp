@@ -357,34 +357,73 @@ ECL_EXPORT int IsAxisActive(int32_t index) { return chimera_axis_active(index, &
 
 /* ------------------------------------------------------------ memory, for the tools */
 
-// The main board's RAM and the backup RAM, as Supermodel keeps them: in
-// 32-bit words in the computer's byte order, so a 32-bit value the PowerPC
-// keeps at address A is read little-endian at A, and the PowerPC's byte at
-// address A is the domain's byte A ^ 3.
+// The main board's RAM and the backup RAM. Supermodel keeps them in 32-bit
+// words in the computer's byte order (the PowerPC's byte at address A is
+// the memory's byte A ^ 3). The tools see them as buses, in the PowerPC's
+// own byte order, so a value reads as the game wrote it (big-endian), and
+// as memory domains in Supermodel's order ("... words"), hidden from the
+// memory tools: Chimera requires the domains, and a person searching the
+// RAM wants the PowerPC's order.
 namespace
 {
-	struct Domain { const char *name; int64_t size; };
-	const Domain kDomains[] = {
-		{ "Main RAM", 0x800000 },
-		{ "Backup RAM", 0x20000 },
+	struct Region { const char *name; const char *words; int64_t size; };
+	const Region kRegions[] = {
+		{ "Main RAM", "Main RAM words", 0x800000 },
+		{ "Backup RAM", "Backup RAM words", 0x20000 },
 	};
-	const int kDomainCount = (int)(sizeof kDomains / sizeof kDomains[0]);
+	const int kRegionCount = (int)(sizeof kRegions / sizeof kRegions[0]);
+
+	uint8_t *region_ptr(int index)
+	{
+		if (!g_model3)
+			return nullptr;
+		switch (index)
+		{
+		case 0: return g_model3->ChimeraRAM();
+		case 1: return g_model3->ChimeraBackupRAM();
+		default: return nullptr;
+		}
+	}
+
+	// what a tool asked for: in memory no state holds
+	ECL_INVISIBLE uint8_t g_busRead[65536];
 }
 
-ECL_EXPORT int GetMemoryDomainCount(void) { return g_model3 ? kDomainCount : 0; }
-ECL_EXPORT const char *GetMemoryDomainName(int index) { return index >= 0 && index < kDomainCount ? kDomains[index].name : nullptr; }
-ECL_EXPORT int64_t GetMemoryDomainSize(int index) { return index >= 0 && index < kDomainCount ? kDomains[index].size : 0; }
-ECL_EXPORT int GetMemoryDomainWritable(int index) { return index >= 0 && index < kDomainCount; }
-ECL_EXPORT uint8_t *GetMemoryDomainPtr(int index)
+ECL_EXPORT int GetMemoryDomainCount(void) { return g_model3 ? kRegionCount : 0; }
+ECL_EXPORT const char *GetMemoryDomainName(int index) { return index >= 0 && index < kRegionCount ? kRegions[index].words : nullptr; }
+ECL_EXPORT int64_t GetMemoryDomainSize(int index) { return index >= 0 && index < kRegionCount ? kRegions[index].size : 0; }
+ECL_EXPORT int GetMemoryDomainWritable(int index) { return index >= 0 && index < kRegionCount; }
+ECL_EXPORT int GetMemoryDomainHidden(int index) { return index >= 0 && index < kRegionCount; }
+ECL_EXPORT uint8_t *GetMemoryDomainPtr(int index) { return region_ptr(index); }
+
+ECL_EXPORT int32_t GetBusCount(void) { return g_model3 ? kRegionCount : 0; }
+ECL_EXPORT const char *GetBusName(int32_t bus) { return bus >= 0 && bus < kRegionCount ? kRegions[bus].name : nullptr; }
+ECL_EXPORT int64_t GetBusSize(int32_t bus) { return bus >= 0 && bus < kRegionCount ? kRegions[bus].size : 0; }
+ECL_EXPORT int32_t GetBusWritable(int32_t bus) { return bus >= 0 && bus < kRegionCount; }
+ECL_EXPORT int32_t PeekBus(int32_t bus, int32_t addr)
 {
-	if (!g_model3)
+	const uint8_t *p = region_ptr(bus);
+	if (!p || addr < 0 || addr >= kRegions[bus].size)
+		return 0;
+	return p[addr ^ 3];
+}
+ECL_EXPORT void PokeBus(int32_t bus, int32_t addr, int32_t value)
+{
+	uint8_t *p = region_ptr(bus);
+	if (p && addr >= 0 && addr < kRegions[bus].size)
+		p[addr ^ 3] = (uint8_t)value;
+}
+ECL_EXPORT const uint8_t *ReadBus(int32_t bus, int64_t addr, int32_t len)
+{
+	const uint8_t *p = region_ptr(bus);
+	if (!p || len < 0 || len > (int32_t)sizeof g_busRead)
 		return nullptr;
-	switch (index)
+	for (int32_t i = 0; i < len; i++)
 	{
-	case 0: return g_model3->ChimeraRAM();
-	case 1: return g_model3->ChimeraBackupRAM();
-	default: return nullptr;
+		const int64_t a = addr + i;
+		g_busRead[i] = (a >= 0 && a < kRegions[bus].size) ? p[a ^ 3] : 0;
 	}
+	return g_busRead;
 }
 
 /* ------------------------------------------------------------ save data */

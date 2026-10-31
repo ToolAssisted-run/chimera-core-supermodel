@@ -298,3 +298,22 @@ the middle of an instruction (a 68000 dbra's displacement counts from the
 word after the opcode) and stopped; that run measured peak 0 and 0 Hz.
 
 Measured: `waterbox/run-gate.sh` 23 passed, 0 failed, 4 skipped.
+
+## The RAM for the tools, in the PowerPC's byte order (2026-10-31)
+
+Supermodel keeps the RAM in 32-bit words in the computer's byte order, so
+a byte the PowerPC keeps at A is at A ^ 3, and a 32-bit value reads
+little-endian. A person searching a big-endian machine's RAM expects the
+game's own order. The core now publishes Main RAM and Backup RAM as buses
+in the PowerPC's order (PeekBus, PokeBus, ReadBus in memory no state
+holds), and keeps the two memory domains (which Chimera requires) under the
+names "Main RAM words" and "Backup RAM words", hidden from the memory tools
+(GetMemoryDomainHidden). (Awaiting the owner: whether the words should be
+shown too; hidden is the default here, as the ares core hides the copy a
+person should not search.)
+
+Measured: `tests/run-frontend.sh` 6 ok (new: engine:memory, the program's
+frame count after 300 frames reads 0000012c through chimera-run's dump of
+the Main RAM bus, and 2c010000 in the hidden domain); with the bus's ^ 3
+taken out on purpose it failed (the bus read 2c010000). Gate 23 passed;
+contract tests 21 passed.
