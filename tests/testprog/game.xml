@@ -17,7 +17,33 @@
     </hardware>
     <roms>
       <region name="crom" stride="4" chunk_size="4">
-        <file offset="0" name="chimeratest-crom.bin" crc32="0x8950C224" />
+        <file offset="0" name="chimeratest-crom.bin" crc32="0x41653562" />
+      </region>
+      <region name="sound_program" stride="2" chunk_size="2">
+        <file offset="0" name="chimeratest-snd.bin" crc32="0xFAF11642" />
+      </region>
+    </roms>
+  </game>
+  <!-- chimera-core-supermodel's own test program (tests/testprog), not a Sega game -->
+  <game name="chimeratestgun">
+    <identity>
+      <title>Chimera Model 3 test program (wheel, pedals and light gun)</title>
+      <version>tests/testprog/testprog.s</version>
+      <manufacturer>chimera-core-supermodel</manufacturer>
+      <year>2026</year>
+    </identity>
+    <hardware>
+      <platform>Sega Model 3</platform>
+      <stepping>1.0</stepping>
+      <inputs>
+        <input type="common" />
+        <input type="vehicle" />
+        <input type="gun1" />
+      </inputs>
+    </hardware>
+    <roms>
+      <region name="crom" stride="4" chunk_size="4">
+        <file offset="0" name="chimeratest-crom.bin" crc32="0x366205F4" />
       </region>
       <region name="sound_program" stride="2" chunk_size="2">
         <file offset="0" name="chimeratest-snd.bin" crc32="0xFAF11642" />

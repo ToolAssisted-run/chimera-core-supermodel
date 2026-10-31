@@ -337,3 +337,32 @@ sandbox at 1x, 26.1 s in the sandbox at 2x; the sandboxed process peaked at
 with the 3D, the sound and the backup RAM in use. A real game draws far
 more polygons and textures than one quad, so these say nothing yet about a
 game's speed on llvmpipe.
+
+## The analog controls and the light gun (2026-10-31)
+
+The test program also reads, on the frames it reads its controls, the
+Model 3's analog channels (the ADC at 0xF004003C: steering, accelerator,
+brake) and light gun 1 through the serial port (registers 0 to 3 and 8:
+the aim's low and high bits and the off-screen bits), and shows them. It
+is made into two sets now, told apart by the program ROM's last byte:
+`chimeratest` (common, joystick 1, fighting) and `chimeratestgun` (common,
+vehicle, gun 1), so each cabinet's inputs reach it (Supermodel fills the
+ADC and the gun only for the cabinets that have them).
+
+What it showed, and the analog test now checks: at rest the wheel is 0x80,
+the pedals 0, the gun at 400, 272 (the middle of upstream's 150..651 and
+80..465); with the wheel at -32768, the accelerator at 32767, the brake at
+16384 and the gun at the right edge and the top, off-screen held: 0x00,
+0xFF, 0x7F, 651 and 80 with the off-screen bit; with the wheel at 32767
+and the gun at the left edge and the bottom: 0xFF, 150 and 465. The cabinet
+shows the wheel, the pedals, the gun's aim, trigger and off-screen, and no
+joystick. With the stick and the gun's scaling broken on purpose (every
+value at rest or at the low end) the values read 80 ff 7f 96 50 10, which
+the test refuses.
+
+Not proved here: the analog guns (Ocean Hunter, LA Machineguns: the ADC
+with upstream's per-game inversion), the twin sticks, the ski, the
+truck's levers, the fishing controls and the drive boards' force
+feedback (off): no test cabinet has them, and no game was tried.
+
+Measured: `waterbox/run-gate.sh` 25 passed, 0 failed, 4 skipped.

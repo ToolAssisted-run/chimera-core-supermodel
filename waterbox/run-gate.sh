@@ -28,6 +28,10 @@
 #                sets it each frame, and nothing around it
 #   controls     a press reaches the program through the Model 3's input
 #                registers, and the controls a cabinet lacks are not shown
+#   analog       in the wheel and gun cabinet (chimeratestgun), the wheel,
+#                the pedals and the light gun's aim reach the program through
+#                the analog channels and the gun's serial port with the
+#                values upstream's inputs give them: at rest, at each end
 #   lag          a frame in which the program did not read its controls (one
 #                in eight, by design) is a lag frame, and only those
 #   clock        the real-time clock is the Starting Clock and the frames
@@ -77,7 +81,7 @@ step() { # step <what> <log> <command...>
 }
 step "the inputs' tables" "$root/build/gate-inputs.log" python3 "$root/tools/gen-inputs.py" --check
 step "the test program" "$root/build/gate-testprog.log" python3 "$root/tests/testprog/make-testprog.py" "$root/build/tests"
-if grep -q "game.xml now names" "$root/build/gate-testprog.log"; then
+if grep -q "game.xml changed" "$root/build/gate-testprog.log"; then
 	echo "the test program changed: tests/testprog/game.xml was rewritten; commit it"
 fi
 step "the LLVM builds" "$root/build/gate-llvm.log" bash -c "bash '$here/build-llvm.sh' native && bash '$here/build-llvm.sh' guest -m '$mb'"
@@ -231,6 +235,31 @@ if [ "$active" = "P1Coin P1Start P2Coin P2Start ServiceA TestA ServiceB TestB P1
 	pass "controls: the test program's cabinet (common, joystick 1, fighting) shows its 20 buttons and no wheel, pedal, gun or other"
 else
 	fail "controls: shown: $active / axes: $axes"
+fi
+
+echo "== analog"
+# the program shows, rows 38 to 43: steering, accelerator, brake, gun X low,
+# gun Y low, and gun X high | gun Y high << 2 | off-screen << 4
+mkwork gun "$root/build/tests/chimeratestgun.zip"
+"$native" "$work/gun" --frames 40 --screenshot 25:"$work/gun-rest.tga" > "$work/gun-rest.txt" 2> /dev/null
+"$native" "$work/gun" --frames 40 --press 10:P1Steering=-32768,P1Accelerator=32767,P1Brake=16384,P1GunX=65535,P1GunY=0,P1Offscreen:20 \
+	--screenshot 25:"$work/gun-a.tga" > /dev/null 2> /dev/null
+"$native" "$work/gun" --frames 40 --press 10:P1Steering=32767,P1GunX=0,P1GunY=65535:20 --screenshot 25:"$work/gun-b.tga" > /dev/null 2> /dev/null
+rest="$(python3 "$root/tests/rowbits.py" "$work/gun-rest.tga" 38 39 40 41 42 43)"
+ends="$(python3 "$root/tests/rowbits.py" "$work/gun-a.tga" 38 39 40 41 42 43)"
+other="$(python3 "$root/tests/rowbits.py" "$work/gun-b.tga" 38 39 40 41 42 43)"
+# rest: wheel 0x80, pedals 0, gun at 400, 272 (the middle of 150..651 and 80..465)
+# ends: wheel 0, accelerator 0xFF, brake 0x7F, gun X 651 (0x28B), Y 80 (0x050), off-screen
+# other: wheel 0xFF, gun X 150 (0x096), Y 465 (0x1D1)
+if [ "$rest" = "80 00 00 90 10 05" ] && [ "$ends" = "00 ff 7f 8b 50 12" ] && [ "$other" = "ff 00 00 96 d1 04" ]; then
+	pass "analog: the wheel, the pedals and the light gun reach the program as upstream's inputs give them (at rest: $rest; at the ends: $ends and $other)"
+else
+	fail "analog: at rest $rest (80 00 00 90 10 05), at the ends $ends (00 ff 7f 8b 50 12) and $other (ff 00 00 96 d1 04)"
+fi
+if grep -q "^activeAxes=P1Steering P1Accelerator P1Brake P1GunX P1GunY $" "$work/gun-rest.txt" && grep -q "^activeButtons=.*P1Trigger P1Offscreen $" "$work/gun-rest.txt"; then
+	pass "analog: the wheel and gun cabinet shows the wheel, the pedals, the gun's aim, its trigger and off-screen, and no joystick"
+else
+	fail "analog: shown: $(grep '^active' "$work/gun-rest.txt" | tr '\n' ' ')"
 fi
 
 echo "== lag"

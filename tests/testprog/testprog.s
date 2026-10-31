@@ -15,7 +15,11 @@
 ;     6 to 15) and minutes on row 2; the low bits of the boot count on
 ;     row 45 (red = 1, blue = 0);
 ;   - colours the Real3D's one polygon, a quad in the upper right of the
-;     picture, with the frame (red rising, full green).
+;     picture, with the frame (red rising, full green);
+;   - on the frames it reads the controls, also reads the analog channels
+;     (the ADC: steering, accelerator, brake) and light gun 1 through the
+;     serial port (X and Y, low 8 and high 2 bits, the off-screen bits), and
+;     shows them on rows 38 to 43, as the control bytes are shown (red = 1).
 ;
 ; The 3D scene is one viewport, its base matrix and one polygon, written
 ; to the Real3D's memories at power-on (tables at the end). The Real3D is a
@@ -62,6 +66,9 @@ reset:
 	li r3, 0xFF
 	stb r3, 12(r31)
 	stb r3, 16(r31)
+	li r3, 0
+	stw r3, 24(r31)
+	stw r3, 28(r31)
 
 	; the boot count, in the backup RAM
 	lis r3, BACKUP@h
@@ -164,6 +171,35 @@ wait:
 	stb r5, 16(r31)
 	lbz r6, 8(r29)
 	stb r6, 12(r31)
+
+	; the analog channels from 0: steering, accelerator, brake
+	li r3, 0
+	stb r3, 0x3C(r29)
+	lbz r10, 0x3C(r29)
+	stb r10, 24(r31)
+	lbz r10, 0x3C(r29)
+	stb r10, 25(r31)
+	lbz r10, 0x3C(r29)
+	stb r10, 26(r31)
+	; light gun 1: X low, Y low, then X high | Y high << 2 | off-screen << 4
+	li r3, 2
+	bl gunreg
+	stb r10, 27(r31)
+	li r3, 0
+	bl gunreg
+	stb r10, 28(r31)
+	li r3, 3
+	bl gunreg
+	mr r11, r10
+	li r3, 1
+	bl gunreg
+	slwi r10, r10, 2
+	or r11, r11, r10
+	li r3, 8
+	bl gunreg
+	slwi r10, r10, 4
+	or r11, r11, r10
+	stb r11, 29(r31)
 noread:
 
 	; the block moves with the joystick (low = held): bit 5 up, 4 down,
@@ -250,6 +286,16 @@ clr:
 	lbz r10, 23(r31)    ; the boot count's low byte (red where 1)
 	li r11, 45
 	bl bits
+	li r23, 0           ; the analog channels and the gun, rows 38 to 43
+anal:
+	addi r24, r23, 24
+	add r24, r24, r31
+	lbz r10, 0(r24)
+	addi r11, r23, 38
+	bl bits
+	addi r23, r23, 1
+	cmpwi r23, 6
+	blt anal
 
 	; the clock: seconds' tens and ones, minutes' tens and ones on row 2,
 	; each digit d as pattern 6 + d
@@ -313,6 +359,18 @@ cell:
 	rlwinm r9, r7, 24, 24, 31
 	or r7, r8, r9
 	sth r7, 0(r6)
+	blr
+
+; gunreg: the light gun register r3 (0-8) through the serial port into r10:
+; the register number to FIFO 2, command 0x00 (select it), command 0x87
+; (read it), the value from FIFO 2
+gunreg:
+	stb r3, 0x28(r29)
+	li r9, 0
+	stb r9, 0x24(r29)
+	li r9, 0x87
+	stb r9, 0x24(r29)
+	lbz r10, 0x30(r29)
 	blr
 
 ; bits: the eight bits of r10 on row r11, from column 2, pattern 3 where
