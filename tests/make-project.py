@@ -26,7 +26,7 @@ import zipfile
 def inputs_of(log):
     """A movie's text block ("[Input]", "LogKey:...", its entries, "[/Input]")
     as a project file's "inputs": the key's groups of column names, and one
-    entry a frame. A group starts where a '#' begins a name; a name ends at
+    entry a frame (which the project keeps in input.input, not in its JSON). A group starts where a '#' begins a name; a name ends at
     '|' (as Chimera splits a key)."""
     lines = log.splitlines()
     out = {}
@@ -138,7 +138,6 @@ def main():
     project = {
         "id": "supermodel-test-%s" % os.path.splitext(files[0]["name"])[0],
         "title": "%s through Chimera" % files[0]["name"],
-        "description": "written by tests/make-project.py",
         "core": {"name": cfg["coreName"], "version": cfg["version"], "sha1": sha1(package)},
         "rerecords": 0,
         "files": files,
@@ -157,8 +156,11 @@ def main():
             "VsyncDenominator": str(cfg["video"]["vsyncDenominator"]),
         },
     }
-    with open(out, "w") as f:
-        json.dump(project, f, indent="\t")
+    # a project is a zip: its JSON, and its input log one entry a line
+    entries = project["inputs"].pop("entries")
+    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr("project.json", json.dumps(project, indent="\t"))
+        z.writestr("input.input", "".join(e + "\n" for e in entries))
     return 0
 
 
