@@ -671,3 +671,48 @@ Chimera for Windows (Development build cb46d2b7), ends on the native
 reference's picture, every pixel (and byte for byte the Linux replay's).
 Sound was not compared on Windows.
 
+
+
+## White spikes and triangles, issue 469 (user-decided, 2026-11-02)
+
+Issue 469: in vf3a, srally2, von2 and scud, white triangles were drawn over
+the picture that upstream Supermodel, on the reporter's graphics card, does
+not draw. The owner chose to fix the software drawing (the GPU bridge stays
+a later step).
+
+Reproduced here with vf3's attract mode, no inputs: at frame 6900 a long
+thin white spike from the bottom left corner, natively (no sandbox), so
+the core's drawing and not Windows. Found by drawing the quad shader's
+fragments in colours by what they computed (the native build, a test
+harness drawing only the last 30 frames, which gave the same picture to
+the pixel):
+
+- With QuadRendering off (New3D's triangles) there is no spike, but the
+  triangles are slower here (17.6 frames a second over vf3's first 2400
+  frames, against 21.3 with quads) and give a slightly different picture
+  (about 48,000 pixels of the frame), so quads stay, as upstream has them.
+- The spike's fragments belong to an ordinary quad, every corner well in
+  front of the camera, whose screen-space vectors to the corners (the
+  shader's noperspective inputs) llvmpipe interpolates to NaN for a thin
+  sliver; NaN passes the shader's discard test, since every comparison
+  with NaN is false, and the fragment is lit white.
+- Not the cause, tried and taken out again: GLSL `precise` fma made fused
+  in llvmpipe (it is split into a multiply and an add on every CPU), and
+  the clipper taking a clipped noperspective value from the nearer end.
+  Neither changed the spike.
+
+The fix is patch 0007: the quad shader checks its four weights first, and
+weights that are not numbers, or far outside the quad's own (0 to 1 inside
+it; -1 to 2 is let through), make the fragment take the attributes the
+triangle interpolated, as upstream already does on a quad's edges. vf3's
+frame 6900 then has no spike (the corner's white is the "Credit" text's,
+255 pixels, against 963 with the spike) and differs from the old picture in
+1,510 pixels, the spike and a few slivers. At frames 3300, 6900 and 7800 of
+vf3's attract mode every other quad fragment's weights stayed within -0.05
+to 1.05, but for 6 pixels a frame outside -1 to 2, which now take the
+triangle's attributes too.
+
+The gate checks frame 6900 when SUPERMODEL_ROMS holds vf3.zip (the native
+build, about four minutes); on the old build's picture the check reads 963
+and fails. Not tried: srally2, von2 and scud (no ROM sets here), whose
+triangles were far larger than vf3's spike and may have another cause.

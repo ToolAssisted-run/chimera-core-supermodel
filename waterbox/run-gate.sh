@@ -424,6 +424,23 @@ for set in vf3 scud srally2 lostwsga; do
 	fi
 done
 
+# vf3's attract mode at frame 6900: a thin sliver whose quad weights came out
+# NaN on llvmpipe drew a long white spike from the bottom left (issue 469,
+# patch 0007). The corner's other white is the "Credit" text, about 255
+# pixels; with the spike it was 963. The native build, pictures drawn from
+# frame 3450 on (the turbo leg's half), about four minutes.
+if [ -n "${SUPERMODEL_ROMS:-}" ] && [ -f "${SUPERMODEL_ROMS}/vf3.zip" ]; then
+	"$native" "$work/vf3" --frames 6901 --turbo --screenshot 6900:"$work/vf3-6900.tga" > "$work/vf3-6900.txt" 2> "$work/vf3-6900.err"
+	white="$(python3 "$root/tests/white-pixels.py" "$work/vf3-6900.tga" 0 300 200 384 2> /dev/null || echo 9999)"
+	if [ "$white" -lt 400 ]; then
+		pass "real games: vf3: no white spike at frame 6900 ($white white pixels in the bottom left corner, the text's)"
+	else
+		fail "real games: vf3: a white spike at frame 6900 ($white white pixels in the bottom left corner; the text has about 255)"
+	fi
+else
+	skip "real games: vf3's frame 6900 (set SUPERMODEL_ROMS to a folder holding vf3.zip)"
+fi
+
 echo
 echo "$passed passed, $fails failed, $skipped skipped"
 [ "$fails" -eq 0 ]

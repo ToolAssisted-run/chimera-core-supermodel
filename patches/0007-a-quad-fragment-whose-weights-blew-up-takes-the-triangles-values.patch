@@ -1,0 +1,79 @@
+From: Chimera core
+Subject: [PATCH] a quad fragment whose weights blew up takes the triangle's values
+
+New3D's quad fragment shader works out four weights from the screen-space
+vectors to the corners, which are interpolated without perspective. On
+llvmpipe, the software OpenGL the core draws with, those interpolated
+vectors come out NaN for some thin slivers, and NaN passes the discard
+test (every comparison with it is false): vf3's attract mode showed a
+long white spike from the bottom left at frame 6900 (Chimera issue 469,
+whose other games showed larger white triangles; not tried here). The
+weights are now checked first: weights that are not numbers, or far
+outside the quad's own (0 to 1 inside it; -1 to 2 is let through), make
+the fragment take the attributes the triangle interpolated, as upstream
+already does on a quad's edges.
+---
+--- a/Src/Graphics/New3D/R3DShaderQuads.h	2026-11-02 13:13:53.489221628 +0100
++++ b/Src/Graphics/New3D/R3DShaderQuads.h	2026-11-02 13:13:53.490010114 +0100
+@@ -344,18 +344,16 @@
+ 	// so in that case (and for triangles) we use the attributes the gpu interpolated, exactly as the triangle shader does.
+ 	// This code will only get triggered in rarer corner cases
+ 
+-	if(extreme_edge)
+-	{
+-		fsViewVertex		= fs_in.triViewVertex;
+-		fsViewNormal		= fs_in.triViewNormal;
+-		fsTexCoord			= fs_in.triTexCoord;
+-		fsFixedShade		= fs_in.triFixedShade;
+-		interp_oneOverW		= gl_FragCoord.w;
+-		uSum				= 1.0;
+-	}
+-	else
++	// Chimera: the quad's weights are worked out first. Weights that are not
++	// numbers, or far outside the quad's own (0 to 1 inside it), mean the
++	// interpolated inputs blew up - a software rasteriser gives NaN for a thin
++	// sliver (Chimera issue 469) - and such a fragment takes the attributes the
++	// triangle interpolated, as an edge does
++	bool useTri = extreme_edge;
++	float u[4];
++
++	if(!useTri)
+ 	{
+-		float u[4];
+ 		for (int i=0; i<4; i++)
+ 			u[i] = length(fs_in.v[i]) * sign(fs_in.oneOverW[i]); // is w[i] negative?
+ 
+@@ -374,10 +372,32 @@
+ 			lambdaSignCount += (t[i_prev] < -t[i]) ? -1 : 1;
+ 		}
+ 
+-		if (lambdaSignCount == 0) { // one can either check for == 0 or abs(...) != 4, both should(!) be equivalent (but in practice its not due to precision issues, but these cases are extremely rare)
++		float total = u[0] + u[1] + u[2] + u[3];
++		bool broken = isnan(total) || isinf(total) || total == 0.0;
++		for (int i=0; i<4; i++) {
++			float l = u[i] / total;
++			if (isnan(l) || isinf(l) || l < -1.0 || l > 2.0) broken = true;
++		}
++
++		if (broken) {
++			useTri = true;
++		}
++		else if (lambdaSignCount == 0) { // one can either check for == 0 or abs(...) != 4, both should(!) be equivalent (but in practice its not due to precision issues, but these cases are extremely rare)
+ 			discard;	// fine for helper invocations too: nothing here uses derivatives (textures are read with texelFetch)
+ 		}
++	}
+ 
++	if(useTri)
++	{
++		fsViewVertex		= fs_in.triViewVertex;
++		fsViewNormal		= fs_in.triViewNormal;
++		fsTexCoord			= fs_in.triTexCoord;
++		fsFixedShade		= fs_in.triFixedShade;
++		interp_oneOverW		= gl_FragCoord.w;
++		uSum				= 1.0;
++	}
++	else
++	{
+ 		for (int i=0; i<4; i++) {
+ 			interp_oneOverW	= fma(fs_in.oneOverW[i], u[i], interp_oneOverW);
+ 			uSum           += u[i];
