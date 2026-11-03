@@ -441,6 +441,40 @@ else
 	skip "real games: vf3's frame 6900 (set SUPERMODEL_ROMS to a folder holding vf3.zip)"
 fi
 
+# vf3's subway floor (issue 479): a floor reaching behind the camera came out
+# smeared, because llvmpipe's clipper measured where a new vertex lies on the
+# wrong screen axis (mesa-patches/0002). The movie: Test opens the test menu;
+# Service and Test set Game Assignments' Stage Select to Challenger and leave
+# both menus; two coins for each player; P1 Start and Punch pick Akira, P2
+# Start and Punch pick Kage, and the challenger's Down and Punch pick the
+# subway. At frame 4600 ("Round 1, Ready") the bottom left corner is floor.
+# Its picture changes about 2.7 times as fast going down as going across when
+# drawn right, and 1.5 times when smeared (down-across.py). The native build,
+# pictures drawn from frame 4560 on, about a minute.
+if [ -n "${SUPERMODEL_ROMS:-}" ] && [ -f "${SUPERMODEL_ROMS}/vf3.zip" ]; then
+	m=(--press 300:TestA:4)
+	for i in $(seq 0 8); do m+=(--press $((600 + i * 20)):ServiceA:4); done   # to Game Assignments
+	m+=(--press 820:TestA:4)
+	for i in $(seq 0 9); do m+=(--press $((1000 + i * 20)):ServiceA:4); done  # to Stage Select
+	m+=(--press 1220:TestA:4)                                                   # Challenger
+	for i in $(seq 0 5); do m+=(--press $((1260 + i * 20)):ServiceA:4); done  # to Exit
+	m+=(--press 1400:TestA:4)
+	for i in $(seq 0 5); do m+=(--press $((1480 + i * 20)):ServiceA:4); done  # to Exit
+	m+=(--press 1620:TestA:4
+		--press 2500:P1Coin:4 --press 2520:P1Coin:4 --press 2540:P2Coin:4 --press 2560:P2Coin:4
+		--press 2700:P1Start:4 --press 3150:P1Punch:4 --press 3200:P2Start:4 --press 3850:P2Punch:4
+		--press 4120:P2Down:4 --press 4160:P2Punch:4)
+	"$native" "$work/vf3" --frames 4601 "${m[@]}" --draw-from 4560 --screenshot 4600:"$work/vf3-4600.tga" > "$work/vf3-4600.txt" 2> "$work/vf3-4600.err"
+	ratio="$(python3 "$root/tests/down-across.py" "$work/vf3-4600.tga" 0 290 250 384 2> /dev/null || echo 0)"
+	if [ "$ratio" -ge 210 ]; then
+		pass "real games: vf3: the subway floor at frame 4600 is not smeared (it changes $ratio/100 times as fast going down as across; smeared it was 150)"
+	else
+		fail "real games: vf3: the subway floor at frame 4600 is smeared (it changes $ratio/100 times as fast going down as across; drawn right, about 270)"
+	fi
+else
+	skip "real games: vf3's subway floor at frame 4600 (set SUPERMODEL_ROMS to a folder holding vf3.zip)"
+fi
+
 echo
 echo "$passed passed, $fails failed, $skipped skipped"
 [ "$fails" -eq 0 ]

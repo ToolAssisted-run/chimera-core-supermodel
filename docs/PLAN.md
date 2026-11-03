@@ -716,3 +716,42 @@ The gate checks frame 6900 when SUPERMODEL_ROMS holds vf3.zip (the native
 build, about four minutes); on the old build's picture the check reads 963
 and fails. Not tried: srally2, von2 and scud (no ROM sets here), whose
 triangles were far larger than vf3's spike and may have another cause.
+
+## Smeared floors near the camera, issue 479 (2026-11-03)
+
+Issue 479, after issue 469's fix: in scud and vf3a the road or floor nearest
+the camera was drawn with its texture smeared. The reporter's way in:
+Game Assignments' Stage Select set to Challenger in the test menu, two
+players, the subway stage. Reproduced with vf3 that way, natively (no
+sandbox): Akira against Kage on the subway, and at frame 4600 ("Round 1,
+Ready") the floor in the bottom quarter of the picture was smeared. Found
+with the test harness drawing only the last 40 frames (the same picture to
+the pixel):
+
+- The smear is there with and without patch 0007, so not that fix (issue
+  469's pictures of scud had it too).
+- Drawing the quad shader's fragments in colours by what they computed: the
+  floor is an ordinary quad (not on an edge, its weights all numbers) with
+  a corner behind the camera (a negative 1/W).
+- With the shader taking the triangle's attributes for every quad, or only
+  for quads with a corner behind the camera, the floor is right.
+- The cause is llvmpipe's clipper. Cutting a triangle at the near plane, it
+  makes a new vertex and works out how far along the edge it lies on the
+  screen, for the values the shader asked to be interpolated without
+  perspective (the quad shader's vectors to the corners). It measured that
+  along x whenever the two ends' x before the divide by W differed, even
+  when their x on the screen was nearly the same, and the factor was then
+  one tiny difference over another. Measured on the screen axis on which the
+  ends are furthest apart, the floor is right: the picture is within 3,820
+  pixels, none more than 40 of 255 apart in a channel, of the one with
+  the shader's triangle attributes for those quads. Taking the values from
+  the nearer end alone (tried for issue 469) changed nothing here either.
+
+So the shader stays upstream's (with 0007) and the fix is in Mesa:
+mesa-patches/0002. The test harness gained `--draw-from N`, which leaves the
+pictures before step N undrawn as the turbo leg does. The gate checks vf3's
+frame 4600 when SUPERMODEL_ROMS holds vf3.zip (`down-across.py`: how fast
+the bottom left corner changes going down against going across, 1.5 times
+smeared and 2.7 drawn right; the leg wants 2.1), about a minute; on the old
+build it reads 150 and fails. Not tried: scud (no ROM set here), whose road
+looks like the same case.

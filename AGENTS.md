@@ -59,6 +59,8 @@ core, with a frontend of the core's own. The user brings a game's ROM set
   off and CThread refuses), no file but the project's, no network.
 - The native reference links the sandbox's math (`make-native-libm.sh`).
 - llvmpipe sees one baseline CPU everywhere (mesa-patches/0001).
+- llvmpipe's clipper measures where a new vertex lies on the screen axis on
+  which the edge's ends are furthest apart (mesa-patches/0002, issue 479).
 - A change to the controls is made in `tools/gen-inputs.py` and its outputs
   committed; `run-gate.sh` refuses stale ones.
 - A change to `tests/testprog/testprog.s` changes its CRC32: run

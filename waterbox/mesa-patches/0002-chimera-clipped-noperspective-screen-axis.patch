@@ -1,0 +1,48 @@
+From: Sergio Martin
+Subject: [PATCH] chimera: a clipped noperspective value is measured on the screen axis where the ends are furthest apart
+
+When the clipper makes a new vertex, it works out how far along the edge
+the vertex is on the screen, for the values a shader asked to be
+interpolated without perspective. It measured that along x whenever the two
+ends' x before the divide by W differed, even when their x on the screen
+was nearly the same: for an edge running up the screen to a vertex behind
+the eye, the factor was one tiny difference over another, and the new
+vertex's values were wrong. Supermodel's New3D draws four-cornered polygons
+with such values, and a floor reaching behind the camera came out smeared
+(Chimera issue 479: vf3's subway floor, Scud Race's road). The axis is now
+the one on which the ends are furthest apart on the screen.
+---
+diff -ru a/src/gallium/auxiliary/draw/draw_pipe_clip.c b/src/gallium/auxiliary/draw/draw_pipe_clip.c
+--- a/src/gallium/auxiliary/draw/draw_pipe_clip.c
++++ b/src/gallium/auxiliary/draw/draw_pipe_clip.c
+@@ -191,15 +191,23 @@
+     */
+    if (clip->num_linear_attribs) {
+       float t_nopersp = t;
+-      /* find either in.x != out.x or in.y != out.y */
++      /* Chimera: measured on the screen axis on which the two ends are
++       * furthest apart. Upstream took x whenever the ends' x before the
++       * divide by W differed, even when their x on the screen was nearly
++       * the same (an edge running up the screen to a vertex behind the
++       * eye): the factor was then one tiny difference over another, and
++       * the new vertex's values were wrong (Supermodel's floors near the
++       * camera came out smeared, Chimera issue 479). */
++      float apart = 0.0f;
+       for (int k = 0; k < 2; k++) {
+-         if (in->clip_pos[k] != out->clip_pos[k]) {
+-            /* do divide by W, then compute linear interpolation factor */
+-            float in_coord = in->clip_pos[k] / in->clip_pos[3];
+-            float out_coord = out->clip_pos[k] / out->clip_pos[3];
+-            float dst_coord = dst->clip_pos[k] / dst->clip_pos[3];
++         /* do divide by W, then compute linear interpolation factor */
++         float in_coord = in->clip_pos[k] / in->clip_pos[3];
++         float out_coord = out->clip_pos[k] / out->clip_pos[3];
++         float dst_coord = dst->clip_pos[k] / dst->clip_pos[3];
++         float d = fabsf(in_coord - out_coord);
++         if (d > apart && isfinite(d)) {
++            apart = d;
+             t_nopersp = (dst_coord - out_coord) / (in_coord - out_coord);
+-            break;
+          }
+       }
+       for (unsigned j = 0; j < clip->num_linear_attribs; j++) {

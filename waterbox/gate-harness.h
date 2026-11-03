@@ -12,6 +12,8 @@
  * changes it, as a mouse stays where it was put. A line starting with # is a
  * comment. --movie-at puts the movie's first line at a given step; --press
  * AT:TOKENS:LEN holds comma-separated tokens for LEN steps from step AT.
+ * --draw-from N leaves the pictures before step N undrawn, as the turbo leg
+ * does (the machine runs the same), to reach a late picture sooner.
  *
  * GATE_STALL_US=<n> in the environment makes the harness wait n microseconds
  * of the computer's time before every step: the machine must not notice.
@@ -73,6 +75,7 @@ struct gate_opts
 	const char *framesOut;   /* per step: the step, the picture's size and digest */
 	int turbo;
 	long turboSettle;
+	long drawFrom;           /* pictures drawn only from this step on (0: all) */
 };
 
 static uint64_t gate_fnv(uint64_t h, const void *p, size_t n)
@@ -191,6 +194,8 @@ static int gate_run(const struct gate_core *c, const struct gate_opts *o)
 
 		if (o->turbo && c->set_rendering)
 			c->set_rendering(f >= tail);
+		if (o->drawFrom > 0 && c->set_rendering)
+			c->set_rendering(f >= o->drawFrom);
 		if (c->pre_frame)
 			c->pre_frame(f);
 
@@ -319,6 +324,7 @@ static int gate_parse_opts(int argc, char **argv, int first, struct gate_opts *o
 		else if (!strcmp(argv[i], "--frames-out") && i + 1 < argc) o->framesOut = argv[++i];
 		else if (!strcmp(argv[i], "--turbo")) o->turbo = 1;
 		else if (!strcmp(argv[i], "--turbo-settle") && i + 1 < argc) o->turboSettle = strtol(argv[++i], 0, 0);
+		else if (!strcmp(argv[i], "--draw-from") && i + 1 < argc) o->drawFrom = strtol(argv[++i], 0, 0);
 		else if (!strcmp(argv[i], "--rerecord") || !strcmp(argv[i], "--session")) ; /* run-wbx's */
 		else if (!strcmp(argv[i], "--session-at") && i + 1 < argc) i++;                /* run-wbx's */
 		else { fprintf(stderr, "unknown option %s\n", argv[i]); return 0; }
