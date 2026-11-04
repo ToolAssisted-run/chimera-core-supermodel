@@ -94,6 +94,7 @@ step "the native Supermodel build" "$root/build/gate-native.log" bash "$here/bui
 step "the guest Supermodel build" "$root/build/gate-guest.log" bash "$here/build-supermodel.sh" guest -m "$mb"
 step "the native link" "$root/build/gate-link-native.log" bash "$here/link-core.sh" native -m "$mb"
 step "the guest link" "$root/build/gate-link-guest.log" bash "$here/link-core.sh" guest -m "$mb"
+step "the clipper test's link" "$root/build/gate-link-clip.log" bash "$here/link-core.sh" clip-test -m "$mb"
 native="$root/build/native/run-native"
 wbx="$root/build/guest/run-wbx"
 core="$root/build/guest/core.wbx"
@@ -441,9 +442,22 @@ else
 	skip "real games: vf3's frame 6900 (set SUPERMODEL_ROMS to a folder holding vf3.zip)"
 fi
 
+# llvmpipe's clipper on its own (issues 479 and 493): a value a shader asks
+# for without perspective, at a corner from in front of the eye to just
+# behind it. With issue 479's patch the clipper was still 3 pixels off at
+# W = -0.000001 and 218 at -0.000000001, which smeared the floors and roads
+# nearest the camera in scud, daytona2 and fvipers2; mesa-patches/0002 now
+# takes each end's share from the W values. No game needed.
+if clip_said="$("$root/build/native/noperspective-clip" 1 0.1 -0.01 -0.001 -0.0001 -0.00001 -0.000001 -0.0000001 -0.000000001 2>&1)"; then
+	pass "llvmpipe: a value without perspective is right where a corner just behind the eye was clipped (worst $(echo "$clip_said" | awk '{print $7}' | sort -g | tail -1) pixels off)"
+else
+	fail "llvmpipe: a value without perspective is wrong where a corner just behind the eye was clipped: $(echo "$clip_said" | tr '\n' ';')"
+fi
+
 # vf3's subway floor (issue 479): a floor reaching behind the camera came out
 # smeared, because llvmpipe's clipper measured where a new vertex lies on the
-# wrong screen axis (mesa-patches/0002). The movie: Test opens the test menu;
+# wrong screen axis (mesa-patches/0002, made exact for issue 493). The
+# movie: Test opens the test menu;
 # Service and Test set Game Assignments' Stage Select to Challenger and leave
 # both menus; two coins for each player; P1 Start and Punch pick Akira, P2
 # Start and Punch pick Kage, and the challenger's Down and Punch pick the

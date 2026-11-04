@@ -748,10 +748,40 @@ the pixel):
   the nearer end alone (tried for issue 469) changed nothing here either.
 
 So the shader stays upstream's (with 0007) and the fix is in Mesa:
-mesa-patches/0002. The test harness gained `--draw-from N`, which leaves the
-pictures before step N undrawn as the turbo leg does. The gate checks vf3's
+mesa-patches/0002 (made exact for issue 493, below). The test harness
+gained `--draw-from N`, which leaves the pictures before step N undrawn as
+the turbo leg does. The gate checks vf3's
 frame 4600 when SUPERMODEL_ROMS holds vf3.zip (`down-across.py`: how fast
 the bottom left corner changes going down against going across, 1.5 times
 smeared and 2.7 drawn right; the leg wants 2.1), about a minute; on the old
 build it reads 150 and fails. Not tried: scud (no ROM set here), whose road
 looks like the same case.
+
+## Smeared roads, cars and floors, issue 493 (2026-11-04)
+
+Issue 493, on the build with issue 479's fix: scud's road, daytona2's car
+and fvipers2's floor nearest the camera were still smeared (vf3 was right,
+and the reporter's picture of fvipers2 in Supermodel itself was clean). None
+of those three sets is here, so the cause was found from the mechanism.
+
+The quad shader gives each corner the vectors from it to the other corners
+on the screen. For a corner just behind the eye (W a little below 0) its
+position on the screen is enormous, so its values are too. The clipper made
+the new vertex's values as out + t * (in - out), and with out enormous the
+sum cancelled to noise; issue 479's patch had only chosen a better axis for
+t. A test program (`tests/noperspective-clip.c`) draws a triangle with this
+Mesa whose value at each corner is the corner's own screen position, which
+is right at a pixel only when the clipper is: with issue 479's patch the
+worst pixel was 0.15 off at W = -0.00001, 3 at -0.000001, 8 at -0.0000001
+and 218 at -0.000000001. The quad shader divides by W a second time for its
+areas, which makes the same error larger.
+
+mesa-patches/0002 now takes each end's share straight from the W values:
+at a fraction t along the edge from out to in, in's share is
+t * W(in) / W(new) and out's is (1 - t) * W(out) / W(new), and the value is
+out's times its share plus in's times its share. Neither share is one minus
+a number close to one, and for an end near W = 0 its share shrinks as its
+values grow. The worst pixel is now 0.00005 off at every W from 1 to
+-0.000000001. The gate runs the test program with no game (it fails on
+issue 479's patch) and still checks vf3's subway floor (270, right). Not
+tried: scud, daytona2 and fvipers2 themselves.

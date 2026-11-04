@@ -1,0 +1,71 @@
+From: Sergio Martin
+Subject: [PATCH] chimera: a clipped noperspective value takes each end's share from the W values
+
+When the clipper makes a new vertex, the values a shader asked to be
+interpolated without perspective must be the straight line across the
+screen between the edge's two ends. Upstream worked out where the new
+vertex lies on that line by dividing both ends by W and taking a ratio
+along one screen axis, then blended the ends' values with it. For an end
+just behind the eye (W a little below 0) its position on the screen, and
+the values a shader computes from it, are enormous, and the blend
+cancelled to noise. Supermodel's New3D draws four-cornered polygons with
+such values, and floors and roads reaching behind the camera came out
+smeared (Chimera issues 479 and 493). Each end's share now comes straight
+from the W values: at a fraction t along the edge from out to in, in's
+share is t * W(in) / W(new) and out's (1 - t) * W(out) / W(new).
+---
+diff -ru a/src/gallium/auxiliary/draw/draw_pipe_clip.c b/src/gallium/auxiliary/draw/draw_pipe_clip.c
+--- a/src/gallium/auxiliary/draw/draw_pipe_clip.c
++++ b/src/gallium/auxiliary/draw/draw_pipe_clip.c
+@@ -180,31 +180,31 @@
+       interp_attr(dst->data[attr], t, in->data[attr], out->data[attr]);
+    }
+ 
+-   /**
+-    * Compute the t in screen-space instead of 3d space to use
+-    * for noperspective interpolation.
+-    *
+-    * The points can be aligned with the X axis, so in that case try
+-    * the Y.  When both points are at the same screen position, we can
+-    * pick whatever value (the interpolated point won't be in front
+-    * anyway), so just use the 3d t.
++   /* Chimera: a value the shader asked to be interpolated without
++    * perspective is a straight line across the screen, so the new vertex
++    * takes each end's share of the screen-space distance. Upstream worked
++    * that share out by dividing both ends by W and taking a ratio along one
++    * axis; for an end just behind the eye (W a little below 0) its position
++    * on the screen is enormous, and the share and the values the shader gave
++    * that end (which are enormous too) cancelled to noise: Supermodel's
++    * floors and roads reaching behind the camera came out smeared (Chimera
++    * issues 479, 493). Each share comes straight from the W values instead:
++    * at a fraction t along the edge from out to in, in's share is
++    * t * W(in) / W(new) and out's (1 - t) * W(out) / W(new), and neither is
++    * one minus a number close to one.
+     */
+    if (clip->num_linear_attribs) {
+-      float t_nopersp = t;
+-      /* find either in.x != out.x or in.y != out.y */
+-      for (int k = 0; k < 2; k++) {
+-         if (in->clip_pos[k] != out->clip_pos[k]) {
+-            /* do divide by W, then compute linear interpolation factor */
+-            float in_coord = in->clip_pos[k] / in->clip_pos[3];
+-            float out_coord = out->clip_pos[k] / out->clip_pos[3];
+-            float dst_coord = dst->clip_pos[k] / dst->clip_pos[3];
+-            t_nopersp = (dst_coord - out_coord) / (in_coord - out_coord);
+-            break;
+-         }
++      const float w_new = dst->clip_pos[3];
++      float share_in = t * in->clip_pos[3] / w_new;
++      float share_out = (1.0f - t) * out->clip_pos[3] / w_new;
++      if (!isfinite(share_in) || !isfinite(share_out)) {
++         share_in = t;
++         share_out = 1.0f - t;
+       }
+       for (unsigned j = 0; j < clip->num_linear_attribs; j++) {
+          const unsigned attr = clip->linear_attribs[j];
+-         interp_attr(dst->data[attr], t_nopersp, in->data[attr], out->data[attr]);
++         for (unsigned k = 0; k < 4; k++)
++            dst->data[attr][k] = share_out * out->data[attr][k] + share_in * in->data[attr][k];
+       }
+    }
+ }

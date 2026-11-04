@@ -5,9 +5,11 @@
 #   native  build/native/run-native: the native reference, the core's calls
 #           driven by run-native.c, with the sandbox's math (make-native-libm.sh);
 #   guest   build/guest/core.wbx: the core, checked by miniBox's check-wbx.sh,
-#           and build/guest/run-wbx, which drives it in the sandbox.
+#           and build/guest/run-wbx, which drives it in the sandbox;
+#   clip-test  build/native/noperspective-clip: tests/noperspective-clip.c,
+#           llvmpipe's clipper checked on its own (issues 479 and 493).
 #
-# Usage: ./link-core.sh native|guest -m <miniBox checkout>
+# Usage: ./link-core.sh native|guest|clip-test -m <miniBox checkout>
 #
 # For the tests' negative controls, LINK_EXTRA names objects linked before
 # the libraries (they take the place of the archive's members of the same
@@ -66,6 +68,21 @@ case "$flavour" in
 			-lpthread -ldl -lm
 		echo "link-core: ${LINK_OUT:-$out/run-native}"
 		;;
+	clip-test)
+		# tests/noperspective-clip.c on the native Mesa, with no Supermodel in it
+		out="$root/build/native"
+		mkdir -p "$out"
+		[ -f "$root/build/native-libm/libchimera-m.a" ] || bash "$here/make-native-libm.sh" "$minibox"
+		gcc -O2 -g -c -o "$out/noperspective-clip.o" "$root/tests/noperspective-clip.c" -I"$root/build/mesa/include"
+		gcc -O2 -c -o "$out/jit-symbols.o" "$here/jit-symbols.c"
+		g++ -no-pie -o "$out/noperspective-clip" "$out/noperspective-clip.o" "$out/jit-symbols.o" \
+			-Wl,--start-group $(mesa_parts build-native) $(llvm_libs native) \
+			"$root/build/native-libm/libchimera-m.a" -Wl,--end-group \
+			$(cat "$root/build/native-libm/wrap-flags") \
+			-Wl,--wrap=dlopen -Wl,--wrap=dlsym -Wl,--wrap=dlclose \
+			-lpthread -ldl -lm
+		echo "link-core: $out/noperspective-clip"
+		;;
 	guest)
 		out="$root/build/guest"
 		mkdir -p "$out"
@@ -93,7 +110,7 @@ case "$flavour" in
 		echo "link-core: $out/core.wbx ($(du -h "$out/core.wbx" | cut -f1)), $out/run-wbx"
 		;;
 	*)
-		echo "usage: $0 native|guest -m <miniBox checkout>" >&2
+		echo "usage: $0 native|guest|clip-test -m <miniBox checkout>" >&2
 		exit 2
 		;;
 esac
