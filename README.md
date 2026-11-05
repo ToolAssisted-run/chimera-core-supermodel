@@ -8,10 +8,8 @@ Chimera issue 354.
 
 ## Status
 
-Published: each push to `main` that passes the tests publishes a `dev`
-release, and a dated nightly is made once a day when `main` moved. Chimera's
-Core Manager lists it. The first published build is "Development build
-79e038b8 (made 2026-10-31 17:30 CET)". Chimera issue 354.
+Published: a dated nightly is made once a day when `main` moved and its
+tests pass. Chimera's Core Manager lists it. Chimera issue 354.
 
 Tested on Linux with this repository's own Model 3 test program (PowerPC
 and 68000 code written here: the 2D layer, a Real3D polygon, the sound
