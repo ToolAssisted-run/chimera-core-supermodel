@@ -12,8 +12,8 @@ core, with a frontend of the core's own. The user brings a game's ROM set
   built in and never edited: `build-supermodel.sh` copies it to
   `build/supermodel-src` and applies `patches/` there.
 - `patches/` - numbered patches to Supermodel, each a `SUPERMODEL_CHIMERA`
-  build option or hook, but for 0007, a fix to the quad shader (a GLSL
-  string, where a build option cannot reach) for what llvmpipe draws.
+  build option or hook, but for 0007 and 0008, fixes to the quad shader (a
+  GLSL string, where a build option cannot reach) for what llvmpipe draws.
 - `waterbox/core/` - the core: `chimera_core.cpp` (the calls Chimera makes,
   the start, memory domains), `chimera_osd.cpp` (OSMesa, the picture, the
   sound, no threads, no folders), `chimera_input.cpp` (Chimera's controls

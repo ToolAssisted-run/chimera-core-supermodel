@@ -1,0 +1,30 @@
+From: Chimera core
+Subject: [PATCH] a quad reaching behind the eye takes the triangle's values
+
+New3D's quad fragment shader works out four weights from the screen-space
+vectors to the quad's corners. For a corner just behind the eye those
+vectors are enormous, and llvmpipe, the software OpenGL the core draws
+with, interpolates them into weights that are finite but wrong: the road
+nearest the camera in scud's attract mode was smeared (Chimera issue 546),
+after patch 0007 and the core's Mesa patch 0002 had fixed the cases where
+they came out NaN or the clipper lost them. Upstream Supermodel draws the
+same scene right on a graphics card. A fragment of a quad with a corner
+behind the eye now takes the attributes the triangle interpolated, as
+upstream does on a quad's edges.
+---
+--- a/Src/Graphics/New3D/R3DShaderQuads.h	2026-11-08 08:20:23.750849130 +0100
++++ b/Src/Graphics/New3D/R3DShaderQuads.h	2026-11-08 08:20:33.387474579 +0100
+@@ -349,7 +349,12 @@
+ 	// interpolated inputs blew up - a software rasteriser gives NaN for a thin
+ 	// sliver (Chimera issue 469) - and such a fragment takes the attributes the
+ 	// triangle interpolated, as an edge does
+-	bool useTri = extreme_edge;
++	// Chimera: a quad with a corner behind the eye (its 1/w negative) takes the
++	// triangle's values too. That corner's screen vectors are enormous, and
++	// llvmpipe's interpolation of them, finite but wrong, smeared the road
++	// nearest the camera in scud's attract mode (Chimera issue 546)
++	bool behind = fs_in.oneOverW[0] < 0.0 || fs_in.oneOverW[1] < 0.0 || fs_in.oneOverW[2] < 0.0 || fs_in.oneOverW[3] < 0.0;
++	bool useTri = extreme_edge || behind;
+ 	float u[4];
+ 
+ 	if(!useTri)
