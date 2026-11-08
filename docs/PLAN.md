@@ -785,3 +785,25 @@ values grow. The worst pixel is now 0.00005 off at every W from 1 to
 -0.000000001. The gate runs the test program with no game (it fails on
 issue 479's patch) and still checks vf3's subway floor (270, right). Not
 tried: scud, daytona2 and fvipers2 themselves.
+
+## Scud's road still smeared, issue 546 (2026-11-08)
+
+Issue 546, on the build with issues 479 and 493's fixes: scud's road nearest
+the camera was still smeared in its attract mode. scud.zip was available this
+time. Scud (the Twin/DX set) waits on its link screen until the test menu's
+Game Assignments make it a single cabinet; the gate's scud movie does that
+with the test buttons, and the attract race is drawn from about frame 2700.
+
+Upstream Supermodel (d51bdb3) on a GTX 1060, given the same NVRAM, draws the
+same scene's road right; through llvmpipe it draws none of the 3D at all.
+
+Colouring each fragment by the quad shader's path showed the smeared road
+drawn by the quad weights themselves, not by patch 0007's fallback, and the
+road is a quad with a corner behind the eye (1/W negative). Its weights came
+out finite but wrong, so nothing caught them. Patch 0008: a fragment of a
+quad with a corner behind the eye takes the triangle's interpolated values,
+as an edge already does. Measured down against across on the right of the
+road at frame 3300 (`tests/down-across.py` 380 220 496 330): 11 smeared, 145
+with the patch. The gate checks it at 70; the full gate is 38 passed, 0
+failed, 2 skipped (srally2 and lostwsga, not here), vf3's checks unchanged.
+Not tried: daytona2 and fvipers2, and a Windows build.

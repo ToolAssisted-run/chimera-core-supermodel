@@ -364,6 +364,7 @@ else
 fi
 
 echo "== real games"
+rm -f "$work/scud-last.tga"   # read below; never one from an earlier run
 # Each ROM set is a zip named as Supermodel and MAME name it, in the folder
 # SUPERMODEL_ROMS names; a clone also needs its parent's zip there. Nothing
 # of them is in this repository. Each runs from power-on with its movie,
@@ -388,6 +389,21 @@ real_movie() { # real_movie <set>: the presses, frames, session frame and pictur
 				--press 2100:P1Guard:20 --press 2150:P1Down:20 --press 2200:P1Punch:3
 				--press 2250:P1Kick:3 --press 2300:P1Right:30 --press 2340:P1Punch,P1Kick:3)
 			frames="${SUPERMODEL_FRAMES:-2400}"; keep=(1000 1300 1650 1900 2200) ;;
+		scud)
+			# scud (Scud Race, Twin/DX) waits on its link screen until the test
+			# menu's Game Assignments make it a single cabinet: Test, eight
+			# Services to Game Assignments, Test; a Service to LINK ID and Test
+			# twice (MASTER, SLAVE, SINGLE); eight Services and Test to leave,
+			# four and Test to leave the menu. The attract race is drawn from
+			# about frame 2700; at 3300 the camera is low behind the car
+			movie=(--press 300:TestA:4)
+			for i in $(seq 0 7); do movie+=(--press $((400 + i * 20)):ServiceA:4); done
+			movie+=(--press 560:TestA:4 --press 700:ServiceA:4 --press 740:TestA:4 --press 800:TestA:4)
+			for i in $(seq 0 7); do movie+=(--press $((860 + i * 20)):ServiceA:4); done
+			movie+=(--press 1020:TestA:4)
+			for i in $(seq 0 3); do movie+=(--press $((1080 + i * 20)):ServiceA:4); done
+			movie+=(--press 1160:TestA:4)
+			frames="${SUPERMODEL_FRAMES:-3301}"; keep=(2900) ;;
 		*)
 			movie=(--press 600:P1Coin:4 --press 640:P1Start:4 --press 900:P1Start:4
 				--press 1000:P1Right,P1Punch:30 --press 1200:P1Left:30)
@@ -487,6 +503,21 @@ if [ -n "${SUPERMODEL_ROMS:-}" ] && [ -f "${SUPERMODEL_ROMS}/vf3.zip" ]; then
 	fi
 else
 	skip "real games: vf3's subway floor at frame 4600 (set SUPERMODEL_ROMS to a folder holding vf3.zip)"
+fi
+
+# scud's attract mode at frame 3300 (the real-games run above, its last
+# picture): the road nearest the camera, a quad with a corner behind the eye,
+# was smeared into streaks down the screen on the right (issue 546, patch
+# 0008). Measured down against across there: smeared 11, drawn right 145.
+if [ -f "$work/scud-last.tga" ]; then
+	ratio="$(python3 "$root/tests/down-across.py" "$work/scud-last.tga" 380 220 496 330 2> /dev/null || echo 0)"
+	if [ "$ratio" -ge 70 ]; then
+		pass "real games: scud: the road at frame 3300 is not smeared (it changes $ratio/100 times as fast going down as across; smeared it was 11)"
+	else
+		fail "real games: scud: the road at frame 3300 is smeared (it changes $ratio/100 times as fast going down as across; drawn right, about 145)"
+	fi
+else
+	skip "real games: scud's road at frame 3300 (set SUPERMODEL_ROMS to a folder holding scud.zip)"
 fi
 
 echo
