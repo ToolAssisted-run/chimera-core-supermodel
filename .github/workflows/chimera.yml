@@ -79,13 +79,19 @@ jobs:
       # The checkout's path is in these two keys: a build folder names its
       # sources by their full path, and a renamed repository is checked out
       # under its new name.
+      - name: Which Meson the runner has
+        # a build folder one Meson set up, another cannot read: the runner's
+        # Meson changed on 2026-11-12 and every cached miniBox build failed
+        id: meson
+        run: echo "version=$(meson --version)" >> "$GITHUB_OUTPUT"
+
       - name: Cache miniBox's sandbox toolchain
         uses: actions/cache@v4
         with:
           path: |
             chimera-checkout/extern/chimera-common-minibox/build/meson-linux
             chimera-checkout/extern/chimera-common-minibox/build/meson-cpp
-          key: guest-cpp-${{ runner.os }}-${{ github.workspace }}-${{ hashFiles('chimera-checkout/extern/chimera-common-minibox/.git') }}-${{ hashFiles('chimera-checkout/extern/chimera-common-minibox/meson.build') }}
+          key: guest-cpp-meson${{ steps.meson.outputs.version }}-${{ runner.os }}-${{ github.workspace }}-${{ hashFiles('chimera-checkout/extern/chimera-common-minibox/.git') }}-${{ hashFiles('chimera-checkout/extern/chimera-common-minibox/meson.build') }}
 
       - name: Build miniBox (the sandbox, and its C++ toolchain)
         run: |
