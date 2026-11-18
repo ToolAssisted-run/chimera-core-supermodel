@@ -45,6 +45,12 @@
 
 #include "chimera_core.h"
 
+/* this core's windows in Chimera's Emulator menu: miniBox's ready-made Export
+ * Save Data, built on its exports (Chimera has no tool of its own for a core,
+ * Chimera issue 610) */
+#define WBX_WINDOWS_IMPLEMENTATION
+#include <waterbox_windows.h>
+
 extern "C" {
 int chimera_setting_str(const char *key, char *out, int outsz);
 long chimera_setting_long(const char *key, long dflt);
