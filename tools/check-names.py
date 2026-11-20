@@ -40,7 +40,7 @@ config = os.path.join(here, "..", "waterbox", "waterbox.config")
 with open(config, encoding="utf-8") as f:
     core_name = json.load(f)["coreName"]
 # the names this core's texts use, and Chimera's (tools/check-proper-nouns.py)
-NAMES = sorted({core_name, "Supermodel", "Model 3", "MAME", "OpenGL", "Sega", "Real3D", "Mesa", "llvmpipe",
+NAMES = sorted({core_name, "Supermodel", "Model 1", "Model 2", "Model 3", "MAME", "OpenGL", "Sega", "Real3D", "Mesa", "llvmpipe",
                 "Chimera", "TAStudio", "GitHub", "Lua", "Windows", "Linux", "macOS", "Vulkan", "Direct3D",
                 "SQLite", "miniBox", "ffmpeg", "Qt", "Wayland"}, key=len, reverse=True)
 

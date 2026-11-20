@@ -135,6 +135,13 @@ def main():
     for k, v in overrides:
         settings[k] = v
 
+    # the system a project records: the machine its settings choose, for a
+    # package of several machines
+    system = cfg["systemId"]
+    for m in cfg.get("machines", []):
+        if settings.get(cfg.get("machineSetting")) in m.get("when", []):
+            system = m["id"]
+
     project = {
         "id": "supermodel-test-%s" % os.path.splitext(files[0]["name"])[0],
         "title": "%s through Chimera" % files[0]["name"],
@@ -149,7 +156,7 @@ def main():
         "branches": [],
         "headers": {
             "MovieVersion": "Chimera Project File v1.1",
-            "Platform": cfg["systemId"],
+            "Platform": system,
             "SHA1": files[0]["sha1"] if files else "",
             "LastInputFrame": str(frames - 1),
             "VsyncNumerator": str(cfg["video"]["vsyncNumerator"]),

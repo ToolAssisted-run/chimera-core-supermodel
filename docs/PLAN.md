@@ -807,3 +807,151 @@ road at frame 3300 (`tests/down-across.py` 380 220 496 330): 11 smeared, 145
 with the patch. The gate checks it at 70; the full gate is 38 passed, 0
 failed, 2 skipped (srally2 and lostwsga, not here), vf3's checks unchanged.
 Not tried: daytona2 and fvipers2, and a Windows build.
+
+## Supermodel 0.4 and the Model 1 and Model 2 boards, issue 627 (2026-11-20)
+
+Issue 627 asks for the core to follow Supermodel, which is no longer only a Model 3
+emulator: since 2026-11-03 it emulates the Sega Model 1 and Model 2 boards too.
+**Decided by the owner (user-decided, 2026-11-20):** move the pin to upstream's newest
+master commit and add the Model 1 and Model 2 as systems the package declares.
+What was done, and what was not.
+
+**The pin.** `extern/supermodel` moves from 036af1c8 (2026-10-29) to
+596f1548e362fe0f089ddb6387e7173415a77115 (2026-11-19), 107 commits on. Supermodel
+names itself "0.4" now; the version text the core writes into the NVRAM files it
+exports is `0.4-20261119-git-596f154` (the commit's date and name, taken by
+`build-supermodel.sh`, never the build's date).
+
+**The patches.** Patches 0001 to 0008 applied after one change of form each: upstream
+turned `GameLoader.cpp` from Windows to Unix line ends, so patches 0001 and 0004
+were written again with Unix line ends (the same changes). Two new ones:
+
+- 0009: the Model 1 and Model 2 hand the core their RAM (the tools' memory domains);
+- 0010: a read of the controls by the Model 1's or Model 2's program is told to the
+  core (the lag counter), as 0003 does for the Model 3.
+
+**What upstream changed that the core had to follow.** The thread classes are gone
+(`CThread` and the rest): `Thread::Start` is what is left that the core can refuse, and
+the core's refusal replaces the old stand-ins (`chimera_osd.cpp`). The semaphore is
+upstream's own header now (it is only used with threads). Machines are made through a
+common interface (`IEmulator`), so the core holds one of three. The version text became
+a function. The Model 1 and Model 2 have a geometry processor that upstream can run as
+the board's own DSP programs on a thread for each chip, as many as the computer has;
+the core does not offer that (upstream's `-no-high-level-geometrizer`): it always uses
+the simulated one, upstream's default, so that no result depends on how many processors
+the computer has. That leaves the 2B boards' accuracy mode out; nothing was lost that
+the rest of Supermodel's users have by default.
+
+**The package.** One `core.wbx` and three machines (`machines` in `waterbox.config`),
+chosen by a new setting, **Machine** (`machine`: `model3` the default, `model2`,
+`model1`). The system ids and names a roster row needs: `Model3` "Sega Model 3",
+`Model2` "Sega Model 2", `Model1` "Sega Model 1". A game runs on the machine its entry in
+Supermodel's game list names (its platform); a game for another machine than the setting
+is refused (`error.wrong_machine`), naming the right one. A zip opened with no project
+is a Model 3 game, as before. The three machines draw 496x384 at 57.524 frames a second
+(a 16 MHz pixel clock, 656 by 424 pixels, on all three) and have the same 44100 Hz
+stereo sound, so the picture, the sound and the controls' list are the package's. A game
+shows the controls its cabinet has: `gen-inputs.py` gained the throttle (and its up and
+down keys), four flight view buttons and a second analog stick (Wing War, Star Wars
+Arcade), after the others so that no earlier control's number changes. New settings:
+**Transparency** (Model 1 and Model 2: original, moire, blend, upstream's
+`-transparency`). **Starting Clock** and **Idle Skip** are for the Model 3 only (the
+others have neither a clock nor a PowerPC). The Model 1 and Model 2 are drawn by one
+renderer of upstream's (`Model1Render`, tile layers and 3D) on the same llvmpipe OpenGL
+inside the core as the Model 3's; the GPU bridge is not used by this core (it never
+was: the picture is drawn by the core's own Mesa), so there is nothing to say of a GPU.
+
+**A bug of the core, found by the Model 1, that the Model 3 had too.** The first Model 1
+run crashed in the sandbox on the first picture. The cause was not the Model 1: miniBox's
+machine specification version 2 maps a bare address hint of `mmap` where it is *whatever
+lives there*, and the LLVM code generator inside Mesa's llvmpipe asks for the page next to
+one it has got, with such a hint. The page next to it, in this run, was the first page of
+the core's picture buffer, which was wiped and made read-only. The Model 3 and Model 2
+only escaped because nothing lay in that place. Declaring version 3 (`__wbx_machine_spec`,
+`chimera_wbx.c`) keeps a hint only where the pages are free. Version 3 also has the
+machine's own clock (a clock read advances it by a microsecond); the core reads no clock
+that reaches the machine. Every core that carries llvmpipe in a version 2 sandbox has the
+same exposure (not looked at for the others here: the main session should know).
+
+**What was proved, on this machine only (jaffanator01, Linux x86-64, the core's own
+software OpenGL; nothing ran on Windows or macOS, and nothing on a graphics card):**
+
+- *Model 3, as before.* The whole gate (the old tests of the test program) passes, and
+  Scud Race (`scud.zip`, a real game; the gate's scud movie: the test menu, then the attract
+  race, 3301 frames) is the same natively and in the sandbox, and the old core (036af1c)
+  and the new one play that movie to the same pictures: `videoHash` 37a4eb1830e28de6 on
+  both, the same steps, the same 60 lag frames and the same 5738294405 cycles of the
+  PowerPC. Only the sound differs (upstream changed the digital sound board and the
+  sound board's MIDI port). So a Model 3 movie made with the old core still replays on scud
+  to the same game; its sound is not the same. Not tried: vf3 and any other game
+  (no ROM set here), so another game's movie may differ where upstream changed something
+  the scud movie does not meet (the IRQ enable, the MIDI port, the DSB).
+- *Model 2.* This machine has no Model 2 game (nor a Model 1 one). `doapp.zip` (called
+  Dead or Alive++) is not one: none of its eight files' CRC32 is in Supermodel's game list
+  (checked against the 2269 different file checksums there, for every zip under
+  `~/roms`: only `scud.zip` matched a whole set; one file each of some ST-V sets matched
+  by chance). I did not find which board `doapp.zip` is for. So the Model 2 is proved with a program of this
+  repository's own: `tests/testprog2` is i960 code (the Model 2's processor), written
+  here, with an assembler (`i960asm.py`, checked by reading its output back with
+  Supermodel's own disassembler) and a set `chimeratest2` in the core's game list. Each
+  frame it waits for the vertical blank, counts the frame, reads the I/O board's
+  controls (every eighth frame it does not: a lag frame by design), moves a block with
+  the joystick, draws the controls' bits, the frame's and the boot count on the tile
+  layer, and counts the boot in the backup RAM. The 68000 program of the Model 3 test
+  (a square wave) is its sound program, with the bytes of each 16-bit word swapped as
+  a Model 2 sound ROM file has them. The gate runs, on it: native = sandbox over 600
+  frames (every picture, the sound, the steps, the lag, the cycles), saved and loaded
+  before every frame, saved and loaded into a new host at frame 160, run twice,
+  the first half undrawn (turbo), a press one frame late seen as different, 75 lag frames
+  of 600, the buttons of players 1 and 2, the coin and start bank, the block's moves
+  (35, 45, then round to 6), the buttons the cabinet shows, the tone (441 Hz, 91996
+  samples for 120 frames), Drawing Scale 2x (992x768, the same machine), save data
+  (the export, and given back the boot count rises), and the refusals.
+  What it does not stand for: the geometry processor, the 3D, the textures, the real
+  games' sound programs, light guns, wheels, analog controls (the program's name chooses
+  the control layout in upstream's code, and only the fighting one is reached) and
+  the other 2A, 2B and 2C parts. Supermodel's own code for them is in the core
+  and has never been seen working here.
+- *Model 1.* Only a start-up test: `tests/testprog1`'s set has a boot ROM whose first
+  instruction jumps to itself, so the V60 does nothing. The gate runs it natively and in
+  the sandbox over 300 frames (the same), saved and loaded before every frame, and
+  saved and loaded into a new host. It showed the machine starts, draws (black), and
+  does not crash the sandbox. **No Model 1 program or game has been run.**
+
+**The runs.** The whole gate (`waterbox/run-gate.sh`) with Scud Race: 54 passed, 1
+failed, 5 skipped. The one failure was the Model 2 sound test, which showed the sound
+program's bytes were in the wrong order for a Model 2 ROM file (the file, not the core);
+the test program's file was fixed and the gate run again without any ROM set: 50 passed,
+0 failed, 7 skipped (the skipped are the real-game tests: vf3, scud, srally2, lostwsga,
+vf3's two picture checks and scud's road, which need ROM sets; scud's passed in the first
+run, on the same code: only the test program's game list entry changed between the two).
+`tests/run-frontend.sh` (the package through chimera-run and Chimera's window, headless):
+9 passed, 0 failed, 2 skipped (vf3), including the Model 2 and Model 1 projects with the
+Machine setting set, whose last pictures equal the native reference's pixel for pixel and
+whose Work RAM domain holds the frame count. Chimera's package checks (`test-packages`):
+all pass. The numbers are on jaffanator01's CPU with the core's own software OpenGL (Mesa
+llvmpipe); no graphics card was used.
+
+**Each new test was broken once.** A copy of the Model 2 and Model 1 part of the gate, with
+each expected value changed (the number of instructions, the lag count, the pressed
+colour, a column of the block, the list of buttons, the sample count, the picture's width,
+the boot count's colour, each machine's name in a refusal, the game list's name) and the
+first sandbox run given a press the others did not have (which must break native =
+sandbox, saved and loaded before every frame, saved into a new host, run twice, and the
+undrawn first half) and Model 1's run one frame short, failed 20 of its 23 tests; the
+3 that passed were the ones the changes did not touch (the press one frame late, which
+is itself the test that a different run is seen, the Drawing Scale run's native =
+sandbox, and the save data export). The sound test's first run, with the wrong byte order,
+failed on its own account.
+
+**Recommendation on the Model 1.** Keep it, and say it is untested: it costs the core
+nothing (it is the same Supermodel code, built the same way; the start-up test proves it
+runs in the sandbox), a person with a Model 1 game can try it and report, and the Machine
+setting makes it a choice nobody gets by accident. If the owner prefers to publish only
+what has run a game, leave out the `Model1` machine and its row in the roster (one entry in
+`machines` and one option of the Machine setting; the code stays). The same holds for
+Model 2, with this program in place of a game: it is the better proved of the two.
+
+**Not done:** the Model 1 and Model 2's network (a link between cabinets: no network in
+the sandbox), the debugger, the PRO-1000 (refused: `error.not_supported`), the legacy 3D
+renderer. Windows and macOS builds were not made.

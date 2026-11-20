@@ -1,8 +1,8 @@
 {
   "package": "supermodel",
-  "effectiveTerms": "GPL-3.0-or-later (Supermodel); this core's own code is MIT; the libraries inside under their own permissive terms (GLEW: modified BSD and MIT; minizip, tinyxml2 and zlib: the zlib licence; minimp3: CC0; Mesa: MIT; LLVM: Apache-2.0 with the LLVM exception)",
+  "effectiveTerms": "GPL-3.0-or-later (Supermodel); this core's own code is MIT; the libraries and the code from MAME inside under their own permissive terms (MAME-derived code and ymfm: BSD-3-Clause; GLEW: modified BSD and MIT; minizip, tinyxml2 and zlib: the zlib licence; minimp3: CC0; Mesa: MIT; LLVM: Apache-2.0 with the LLVM exception)",
   "commercialUse": "allowed",
-  "note": "The built core combines this repository's code (MIT): the Chimera frontend in waterbox/core and the build scripts; Supermodel (GPL-3.0-or-later), compiled from the submodule extern/supermodel with this repository's patches/ applied, including the Musashi 68000 core and the Z80 core it carries under its GPL, and the libraries in its Src/Pkgs (GLEW, minizip, tinyxml2, minimp3); Mesa (MIT), whose llvmpipe driver behind OSMesa is the OpenGL Supermodel draws with (with this repository's waterbox/mesa-patches applied), and the zlib Mesa's build carries, which reads the game's zip; and LLVM (Apache-2.0 with the LLVM exception), which llvmpipe compiles the shaders with. The package carries no game and no ROM: the project brings the game's ROM set.",
+  "note": "The built core combines this repository's code (MIT): the Chimera frontend in waterbox/core and the build scripts; Supermodel (GPL-3.0-or-later), compiled from the submodule extern/supermodel with this repository's patches/ applied, including the Musashi 68000 core and the Z80 core it carries under its GPL, the code from MAME it carries for the Model 1 and Model 2 (BSD-3-Clause, the authors named in the licence text), and the libraries in its Src/Pkgs (GLEW, minizip, tinyxml2, minimp3, ymfm); Mesa (MIT), whose llvmpipe driver behind OSMesa is the OpenGL Supermodel draws with (with this repository's waterbox/mesa-patches applied), and the zlib Mesa's build carries, which reads the game's zip; and LLVM (Apache-2.0 with the LLVM exception), which llvmpipe compiles the shaders with. The package carries no game and no ROM: the project brings the game's ROM set.",
   "components": [
     {
       "name": "chimera-core-supermodel (the Chimera frontend and the build)",
@@ -50,6 +50,22 @@
       "url": "https://github.com/lieff/minimp3",
       "commit": "{submodule:extern/supermodel}",
       "file": "waterbox/licenses/minimp3-LICENSE.txt",
+      "sourceUrl": "https://github.com/trzy/supermodel/archive/{commit}.tar.gz"
+    },
+    {
+      "name": "Code from MAME inside Supermodel (the Model 1 and Model 2 boards, the i960, V60, MB86233, MB86235 and SHARC processors, MultiPCM)",
+      "license": "BSD-3-Clause",
+      "url": "https://www.mamedev.org",
+      "commit": "{submodule:extern/supermodel}",
+      "file": "waterbox/licenses/MAME-derived-LICENSE.txt",
+      "sourceUrl": "https://github.com/trzy/supermodel/archive/{commit}.tar.gz"
+    },
+    {
+      "name": "ymfm (inside Supermodel, Src/Pkgs: the Model 1's YM3438)",
+      "license": "BSD-3-Clause",
+      "url": "https://github.com/aaronsgiles/ymfm",
+      "commit": "{submodule:extern/supermodel}",
+      "file": "extern/supermodel/Src/Pkgs/ymfm/LICENSE",
       "sourceUrl": "https://github.com/trzy/supermodel/archive/{commit}.tar.gz"
     },
     {

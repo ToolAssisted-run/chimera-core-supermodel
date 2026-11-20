@@ -119,6 +119,17 @@ BUTTONS = [
 
     ("P1 Cast", "FISHING", "sw:fishingCast", "C"),
     ("P1 Select", "FISHING", "sw:fishingSelect", "s"),
+
+    # The Model 1 and Model 2 cabinets' controls that no Model 3 one has. They
+    # come last, so that the numbers of the others do not change.
+    ("P1 Throttle Up", "THROTTLE", "sw:throttleUp", "u"),
+    ("P1 Throttle Down", "THROTTLE", "sw:throttleDown", "w"),
+    ("P1 Flight View 1", "FLIGHT_VIEW4", "sw:flightView[0]", "9"),
+    ("P1 Flight View 2", "FLIGHT_VIEW4", "sw:flightView[1]", "0"),
+    ("P1 Flight View 3", "FLIGHT_VIEW4", "sw:flightView[2]", "("),
+    ("P1 Flight View 4", "FLIGHT_VIEW4", "sw:flightView[3]", ")"),
+    ("P1 Stick 2 Trigger 1", "ANALOG_JOYSTICK2", "sw:analogJoy2Trigger1", "q"),
+    ("P1 Stick 2 Trigger 2", "ANALOG_JOYSTICK2", "sw:analogJoy2Trigger2", "k"),
 ]
 
 # An axis's range on Chimera's side:
@@ -151,6 +162,9 @@ AXES = [
     ("P1 Stick Y", "FISHING", "signed", "StkY", [("fishingStickY", 0x00, 0x80, 0xFF)]),
     ("P1 Reel", "FISHING", "pedal", "Reel", [("fishingReel", 0x00, 0x00, 0xFF)]),
     ("P1 Tension", "FISHING", "pedal", "Tens", [("fishingTension", 0x00, 0x00, 0xFF)]),
+    ("P1 Throttle", "THROTTLE", "pedal", "Thrt", [("throttle", 0x00, 0x00, 0xFF)]),
+    ("P1 Stick 2 X", "ANALOG_JOYSTICK2", "signed", "Stk2X", [("analogJoy2X", 0x00, 0x80, 0xFF)]),
+    ("P1 Stick 2 Y", "ANALOG_JOYSTICK2", "signed", "Stk2Y", [("analogJoy2Y", 0x00, 0x80, 0xFF)]),
 ]
 
 # Default bindings: Supermodel's own default keys (Src/OSD/SDL/Main.cpp,
@@ -185,6 +199,9 @@ BINDS = {
     "P1 Ski Select 1": "Q, X1 X", "P1 Ski Select 2": "W, X1 Y", "P1 Ski Select 3": "E, X1 RightShoulder",
     "P1 Pedal": "A, X1 A", "P2 Pedal": "X2 A",
     "P1 Cast": "Z, X1 A", "P1 Select": "X, X1 B",
+    "P1 Throttle Up": "X", "P1 Throttle Down": "Z",
+    "P1 Flight View 1": "Q", "P1 Flight View 2": "W", "P1 Flight View 3": "E", "P1 Flight View 4": "R",
+    "P1 Stick 2 Trigger 1": "U", "P1 Stick 2 Trigger 2": "O",
 }
 
 # (game controller axis, key for the negative end, key for the positive end)
@@ -209,6 +226,9 @@ ANALOG_BINDS = {
     "P1 Stick Y": ("X1 RightThumbY Axis", "W", "S"),
     "P1 Reel": ("X1 RightTrigger Axis", "", "Space"),
     "P1 Tension": ("X1 LeftTrigger Axis", "", "T"),
+    "P1 Throttle": ("", "", "X"),
+    "P1 Stick 2 X": ("X1 RightThumbX Axis", "J", "L"),
+    "P1 Stick 2 Y": ("X1 RightThumbY Axis", "I", "K"),
 }
 
 RANGES = {
@@ -275,12 +295,17 @@ def write_names():
     return "\n".join(out) + "\n"
 
 
-def input_decl():
+# The package's three machines have one list of controls (a game shows the ones
+# its cabinet has), each under its own name
+CABINETS = {"Model3": "Model 3 Cabinet", "Model2": "Model 2 Cabinet", "Model1": "Model 1 Cabinet"}
+
+
+def input_decl(name):
     p1 = [b[0] for b in BUTTONS if b[0].startswith("P1 ")] + [a[0] for a in AXES if a[0].startswith("P1 ")]
     p2 = [b[0] for b in BUTTONS if b[0].startswith("P2 ")] + [a[0] for a in AXES if a[0].startswith("P2 ")]
     return {
-        "name": "Model 3 Cabinet",
-        "_comment": "Every control at least one Model 3 cabinet has, by Supermodel's own inputs. A game shows only those its cabinet has (its <inputs> in Supermodel's game list); the others leave the input roll. Service and Test are the cabinet's service buttons. Gear 1 to 4 and Neutral set the 4-speed shifter; Shift Up and Down move it a gear, or work the up/down shifter. Trigger is a light gun's trigger (and an analog gun's left one); Off-screen points a light gun away from the screen, to reload.",
+        "name": name,
+        "_comment": "Every control at least one cabinet of this machine has, by Supermodel's own inputs. A game shows only those its cabinet has (its <inputs> in Supermodel's game list); the others leave the input roll. Service and Test are the cabinet's service buttons. Gear 1 to 4 and Neutral set the 4-speed shifter; Shift Up and Down move it a gear, or work the up/down shifter. Trigger is a light gun's trigger (and an analog gun's left one); Off-screen points a light gun away from the screen, to reload.",
         "buttons": [b[0] for b in BUTTONS],
         "mnemonics": {b[0]: b[3] for b in BUTTONS},
         "axes": [{"name": a[0], "min": RANGES[a[2]][0], "max": RANGES[a[2]][1], "neutral": RANGES[a[2]][2], "header": a[3]} for a in AXES],
@@ -290,7 +315,6 @@ def input_decl():
 
 
 def write_keybinds():
-    name = "Model 3 Cabinet"
     analog = {}
     for a in AXES:
         value, neg, pos = ANALOG_BINDS[a[0]]
@@ -306,9 +330,9 @@ def write_keybinds():
             "cabinets share keys, as upstream's do: a game has only its own.",
             "Written by tools/gen-inputs.py.",
         ],
-        "AllTrollers": {name: {b[0]: BINDS[b[0]] for b in BUTTONS}},
-        "AllTrollersAutoFire": {name: {}},
-        "AllTrollersAnalog": {name: analog},
+        "AllTrollers": {n: {b[0]: BINDS[b[0]] for b in BUTTONS} for n in CABINETS.values()},
+        "AllTrollersAutoFire": {n: {} for n in CABINETS.values()},
+        "AllTrollersAnalog": {n: analog for n in CABINETS.values()},
     }
     return json.dumps(doc, indent=2) + "\n"
 
@@ -341,7 +365,9 @@ def main():
     cfg_path = os.path.join(ROOT, "waterbox/waterbox.config")
     if os.path.exists(cfg_path):
         cfg = json.load(open(cfg_path))
-        cfg["input"] = input_decl()
+        cfg["input"] = input_decl(CABINETS["Model3"])
+        for machine in cfg.get("machines", []):
+            machine["input"] = input_decl(CABINETS[machine["id"]])
         files[cfg_path] = json.dumps(cfg, indent=2, ensure_ascii=True) + "\n"
     stale = []
     for path, text in files.items():

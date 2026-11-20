@@ -4,8 +4,8 @@
 #ifndef INPUT_NAMES_H
 #define INPUT_NAMES_H
 
-#define GATE_BTN_COUNT 79
-#define GATE_AXIS_COUNT 20
+#define GATE_BTN_COUNT 87
+#define GATE_AXIS_COUNT 23
 static const char *const gate_button_tokens[GATE_BTN_COUNT] = {
 	"P1Coin",
 	"P1Start",
@@ -86,6 +86,14 @@ static const char *const gate_button_tokens[GATE_BTN_COUNT] = {
 	"P2Pedal",
 	"P1Cast",
 	"P1Select",
+	"P1ThrottleUp",
+	"P1ThrottleDown",
+	"P1FlightView1",
+	"P1FlightView2",
+	"P1FlightView3",
+	"P1FlightView4",
+	"P1Stick2Trigger1",
+	"P1Stick2Trigger2",
 };
 static const char *const gate_axis_tokens[GATE_AXIS_COUNT] = {
 	"P1Steering",
@@ -108,6 +116,9 @@ static const char *const gate_axis_tokens[GATE_AXIS_COUNT] = {
 	"P1StickY",
 	"P1Reel",
 	"P1Tension",
+	"P1Throttle",
+	"P1Stick2X",
+	"P1Stick2Y",
 };
 static const int gate_axis_neutral[GATE_AXIS_COUNT] = {
 	0,
@@ -120,6 +131,9 @@ static const int gate_axis_neutral[GATE_AXIS_COUNT] = {
 	32768,
 	32768,
 	32768,
+	0,
+	0,
+	0,
 	0,
 	0,
 	0,

@@ -1,0 +1,61 @@
+From: Chimera core
+Subject: [PATCH] a read of the Model 1 and Model 2 controls is told to the core
+
+With SUPERMODEL_CHIMERA, every read of the Model 1's I/O board memory
+that holds the controls (dual port RAM 0 to 10) and of the Model 2's
+I/O board ports that hold them (the switch ports B to D, the light guns,
+the analog channels) tells the core, which counts a frame in which none
+was read as a lag frame, as patch 0003 does for the Model 3.
+---
+--- a/Src/Model1/Model1.cpp
++++ b/Src/Model1/Model1.cpp
+@@ -77,6 +77,10 @@
+ #include <iostream>
+ #include <set>
+ 
++#ifdef SUPERMODEL_CHIMERA
++extern "C" void chimera_inputs_read(void);
++#endif
++
+ namespace
+ {
+   constexpr int V60_TIME = 5;             // time units per V60 cycle (16 MHz)
+@@ -617,6 +621,12 @@
+       // state (one cycle) on reads.
+       if (m_logIO && ((addr & 0xFFF) >> 1) >= 0x0B)
+         DebugLog("DPRAM read  %03X = %02X (PC=%06X)\n", (addr & 0xFFF) >> 1, m_dpram[(addr & 0xFFF) >> 1], m_v60.GetPPC());
++#ifdef SUPERMODEL_CHIMERA
++      // the game looked at its controls (the analog channels 0-7, the
++      // switch ports 8-10): this frame is no lag frame
++      if (((addr & 0xFFF) >> 1) <= 10)
++        chimera_inputs_read();
++#endif
+       return 0xFF00 | m_dpram[(addr & 0xFFF) >> 1];
+     }
+     if (addr >= 0xC40000 && addr < 0xC40004)
+--- a/Src/Model2/Model2.cpp
++++ b/Src/Model2/Model2.cpp
+@@ -50,6 +50,10 @@
+ 
+ // A second sound board (Model 1's) mixed into the SCSP board's frame through
+ // its DSB hook: the Model 2 board sends it commands, resets it and saves it
++#ifdef SUPERMODEL_CHIMERA
++extern "C" void chimera_inputs_read(void);
++#endif
++
+ namespace
+ {
+   class Model1SoundMixer : public CDSB
+@@ -1023,6 +1027,12 @@
+ 
+ uint8_t CModel2::IORead(unsigned offset)
+ {
++#ifdef SUPERMODEL_CHIMERA
++  // the game looked at its controls (the switch ports B to D, the light guns,
++  // the analog channels): this frame is no lag frame
++  if ((offset >= 1 && offset <= 3) || offset == 0x0c || offset == 0x0f)
++    chimera_inputs_read();
++#endif
+   switch (offset)
+   {
+   case 0x00: case 0x01: case 0x02: case 0x03: case 0x04: case 0x05: case 0x06:

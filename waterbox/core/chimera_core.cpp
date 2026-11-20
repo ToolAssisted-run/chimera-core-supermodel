@@ -7,8 +7,9 @@
  *   Init          reads the project's settings and files, finds the game in
  *                 the game list the core carries (Games.xml), loads its ROM
  *                 set from the zip, makes the OpenGL context (OSMesa, in
- *                 chimera_osd.cpp), builds the Model 3 with every board on
- *                 the one thread (MultiThreaded off) and resets it;
+ *                 chimera_osd.cpp), builds the machine the game is for (a
+ *                 Model 1, a Model 2 or a Model 3) with every board on the
+ *                 one thread (MultiThreaded off) and resets it;
  *   FrameAdvance  writes the controls Chimera holds into Supermodel's inputs
  *                 (chimera_input.cpp) and runs one frame: the main board,
  *                 the graphics, the sound board, the drive board;
@@ -22,6 +23,10 @@
 #include "GameLoader.h"
 #include "ROMSet.h"
 #include "Model3/Model3.h"
+#include "Model3/IEmulator.h"
+#include "Model1/Model1.h"
+#include "Model2/Model2.h"
+#include "Graphics/Model1Render.h"
 #include "Inputs/Inputs.h"
 #include "Graphics/Render2D.h"
 #include "Graphics/New3D/New3D.h"
@@ -66,14 +71,16 @@ const char *chimera_slot_name(const char *id, int index, char *out, int outsz);
 
 namespace
 {
-	// The Model 3's picture: 496x384, drawn at the Drawing Scale setting's
-	// multiple of it (upstream's XResolution/YResolution, its -res option).
+	// The picture of the three machines is 496x384, drawn at the Drawing Scale
+	// setting's multiple of it (upstream's XResolution/YResolution, its -res
+	// option).
 	const unsigned kBaseWidth = 496;
 	const unsigned kBaseHeight = 384;
 	unsigned g_width = kBaseWidth;
 	unsigned g_height = kBaseHeight;
 
-	// The refresh rate of the hardware: 57.524160 Hz. The main board runs a
+	// The refresh rate of the hardware (all three machines: a 16 MHz pixel
+	// clock, 656 by 424 pixels a frame): 57.524160 Hz. The main board runs a
 	// frame's share of that in cycles whatever this says; the sound board
 	// makes 44100 / RefreshRate samples a frame (766 or 767).
 	const float kRefreshHz = 57.524f;
@@ -81,7 +88,10 @@ namespace
 	char g_loadError[2048];
 	char g_firstError[1024];
 	bool g_ready;
+	IEmulator *g_emu;
 	CModel3 *g_model3;
+	CModel2 *g_model2;
+	CModel1 *g_model1;
 	CInputs *g_inputs;
 	IRender2D *g_render2D;
 	IRender3D *g_render3D;
@@ -117,12 +127,37 @@ namespace
 		}
 	};
 
+	// The machine a game is for, as the Machine setting names it
+	const char *machine_of(const Game &game)
+	{
+		switch (game.platform)
+		{
+		case Game::PLATFORM_MODEL1: return "model1";
+		case Game::PLATFORM_MODEL2: return "model2";
+		case Game::PLATFORM_MODEL3: return "model3";
+		default: return nullptr;
+		}
+	}
+
+	const char *machine_name(const Game &game)
+	{
+		switch (game.platform)
+		{
+		case Game::PLATFORM_MODEL1: return "Sega Model 1";
+		case Game::PLATFORM_MODEL2: return "Sega Model 2";
+		default: return "Sega Model 3";
+		}
+	}
+
 	// The reason Init refused: a key of the package's language table, with
 	// Supermodel's own words (or a name) as its argument.
-	void fail(const char *key, const char *arg = nullptr)
+	void fail(const char *key, const char *arg = nullptr, const char *arg2 = nullptr)
 	{
 		const char *what = arg ? arg : (g_firstError[0] ? g_firstError : "-");
-		snprintf(g_loadError, sizeof g_loadError, "%s" TEXT_ARG "%s", key, what);
+		if (arg2)
+			snprintf(g_loadError, sizeof g_loadError, "%s" TEXT_ARG "%s" TEXT_ARG "%s", key, what, arg2);
+		else
+			snprintf(g_loadError, sizeof g_loadError, "%s" TEXT_ARG "%s", key, what);
 		fprintf(stderr, "supermodel: Init refused: %s (%s)\n", key, what);
 	}
 
@@ -143,6 +178,18 @@ namespace
 		config->Set("GameXMLFile", std::string(games_xml));
 		config->Set("InitStateFile", std::string(""));
 		config->Set("PowerPCFrequency", 0u);
+		// the Model 1 and Model 2 video board's geometrizer simulated, as
+		// upstream's default: its other kind runs the board's DSP programs on
+		// a thread for each chip, as many as the computer has
+		config->Set("HighLevelGeometrizer", true);
+		{
+			// how translucent polygons are drawn: original, moire or blend
+			char mode[16];
+			int t = 0;
+			if (chimera_setting_str("transparency", mode, sizeof mode))
+				t = !strcmp(mode, "moire") ? 1 : !strcmp(mode, "blend") ? 2 : 0;
+			config->Set("Transparency", t);
+		}
 		config->Set("MultiThreaded", false);
 		config->Set("GPUMultiThreaded", false);
 		config->Set("IdleSkip", setting_bool("idleSkip", true));
@@ -270,10 +317,20 @@ ECL_EXPORT int Init(void)
 			return 0;
 		}
 	}
-	if (g_game.platform != Game::PLATFORM_MODEL3)
 	{
-		fail("error.not_model3", g_game.name.c_str());
-		return 0;
+		const char *actual = machine_of(g_game);
+		if (!actual)
+		{
+			fail("error.not_supported", g_game.name.c_str());
+			return 0;
+		}
+		char wanted[16] = "model3";
+		chimera_setting_str("machine", wanted, sizeof wanted);
+		if (strcmp(wanted, actual))
+		{
+			fail("error.wrong_machine", g_game.title.c_str(), machine_name(g_game));
+			return 0;
+		}
 	}
 	fprintf(stderr, "supermodel: %s (%s), %s\n", g_game.title.c_str(), g_game.name.c_str(), g_game.version.c_str());
 
@@ -285,8 +342,13 @@ ECL_EXPORT int Init(void)
 	}
 
 	g_inputs = chimera_inputs_create();
-	g_model3 = new CModel3(*g_config, g_inputs, nullptr, nullptr);
-	if (Result::OKAY != g_model3->Init(g_game, romSet))
+	switch (g_game.platform)
+	{
+	case Game::PLATFORM_MODEL1: g_emu = g_model1 = new CModel1(*g_config, g_inputs, nullptr); break;
+	case Game::PLATFORM_MODEL2: g_emu = g_model2 = new CModel2(*g_config, g_inputs, nullptr, nullptr); break;
+	default: g_emu = g_model3 = new CModel3(*g_config, g_inputs, nullptr, nullptr); break;
+	}
+	if (Result::OKAY != g_emu->Init(g_game, romSet))
 	{
 		fail("error.init_failed");
 		return 0;
@@ -307,7 +369,7 @@ ECL_EXPORT int Init(void)
 			fprintf(stderr, "supermodel: Init refused: %s is not a Supermodel NVRAM file\n", saveName);
 			return 0;
 		}
-		g_model3->LoadNVRAM(&nvram);
+		g_emu->LoadNVRAM(&nvram);
 		nvram.Close();
 		fprintf(stderr, "supermodel: NVRAM from %s\n", saveName);
 	}
@@ -321,18 +383,21 @@ ECL_EXPORT int Init(void)
 
 	g_superAA = new SuperAA(1, CRTcolor::None);
 	g_superAA->Init(g_width, g_height);
-	g_render2D = new CRender2D(*g_config);
-	g_render3D = new New3D::CNew3D(*g_config, g_game.name);
+	// the Model 1 and Model 2 draw their 2D layers and their 3D with one
+	// renderer of their own (Model1Render); only the Model 3 has New3D
+	const bool model3 = g_game.platform == Game::PLATFORM_MODEL3;
+	g_render2D = model3 ? (IRender2D *)new CRender2D(*g_config) : (IRender2D *)new CModel1Render();
+	g_render3D = model3 ? (IRender3D *)new New3D::CNew3D(*g_config, g_game.name) : nullptr;
 	if (Result::OKAY != g_render2D->Init(0, 0, g_width, g_height, g_width, g_height, g_superAA->GetTargetID(), UpscaleMode::Bilinear) ||
-	    Result::OKAY != g_render3D->Init(0, 0, g_width, g_height, g_width, g_height, g_superAA->GetTargetID()))
+	    (g_render3D && Result::OKAY != g_render3D->Init(0, 0, g_width, g_height, g_width, g_height, g_superAA->GetTargetID())))
 	{
 		fail("error.renderer_failed");
 		return 0;
 	}
-	g_model3->AttachRenderers(g_render2D, g_render3D, g_superAA);
+	g_emu->AttachRenderers(g_render2D, g_render3D, g_superAA);
 	chimera_inputs_attach(g_inputs, &g_game);
 
-	g_model3->Reset();
+	g_emu->Reset();
 	g_ready = true;
 	return 1;
 }
@@ -345,7 +410,7 @@ ECL_EXPORT void FrameAdvance(uint64_t packed)
 	chimera_inputs_apply(g_inputs);
 	chimera_inputs_begin_frame();
 	chimera_audio_begin_frame();
-	g_model3->RunFrame();
+	g_emu->RunFrame();
 	g_frames++;
 }
 
@@ -354,8 +419,18 @@ ECL_EXPORT void SetRenderingEnabled(int on) { chimera_set_rendering(on); }
 ECL_EXPORT int GetVsyncNumerator(void) { return 57524; }
 ECL_EXPORT int GetVsyncDenominator(void) { return 1000; }
 
-// the main board's PowerPC cycles since power-on: the machine's own clock
-ECL_EXPORT uint64_t GetCycleCount(void) { return chimera_ppc_cycles(); }
+// the main board's cycles since power-on: the PowerPC's, counted by the
+// processor, for the Model 3; for the Model 1 (a V60 at 16 MHz) and the
+// Model 2 (an i960 at 25 MHz), which count none, the frames run at the
+// hardware's 57.524160 a second
+ECL_EXPORT uint64_t GetCycleCount(void)
+{
+	if (g_model1)
+		return g_frames * 16000000ull * 1000000ull / 57524160ull;
+	if (g_model2)
+		return g_frames * 25000000ull * 1000000ull / 57524160ull;
+	return chimera_ppc_cycles();
+}
 
 // the controls the game's cabinet has; the others are not shown
 ECL_EXPORT int IsButtonActive(int32_t index) { return chimera_button_active(index, &g_game); }
@@ -363,13 +438,17 @@ ECL_EXPORT int IsAxisActive(int32_t index) { return chimera_axis_active(index, &
 
 /* ------------------------------------------------------------ memory, for the tools */
 
-// The main board's RAM and the backup RAM. Supermodel keeps them in 32-bit
+// The Model 3's main RAM and backup RAM. Supermodel keeps them in 32-bit
 // words in the computer's byte order (the PowerPC's byte at address A is
 // the memory's byte A ^ 3). The tools see them as buses, in the PowerPC's
 // own byte order, so a value reads as the game wrote it (big-endian), and
 // as memory domains in Supermodel's order ("... words"), hidden from the
 // memory tools: Chimera requires the domains, and a person searching the
 // RAM wants the PowerPC's order.
+//
+// The Model 1 (V60) and the Model 2 (i960) are little-endian, as the
+// computer is: their RAM is the domains themselves, in plain view, and they
+// have no buses.
 namespace
 {
 	struct Region { const char *name; const char *words; int64_t size; };
@@ -379,33 +458,64 @@ namespace
 	};
 	const int kRegionCount = (int)(sizeof kRegions / sizeof kRegions[0]);
 
+	const char *const kModel1Names[] = { "Backup RAM", "Main RAM" };
+	const char *const kModel2Names[] = { "RAM", "Work RAM", "Backup RAM" };
+
+	// the number of memory domains the machine has
+	int domain_count(void)
+	{
+		if (g_model3)
+			return kRegionCount;
+		if (g_model2)
+			return 3;
+		if (g_model1)
+			return 2;
+		return 0;
+	}
+
+	uint8_t *domain_ptr(int index, int64_t *size)
+	{
+		*size = 0;
+		if (index < 0 || index >= domain_count())
+			return nullptr;
+		if (g_model3)
+		{
+			*size = kRegions[index].size;
+			return index == 0 ? g_model3->ChimeraRAM() : g_model3->ChimeraBackupRAM();
+		}
+		if (g_model2)
+			return g_model2->ChimeraRAM(index, size);
+		return g_model1->ChimeraRAM(index, size);
+	}
+
 	uint8_t *region_ptr(int index)
 	{
-		if (!g_model3)
-			return nullptr;
-		switch (index)
-		{
-		case 0: return g_model3->ChimeraRAM();
-		case 1: return g_model3->ChimeraBackupRAM();
-		default: return nullptr;
-		}
+		int64_t size;
+		return g_model3 ? domain_ptr(index, &size) : nullptr;
 	}
 
 	// what a tool asked for: in memory no state holds
 	ECL_INVISIBLE uint8_t g_busRead[65536];
 }
 
-ECL_EXPORT int GetMemoryDomainCount(void) { return g_model3 ? kRegionCount : 0; }
-ECL_EXPORT const char *GetMemoryDomainName(int index) { return index >= 0 && index < kRegionCount ? kRegions[index].words : nullptr; }
-ECL_EXPORT int64_t GetMemoryDomainSize(int index) { return index >= 0 && index < kRegionCount ? kRegions[index].size : 0; }
-ECL_EXPORT int GetMemoryDomainWritable(int index) { return index >= 0 && index < kRegionCount; }
-ECL_EXPORT int GetMemoryDomainHidden(int index) { return index >= 0 && index < kRegionCount; }
-ECL_EXPORT uint8_t *GetMemoryDomainPtr(int index) { return region_ptr(index); }
+ECL_EXPORT int GetMemoryDomainCount(void) { return domain_count(); }
+ECL_EXPORT const char *GetMemoryDomainName(int index)
+{
+	if (index < 0 || index >= domain_count())
+		return nullptr;
+	if (g_model3)
+		return kRegions[index].words;
+	return g_model2 ? kModel2Names[index] : kModel1Names[index];
+}
+ECL_EXPORT int64_t GetMemoryDomainSize(int index) { int64_t size; domain_ptr(index, &size); return size; }
+ECL_EXPORT int GetMemoryDomainWritable(int index) { return index >= 0 && index < domain_count(); }
+ECL_EXPORT int GetMemoryDomainHidden(int index) { return g_model3 && index >= 0 && index < domain_count(); }
+ECL_EXPORT uint8_t *GetMemoryDomainPtr(int index) { int64_t size; return domain_ptr(index, &size); }
 
 ECL_EXPORT int32_t GetBusCount(void) { return g_model3 ? kRegionCount : 0; }
-ECL_EXPORT const char *GetBusName(int32_t bus) { return bus >= 0 && bus < kRegionCount ? kRegions[bus].name : nullptr; }
-ECL_EXPORT int64_t GetBusSize(int32_t bus) { return bus >= 0 && bus < kRegionCount ? kRegions[bus].size : 0; }
-ECL_EXPORT int32_t GetBusWritable(int32_t bus) { return bus >= 0 && bus < kRegionCount; }
+ECL_EXPORT const char *GetBusName(int32_t bus) { return g_model3 && bus >= 0 && bus < kRegionCount ? kRegions[bus].name : nullptr; }
+ECL_EXPORT int64_t GetBusSize(int32_t bus) { return g_model3 && bus >= 0 && bus < kRegionCount ? kRegions[bus].size : 0; }
+ECL_EXPORT int32_t GetBusWritable(int32_t bus) { return g_model3 && bus >= 0 && bus < kRegionCount; }
 ECL_EXPORT int32_t PeekBus(int32_t bus, int32_t addr)
 {
 	const uint8_t *p = region_ptr(bus);
@@ -451,12 +561,12 @@ namespace
 		if (!stream)
 			return;
 		CBlockFile nvram;
-		if (Result::OKAY != nvram.Create(stream, "Supermodel NVRAM State", "Supermodel Version " SUPERMODEL_VERSION))
+		if (Result::OKAY != nvram.Create(stream, "Supermodel NVRAM State", "Supermodel Version " + SupermodelVersion()))
 			return;
 		int32_t version = 0;
 		nvram.Write(&version, sizeof version);
 		nvram.Write(g_game.name);
-		g_model3->SaveNVRAM(&nvram);
+		g_emu->SaveNVRAM(&nvram);
 		fflush(stream);
 		g_nvramSize = ftell(stream);
 		nvram.Close();

@@ -23,3 +23,15 @@ const char *chimera_slot_name(const char *id, int index, char *out, int outsz)
 {
 	return wbx_slot_name(id, index, out, outsz);
 }
+
+/* The machine's specification, version 3 (miniBox's docs/MACHINE-SPEC.md,
+ * "Virtual time"). The reason is its mmap: a bare address hint is kept only
+ * where those pages are free. Under version 2 it maps there whatever lives
+ * there, and LLVM's code generator inside Mesa's llvmpipe asks for the page
+ * next to one it has just got by such a hint: it wiped the first page of the
+ * core's picture buffer (found with the Model 1; the Model 3 and Model 2
+ * only escaped because nothing lay there). The other change of version 3,
+ * the machine's own clock (every clock read advances it a microsecond),
+ * touches nothing here: no part of Supermodel the core runs reads a clock but
+ * for statistics that never reach the machine. */
+__attribute__((visibility("default"))) __attribute__((used)) const unsigned int __wbx_machine_spec = 3;

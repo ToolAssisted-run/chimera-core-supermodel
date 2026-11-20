@@ -215,36 +215,17 @@ uint64_t chimera_ppc_cycles(void) { return ppc_total_cycles(); }
 
 /* ------------------------------------------------------------ threads: none */
 
-CThread::CThread(const std::string &name, void *impl) : m_name(name), m_impl(impl) {}
-CThread::~CThread() {}
-void CThread::Sleep(UINT32) {}
-// only Supermodel's timing statistics read this; they never reach the machine
-UINT32 CThread::GetTicks() { return 0; }
-CThread *CThread::CreateThread(const std::string &, ThreadStart, void *) { return nullptr; }
-CSemaphore *CThread::CreateSemaphore(UINT32 initVal) { return new CSemaphore((void *)(uintptr_t)initVal); }
-CCondVar *CThread::CreateCondVar() { return new CCondVar(nullptr); }
-CMutex *CThread::CreateMutex() { return new CMutex(nullptr); }
-const char *CThread::GetLastError() { return "the Chimera core runs on one thread"; }
-const std::string &CThread::GetName() const { return m_name; }
-UINT32 CThread::GetId() { return 0; }
-int CThread::Wait() { return 0; }
+// Upstream starts its board threads through Thread::Start, only when
+// MultiThreaded is on; the core keeps it off (and the Model 1 and Model 2
+// geometrizer on its simulated, one-thread kind), so nothing is started. A
+// start that is asked for anyway runs nothing and says so.
+void Thread::SetCurrentName(const std::string &) {}
 
-CSemaphore::CSemaphore(void *impl) : m_impl(impl) {}
-CSemaphore::~CSemaphore() {}
-UINT32 CSemaphore::GetValue() { return (UINT32)(uintptr_t)m_impl; }
-bool CSemaphore::Wait() { return true; }
-bool CSemaphore::Post() { return true; }
-
-CCondVar::CCondVar(void *impl) : m_impl(impl) {}
-CCondVar::~CCondVar() {}
-bool CCondVar::Wait(CMutex *) { return true; }
-bool CCondVar::Signal() { return true; }
-bool CCondVar::SignalAll() { return true; }
-
-CMutex::CMutex(void *impl) : m_impl(impl) {}
-CMutex::~CMutex() {}
-bool CMutex::Lock() { return true; }
-bool CMutex::Unlock() { return true; }
+std::thread Thread::Start(const std::string &name, std::function<void()>)
+{
+	fprintf(stderr, "supermodel: error: the core runs on one thread, so '%s' is not started\n", name.c_str());
+	return std::thread();
+}
 
 /* ------------------------------------------------------------ folders: none */
 

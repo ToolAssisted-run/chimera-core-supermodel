@@ -1,7 +1,8 @@
 # AGENTS.md - chimera-core-supermodel
 
-Supermodel (Sega Model 3) as a Chimera core: the emulation on one thread,
-drawn by its New3D renderer on Mesa's llvmpipe behind OSMesa inside the
+Supermodel (Sega Model 1, Model 2 and Model 3) as a Chimera core: the
+emulation on one thread, drawn by its renderers (New3D for the Model 3, the
+Model 1/2 renderer for the others) on Mesa's llvmpipe behind OSMesa inside the
 core, with a frontend of the core's own. The user brings a game's ROM set
 (a zip). Read Chimera's `docs/new-core.md` and this repository's
 `docs/PLAN.md` first.
@@ -14,6 +15,8 @@ core, with a frontend of the core's own. The user brings a game's ROM set
 - `patches/` - numbered patches to Supermodel, each a `SUPERMODEL_CHIMERA`
   build option or hook, but for 0007 and 0008, fixes to the quad shader (a
   GLSL string, where a build option cannot reach) for what llvmpipe draws.
+  They are made against the pinned commit; after moving the pin, each must
+  apply to the new source (`build-supermodel.sh` applies all or none).
 - `waterbox/core/` - the core: `chimera_core.cpp` (the calls Chimera makes,
   the start, memory domains), `chimera_osd.cpp` (OSMesa, the picture, the
   sound, no threads, no folders), `chimera_input.cpp` (Chimera's controls
@@ -26,7 +29,15 @@ core, with a frontend of the core's own. The user brings a game's ROM set
   (`waterbox.config`, `file_slots.json`, `default_keybinds.json`,
   `package-licenses.json`, `languages/`), the harness (`gate-harness.h`,
   `run-native.c`, `run-wbx.c`, `input-names.h`), `run-gate.sh`.
-- `tests/testprog/` - the test program: `testprog.s` (Model 3 PowerPC code
+- `tests/testprog2/` - the Model 2 test program: `testprog2.s` (i960 code of
+  this repository's own: the tile layer, controls, backup RAM, frame loop),
+  `i960asm.py` (its assembler), `make-testprog2.py` (the zip `chimeratest2` and
+  `game.xml`, its entry in the core's game list), `disasm.cpp` (reads the
+  assembler's output back with Supermodel's own i960 disassembler).
+- `tests/testprog1/` - the Model 1 start-up test: `make-testprog1.py` makes the
+  set `chimeratest1` (a boot ROM whose processor jumps to itself) and its
+  `game.xml`. It proves the machine starts and runs, not a program.
+- `tests/testprog/` - the Model 3 test program: `testprog.s` (Model 3 PowerPC code
   of this repository's own: 2D layer, Real3D quad, controls, ADC, light
   gun, clock, backup RAM), `ppcasm.py` (its assembler), `make-testprog.py`
   (the 68000 sound program, the two ROM zips `chimeratest` and
@@ -45,6 +56,8 @@ core, with a frontend of the core's own. The user brings a game's ROM set
     waterbox/setup-mesa.sh -n && waterbox/setup-mesa.sh -m $mb
     waterbox/make-native-libm.sh $mb
     python3 tests/testprog/make-testprog.py build/tests
+    python3 tests/testprog2/make-testprog2.py build/tests
+    python3 tests/testprog1/make-testprog1.py build/tests
     waterbox/build-supermodel.sh native -m $mb && waterbox/build-supermodel.sh guest -m $mb
     waterbox/link-core.sh native -m $mb && waterbox/link-core.sh guest -m $mb
     waterbox/run-gate.sh -m $mb                      # the core's tests
@@ -56,7 +69,8 @@ core, with a frontend of the core's own. The user brings a game's ROM set
 
 - Nothing of the computer reaches the machine: no clock (the RTC is the
   Starting Clock and the frames, patch 0002), no thread (MultiThreaded is
-  off and CThread refuses), no file but the project's, no network.
+  off, the Model 1/2 geometry processor stays the simulated one, and
+  `Thread::Start` refuses), no file but the project's, no network.
 - The native reference links the sandbox's math (`make-native-libm.sh`).
 - llvmpipe sees one baseline CPU everywhere (mesa-patches/0001).
 - llvmpipe's clipper gives a new vertex each end's share of a value without
@@ -65,7 +79,11 @@ core, with a frontend of the core's own. The user brings a game's ROM set
 - A change to the controls is made in `tools/gen-inputs.py` and its outputs
   committed; `run-gate.sh` refuses stale ones.
 - A change to `tests/testprog/testprog.s` changes its CRC32: run
-  `make-testprog.py` and commit `game.xml`.
+  `make-testprog.py` and commit `game.xml`; the same for `testprog2.s` and
+  `make-testprog2.py` (Model 2), and `make-testprog1.py` (Model 1).
+- A game is for one machine (its platform in Supermodel's game list), and the
+  project's Machine setting must say it; `gen-inputs.py` writes the same list of
+  controls for the three machines (a game shows the ones its cabinet has).
 - Patches: snapshot the file, edit a copy, `diff -u` (the sources have CRLF
   line ends; keep them).
 - Every new test is broken on purpose once and seen to fail.

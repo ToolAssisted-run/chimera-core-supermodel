@@ -1,0 +1,36 @@
+  <!-- chimera-core-supermodel's own test program (tests/testprog2), not a Sega game -->
+  <game name="chimeratest2">
+    <identity>
+      <title>Chimera Model 2 test program</title>
+      <version>tests/testprog2/testprog2.s</version>
+      <manufacturer>chimera-core-supermodel</manufacturer>
+      <year>2026</year>
+    </identity>
+    <hardware>
+      <platform>Sega Model 2</platform>
+      <stepping>2A</stepping>
+      <inputs>
+        <input type="common" />
+        <input type="joystick1" />
+        <input type="joystick2" />
+        <input type="fighting" />
+      </inputs>
+    </hardware>
+    <roms>
+      <region name="program" stride="1" chunk_size="1">
+        <file offset="0" name="chimeratest2-program.bin" crc32="0x1AA8B8EA" />
+      </region>
+      <region name="sound_program" stride="1" chunk_size="1">
+        <file offset="0" name="chimeratest2-sound.bin" crc32="0x4934B058" />
+      </region>
+      <region name="main_data" stride="1" chunk_size="1">
+        <file offset="0" name="chimeratest2-data.bin" crc32="0xAC5CF9D4" />
+      </region>
+      <region name="polygons" stride="1" chunk_size="1">
+        <file offset="0" name="chimeratest2-polygons.bin" crc32="0xD085C1B7" />
+      </region>
+      <region name="copro_tables" stride="1" chunk_size="1">
+        <file offset="0" name="chimeratest2-tables.bin" crc32="0x6BE674C0" />
+      </region>
+    </roms>
+  </game>

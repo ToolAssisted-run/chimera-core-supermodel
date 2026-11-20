@@ -1,0 +1,29 @@
+  <!-- chimera-core-supermodel's own start-up test (tests/testprog1), not a Sega game -->
+  <game name="chimeratest1">
+    <identity>
+      <title>Chimera Model 1 start-up test</title>
+      <version>tests/testprog1/make-testprog1.py</version>
+      <manufacturer>chimera-core-supermodel</manufacturer>
+      <year>2026</year>
+    </identity>
+    <hardware>
+      <platform>Sega Model 1</platform>
+      <inputs>
+        <input type="common" />
+        <input type="joystick1" />
+        <input type="joystick2" />
+        <input type="fighting" />
+      </inputs>
+    </hardware>
+    <roms>
+      <region name="rom_boot" stride="1" chunk_size="1">
+        <file offset="0" name="chimeratest1-boot.bin" crc32="0xBF06B191" />
+      </region>
+      <region name="copro_tables" stride="1" chunk_size="1">
+        <file offset="0" name="chimeratest1-tables.bin" crc32="0xFC528A77" />
+      </region>
+      <region name="polygons" stride="1" chunk_size="1">
+        <file offset="0" name="chimeratest1-polygons.bin" crc32="0x330A530A" />
+      </region>
+    </roms>
+  </game>

@@ -1,5 +1,7 @@
 # Building and testing the Supermodel core
 
+(Sega Model 1, Model 2 and Model 3: one core, one build.)
+
 ## Requirements
 
 - Linux on x86-64, with GCC 14 (the guest kit's compiler is the system's,
@@ -41,10 +43,13 @@ All from the repository's root, with `-m <chimera>/extern/chimera-common-minibox
    scripts see them built and stop).
 2. `waterbox/make-native-libm.sh <mb>`: the sandbox's own math functions for
    the native build (`build/native-libm`).
-3. `python3 tests/testprog/make-testprog.py build/tests`: the test program
-   (`build/tests/chimeratest.zip`). It also rewrites
+3. `python3 tests/testprog/make-testprog.py build/tests`: the Model 3 test
+   program (`build/tests/chimeratest.zip`). It also rewrites
    `tests/testprog/game.xml`, the test program's entry in the core's game
-   list, when the program changed.
+   list, when the program changed. The same for the Model 2 test program
+   (`python3 tests/testprog2/make-testprog2.py build/tests`,
+   `chimeratest2.zip`) and the Model 1 start-up test
+   (`python3 tests/testprog1/make-testprog1.py build/tests`, `chimeratest1.zip`).
 4. `waterbox/build-supermodel.sh native -m <mb>` and
    `waterbox/build-supermodel.sh guest -m <mb>`: Supermodel and the core's
    frontend as static libraries (`build/<flavour>/obj`), at most 4 jobs

@@ -1,7 +1,8 @@
 #!/bin/bash
 # The frontend half of the tests: the package, as Chimera loads it, playing
 # this repository's Model 3 test program (tests/testprog, made by
-# make-testprog.py) - so it needs no game of anyone's and runs anywhere.
+# make-testprog.py), its Model 2 test program and its Model 1 start-up test
+# - so it needs no game of anyone's and runs anywhere.
 #
 # - chimera-run (the engine, no window): a movie from a file and the same
 #   movie in a hand-written project. The last picture must be the native
@@ -128,6 +129,57 @@ else
 		report "engine:memory" PASS "after $frames frames the program's frame count reads $bus on the Main RAM bus (the PowerPC's order) and $words in the hidden domain"
 	else
 		report "engine:memory" FAIL "the frame count reads '$bus' on the bus and '$words' in the domain, not $want"
+	fi
+fi
+
+# ---------------------------------------------------------------- Model 2 and Model 1
+# The Model 2 test program (tests/testprog2) and the Model 1 start-up test
+# (tests/testprog1) as projects whose Machine setting names their machine,
+# played by chimera-run: the last picture must be the native reference's, and
+# the Model 2 program's frame count (work RAM 0x500000, the "Work RAM" domain,
+# little-endian: the i960's) must be the frames run.
+if [ -x "$crun" ]; then
+	game2="$root/build/tests/chimeratest2.zip"
+	python3 "$here/testprog2/make-testprog2.py" "$root/build/tests" > "$work/testprog2.log" 2>&1
+	mkdir -p "$work/native2" "$work/proj2"
+	cp "$game2" "$work/native2/"
+	printf '{"game":["chimeratest2.zip"]}' > "$work/native2/slots"; printf '{"machine":"model2"}' > "$work/native2/settings"
+	"$rn" "$work/native2" --frames "$frames" --press 40:P1Right:30 --press 150:P1Up:20 --press 100:P1Punch:200 --press 200:P1Start:3 \
+		--screenshot "$((frames - 1)):$work/native2.last.tga" > "$work/native2.txt" 2> "$work/native2.err"
+	cp "$game2" "$work/proj2/"
+	python3 "$here/make-project.py" "$pkg" "$work/proj2/test.chimeraProject" "$frames" 'machine="model2"' \
+		"press=P1 Right:40:30" "press=P1 Up:150:20" "press=P1 Punch:100:200" "press=P1 Start:200:3" log="$work/test2.log" \
+		-- "game=$work/proj2/chimeratest2.zip"
+	( cd "$work" && timeout 900 "$crun" --project "$work/proj2/test.chimeraProject" "$pkg" --files "$work/proj2" --frames "$frames" \
+		--screenshot "$((frames - 1))=$work/proj2.last.tga" --dump "Work RAM=$work/work2.ram" --meta "$work/proj2.meta" > "$work/proj2.log" 2>&1 )
+	if grep -q '^status=OK' "$work/proj2.meta" 2>/dev/null &&
+	   python3 "$here/compare-pictures.py" "$work/native2.last.tga" "$work/proj2.last.tga" > "$work/proj2.pic" 2>&1; then
+		report "engine:model2" PASS "$frames frames of the Model 2 test program from a project with the Machine setting Model 2: the last picture is the reference's, $(cat "$work/proj2.pic")"
+	else
+		report "engine:model2" FAIL "$(grep -m1 detail= "$work/proj2.meta" 2>/dev/null) $(cat "$work/proj2.pic" 2>/dev/null) (build/frontend/proj2.log)"
+	fi
+	bus2="$(od -An -tx1 -N 4 "$work/work2.ram" 2>/dev/null | tr -d ' \n')"
+	want2="$(printf '%08x' "$frames" | sed 's/\(..\)\(..\)\(..\)\(..\)/\4\3\2\1/')"
+	if [ "$bus2" = "$want2" ]; then
+		report "engine:memory2" PASS "after $frames frames the Model 2 program's frame count reads $bus2 in the Work RAM domain (little-endian, as the i960's)"
+	else
+		report "engine:memory2" FAIL "the frame count reads '$bus2' in the Work RAM domain, not $want2"
+	fi
+	game1="$root/build/tests/chimeratest1.zip"
+	python3 "$here/testprog1/make-testprog1.py" "$root/build/tests" > "$work/testprog1.log" 2>&1
+	mkdir -p "$work/native1" "$work/proj1"
+	cp "$game1" "$work/native1/"
+	printf '{"game":["chimeratest1.zip"]}' > "$work/native1/slots"; printf '{"machine":"model1"}' > "$work/native1/settings"
+	"$rn" "$work/native1" --frames 120 --screenshot "119:$work/native1.last.tga" > "$work/native1.txt" 2> "$work/native1.err"
+	cp "$game1" "$work/proj1/"
+	python3 "$here/make-project.py" "$pkg" "$work/proj1/test.chimeraProject" 120 'machine="model1"' -- "game=$work/proj1/chimeratest1.zip"
+	( cd "$work" && timeout 900 "$crun" --project "$work/proj1/test.chimeraProject" "$pkg" --files "$work/proj1" --frames 120 \
+		--screenshot "119=$work/proj1.last.tga" --meta "$work/proj1.meta" > "$work/proj1.log" 2>&1 )
+	if grep -q '^status=OK' "$work/proj1.meta" 2>/dev/null &&
+	   python3 "$here/compare-pictures.py" "$work/native1.last.tga" "$work/proj1.last.tga" > "$work/proj1.pic" 2>&1; then
+		report "engine:model1" PASS "120 frames of the Model 1 start-up test from a project with the Machine setting Model 1: the last picture is the reference's, $(cat "$work/proj1.pic")"
+	else
+		report "engine:model1" FAIL "$(grep -m1 detail= "$work/proj1.meta" 2>/dev/null) $(cat "$work/proj1.pic" 2>/dev/null) (build/frontend/proj1.log)"
 	fi
 fi
 

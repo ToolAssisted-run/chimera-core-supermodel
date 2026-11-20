@@ -6,6 +6,7 @@
 #   GEN      the folder holding the generated 68000 core (m68kops.*)
 #   WB       this repository's waterbox folder
 #   KIT      the include folders of the guest kit (or the native stand-in)
+#   GITREV   the upstream commit's date and name, for the version text
 #   CC CXX   the compilers, CFLAGS CXXFLAGS their flavour's flags
 #
 # Not built: upstream's SDL frontend (Src/OSD/SDL, the core is the frontend),
@@ -18,6 +19,19 @@ EMU_CXX := \
 	Src/BlockFile.cpp Src/GameLoader.cpp Src/ROMSet.cpp \
 	Src/CPU/PowerPC/ppc.cpp Src/CPU/PowerPC/PPCDisasm.cpp \
 	Src/CPU/68K/68K.cpp Src/CPU/Z80/Z80.cpp \
+	Src/CPU/V60/V60.cpp Src/CPU/V60/V60Disasm.cpp \
+	Src/CPU/MB86233/MB86233.cpp Src/CPU/MB86233/MB86233Disasm.cpp \
+	Src/CPU/MB86235/MB86235.cpp Src/CPU/MB86235/MB86235Disasm.cpp \
+	Src/CPU/I960/I960.cpp Src/CPU/I960/I960Disasm.cpp \
+	Src/CPU/SHARC/SHARC.cpp Src/CPU/SHARC/SHARCDisasm.cpp \
+	Src/Model1/I8251.cpp Src/Model1/Model1.cpp Src/Model1/Model1Geometrizer.cpp \
+	Src/Model1/Model1Geometry.cpp Src/Model1/Model1SoundBoard.cpp \
+	Src/Model1/Model1Tilemap.cpp Src/Model1/YM3438.cpp \
+	Src/Model2/Model2.cpp Src/Model2/Model2Comm.cpp Src/Model2/Model2DriveBoard.cpp \
+	Src/Model2/Model2Video.cpp Src/Model2/Sega315_5838.cpp \
+	Src/Sound/MultiPCM.cpp Src/Graphics/Model1Render.cpp \
+	Src/Pkgs/ymfm/ymfm_opn.cpp Src/Pkgs/ymfm/ymfm_adpcm.cpp Src/Pkgs/ymfm/ymfm_ssg.cpp \
+	Src/Version.cpp \
 	Src/Model3/53C810.cpp Src/Model3/93C46.cpp Src/Model3/BillBoard.cpp \
 	Src/Model3/Crypto.cpp Src/Model3/DSB.cpp Src/Model3/IRQ.cpp Src/Model3/JTAG.cpp \
 	Src/Model3/MPC10x.cpp Src/Model3/Model3.cpp Src/Model3/NetBoard.cpp \
@@ -55,7 +69,10 @@ INCLUDES := -I$(WB)/shim -I$(SRC)/Src -I$(SRC)/Src/OSD -I$(SRC)/Src/OSD/SDL \
 	-I$(SRC)/Src/Pkgs -I$(SRC)/Src/CPU/68K/Musashi -I$(GEN) -I$(MESA)/include \
 	-I$(MESA)/subprojects/zlib-1.3.1 \
 	$(foreach d,$(subst :, ,$(KIT)),-I$(d))
-DEFINES := -DGLEW_STATIC -DGLEW_OSMESA -DGLEW_NO_GLU -DSUPERMODEL_CHIMERA
+# the version Supermodel reports (it is written in the files it saves): upstream's
+# series number, the date of the commit and its name, never the date of the build
+DEFINES := -DGLEW_STATIC -DGLEW_OSMESA -DGLEW_NO_GLU -DSUPERMODEL_CHIMERA \
+	-DSUPERMODEL_GIT_REVISION=\"$(GITREV)\"
 
 OBJS := $(addprefix $(OUT)/emu/,$(EMU_CXX:.cpp=.o)) \
 	$(addprefix $(OUT)/emu/,$(EMU_C:.c=.o)) \

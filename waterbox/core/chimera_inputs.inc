@@ -80,6 +80,14 @@ static const ButtonDef kButtons[] = {
 	{ "P2 Pedal", Game::INPUT_MAGTRUCK, BTN_SWITCH, [](CInputs *i) -> CInput * { return i->magicalPedal2.get(); }, 0 },
 	{ "P1 Cast", Game::INPUT_FISHING, BTN_SWITCH, [](CInputs *i) -> CInput * { return i->fishingCast.get(); }, 0 },
 	{ "P1 Select", Game::INPUT_FISHING, BTN_SWITCH, [](CInputs *i) -> CInput * { return i->fishingSelect.get(); }, 0 },
+	{ "P1 Throttle Up", Game::INPUT_THROTTLE, BTN_SWITCH, [](CInputs *i) -> CInput * { return i->throttleUp.get(); }, 0 },
+	{ "P1 Throttle Down", Game::INPUT_THROTTLE, BTN_SWITCH, [](CInputs *i) -> CInput * { return i->throttleDown.get(); }, 0 },
+	{ "P1 Flight View 1", Game::INPUT_FLIGHT_VIEW4, BTN_SWITCH, [](CInputs *i) -> CInput * { return i->flightView[0].get(); }, 0 },
+	{ "P1 Flight View 2", Game::INPUT_FLIGHT_VIEW4, BTN_SWITCH, [](CInputs *i) -> CInput * { return i->flightView[1].get(); }, 0 },
+	{ "P1 Flight View 3", Game::INPUT_FLIGHT_VIEW4, BTN_SWITCH, [](CInputs *i) -> CInput * { return i->flightView[2].get(); }, 0 },
+	{ "P1 Flight View 4", Game::INPUT_FLIGHT_VIEW4, BTN_SWITCH, [](CInputs *i) -> CInput * { return i->flightView[3].get(); }, 0 },
+	{ "P1 Stick 2 Trigger 1", Game::INPUT_ANALOG_JOYSTICK2, BTN_SWITCH, [](CInputs *i) -> CInput * { return i->analogJoy2Trigger1.get(); }, 0 },
+	{ "P1 Stick 2 Trigger 2", Game::INPUT_ANALOG_JOYSTICK2, BTN_SWITCH, [](CInputs *i) -> CInput * { return i->analogJoy2Trigger2.get(); }, 0 },
 };
 
 static const AxisDef kAxes[] = {
@@ -103,4 +111,7 @@ static const AxisDef kAxes[] = {
 	{ "P1 Stick Y", Game::INPUT_FISHING, AXIS_SIGNED, 0, { { [](CInputs *i) -> CInput * { return i->fishingStickY.get(); }, 0, 128, 255 }, { nullptr, 0, 0, 0 } } },
 	{ "P1 Reel", Game::INPUT_FISHING, AXIS_PEDAL, 0, { { [](CInputs *i) -> CInput * { return i->fishingReel.get(); }, 0, 0, 255 }, { nullptr, 0, 0, 0 } } },
 	{ "P1 Tension", Game::INPUT_FISHING, AXIS_PEDAL, 0, { { [](CInputs *i) -> CInput * { return i->fishingTension.get(); }, 0, 0, 255 }, { nullptr, 0, 0, 0 } } },
+	{ "P1 Throttle", Game::INPUT_THROTTLE, AXIS_PEDAL, 0, { { [](CInputs *i) -> CInput * { return i->throttle.get(); }, 0, 0, 255 }, { nullptr, 0, 0, 0 } } },
+	{ "P1 Stick 2 X", Game::INPUT_ANALOG_JOYSTICK2, AXIS_SIGNED, 0, { { [](CInputs *i) -> CInput * { return i->analogJoy2X.get(); }, 0, 128, 255 }, { nullptr, 0, 0, 0 } } },
+	{ "P1 Stick 2 Y", Game::INPUT_ANALOG_JOYSTICK2, AXIS_SIGNED, 0, { { [](CInputs *i) -> CInput * { return i->analogJoy2Y.get(); }, 0, 128, 255 }, { nullptr, 0, 0, 0 } } },
 };

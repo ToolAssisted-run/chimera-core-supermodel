@@ -66,15 +66,16 @@ if [ ! -f "$gen/m68kops.c" ]; then
 	(cd "$src" && "$gen/m68kmake" "$gen" Src/CPU/68K/Musashi/m68k_in.c)
 fi
 
-# ---- the game list the core carries: upstream's, and this repository's
-# test program's entry (tests/testprog/game.xml) before its end ----
-python3 - "$src/Config/Games.xml" "$root/tests/testprog/game.xml" "$gen/games_xml.inc" <<'PYXML'
+# ---- the game list the core carries: upstream's, and the entries of this
+# repository's test programs (tests/testprog/game.xml for the Model 3,
+# tests/testprog2/game.xml for the Model 2, tests/testprog1/game.xml for the Model 1) before its end ----
+python3 - "$src/Config/Games.xml" "$gen/games_xml.inc" "$root/tests/testprog/game.xml" "$root/tests/testprog2/game.xml" "$root/tests/testprog1/game.xml" <<'PYXML'
 import os, sys
-games, extra, out = sys.argv[1:4]
+games, out = sys.argv[1:3]
 text = open(games, "rb").read()
-if os.path.exists(extra):
-    end = text.rindex(b"</games>")
-    text = text[:end] + open(extra, "rb").read() + text[end:]
+end = text.rindex(b"</games>")
+extra = b"".join(open(p, "rb").read() for p in sys.argv[3:] if os.path.exists(p))
+text = text[:end] + extra + text[end:]
 body = ",".join(str(b) for b in text)
 new = ("/* games_xml.inc - written by build-supermodel.sh: Supermodel's Games.xml */\n"
        "static const char games_xml[] = {" + body + ",0};\n")
@@ -107,9 +108,12 @@ case "$flavour" in
 		;;
 esac
 
+# the version Supermodel reports: the commit's date and name, not the build's
+gitrev="$(git -C "$upstream" show -s --format=%cd --date=format:%Y%m%d HEAD)-git-$(git -C "$upstream" rev-parse --short HEAD)"
+
 out="$root/build/$flavour/obj"
 mkdir -p "$out"
 make -s -f "$here/supermodel.mk" -j "$jobs" \
-	SRC="$src" OUT="$out" GEN="$gen" WB="$here" KIT="$kit" MESA="$root/build/mesa" \
+	SRC="$src" OUT="$out" GEN="$gen" WB="$here" KIT="$kit" MESA="$root/build/mesa" GITREV="$gitrev" \
 	CC="$cc" CXX="$cxx" CFLAGS="$cflags" CXXFLAGS="$cxxflags"
 echo "build-supermodel: $out/libsupermodel.a $out/libchimeracore.a"

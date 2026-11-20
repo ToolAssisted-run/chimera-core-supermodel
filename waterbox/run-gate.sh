@@ -87,6 +87,14 @@ step "the test program" "$root/build/gate-testprog.log" python3 "$root/tests/tes
 if grep -q "game.xml changed" "$root/build/gate-testprog.log"; then
 	echo "the test program changed: tests/testprog/game.xml was rewritten; commit it"
 fi
+step "the Model 2 test program" "$root/build/gate-testprog2.log" python3 "$root/tests/testprog2/make-testprog2.py" "$root/build/tests"
+if grep -q "game.xml changed" "$root/build/gate-testprog2.log"; then
+	echo "the Model 2 test program changed: tests/testprog2/game.xml was rewritten; commit it"
+fi
+step "the Model 1 start-up test" "$root/build/gate-testprog1.log" python3 "$root/tests/testprog1/make-testprog1.py" "$root/build/tests"
+if grep -q "game.xml changed" "$root/build/gate-testprog1.log"; then
+	echo "the Model 1 start-up test changed: tests/testprog1/game.xml was rewritten; commit it"
+fi
 step "the LLVM builds" "$root/build/gate-llvm.log" bash -c "bash '$here/build-llvm.sh' native && bash '$here/build-llvm.sh' guest -m '$mb'"
 step "the Mesa builds" "$root/build/gate-mesa.log" bash -c "bash '$here/setup-mesa.sh' -m '$mb' && bash '$here/setup-mesa.sh' -n"
 step "the sandbox's math for the native build" "$root/build/gate-libm.log" bash "$here/make-native-libm.sh" "$mb"
@@ -95,6 +103,9 @@ step "the guest Supermodel build" "$root/build/gate-guest.log" bash "$here/build
 step "the native link" "$root/build/gate-link-native.log" bash "$here/link-core.sh" native -m "$mb"
 step "the guest link" "$root/build/gate-link-guest.log" bash "$here/link-core.sh" guest -m "$mb"
 step "the clipper test's link" "$root/build/gate-link-clip.log" bash "$here/link-core.sh" clip-test -m "$mb"
+step "the i960 disassembler for the Model 2 program" "$root/build/gate-disasm.log" bash -c "
+	g++ -O1 -std=c++17 -o '$root/build/native/i960dis' '$root/tests/testprog2/disasm.cpp' \
+		'$root/build/supermodel-src/Src/CPU/I960/I960Disasm.cpp' -I'$root/build/supermodel-src/Src'"
 native="$root/build/native/run-native"
 wbx="$root/build/guest/run-wbx"
 core="$root/build/guest/core.wbx"
@@ -361,6 +372,175 @@ if grep -q "^loadError=error.no_game" "$work/nogame.txt"; then
 	pass "refusals: a project with no game says so"
 else
 	fail "refusals: no game: $(grep loadError "$work/nogame.txt")"
+fi
+
+# ---------------------------------------------------------------- Model 2
+# The Model 2 test program (tests/testprog2: i960 code, no game's): the same
+# tests as the Model 3's, on what it uses (the tile layer, the controls, the
+# backup RAM, the frame loop). The project's Machine setting says Model 2.
+testzip2="$root/build/tests/chimeratest2.zip"
+mkwork m2 "$testzip2" '{"machine": "model2"}'
+frames2=600
+movie2=(--press 40:P1Right:30 --press 100:P1Punch:200 --press 150:P1Up,P1Kick:20 --press 300:P1Start,P1Coin:3
+        --press 400:P1Left,P1Down:25 --press 450:TestA,ServiceA:2 --press 500:P1Guard,P1Escape:40)
+echo "== Model 2 ($frames2 frames)"
+# the assembler's encodings, read back by Supermodel's own disassembler: every
+# instruction is known to it, and the first, the loop's end and the count are
+# the ones written
+"$root/build/native/i960dis" "$root/build/tests/chimeratest2-program.bin" 0x100 0x470 > "$work/m2-dis.txt" 2>&1
+if ! grep -q '?' "$work/m2-dis.txt" && [ "$(wc -l < "$work/m2-dis.txt")" = 167 ] && sed -n 1p "$work/m2-dis.txt" | grep -q "^0100: lda     0xff,g0$" &&
+   tail -1 "$work/m2-dis.txt" | grep -q "^046c: b       0x00000278$"; then
+	pass "assembler: the Model 2 program's 167 instructions are all known to Supermodel's i960 disassembler, and the first and last read as written"
+else
+	fail "assembler: $(grep -m3 '?' "$work/m2-dis.txt") ($(wc -l < "$work/m2-dis.txt") lines; last: $(tail -1 "$work/m2-dis.txt"))"
+fi
+"$native" "$work/m2" --frames $frames2 "${movie2[@]}" > "$work/m2n.txt" 2> "$work/m2n.err"
+"$wbx" "$core" "$work/m2" --frames $frames2 "${movie2[@]}" > "$work/m2w.txt" 2> "$work/m2w.err"
+if grep -q "supermodel: Chimera Model 2 test program (chimeratest2)" "$work/m2n.err"; then
+	pass "game list: the Model 2 test program is found in the core's game list by its ROM's CRC32"
+else
+	fail "game list: $(grep -m3 'error' "$work/m2n.err")"
+fi
+same equivalence "$work/m2n.txt" "$work/m2w.txt" "Model 2, native = sandbox, $frames2 frames: every picture, the sound, the steps, the lag, the cycles"
+"$wbx" "$core" "$work/m2" --frames $frames2 "${movie2[@]}" --rerecord > "$work/m2r.txt" 2> "$work/m2r.err"
+same rerecord "$work/m2r.txt" "$work/m2w.txt" "Model 2, save+load before every frame = straight ($(sed -n 's/stateBytes=//p' "$work/m2r.err") state bytes)"
+"$wbx" "$core" "$work/m2" --frames $frames2 "${movie2[@]}" --session-at 160 > "$work/m2s.txt" 2> "$work/m2s.err"
+same session "$work/m2s.txt" "$work/m2w.txt" "Model 2, saved at frame 160 (Up and Kick held), loaded into a new host = straight"
+"$wbx" "$core" "$work/m2" --frames $frames2 "${movie2[@]}" > "$work/m2w2.txt" 2> /dev/null
+same replay "$work/m2w2.txt" "$work/m2w.txt" "Model 2, the same movie run twice in the sandbox = the same"
+"$native" "$work/m2" --frames $frames2 "${movie2[@]}" --turbo > "$work/m2t.txt" 2> /dev/null
+digests "$work/m2t.txt" | grep -v '^videoHash=' > "$work/m2t.d"
+digests "$work/m2n.txt" | grep -v '^videoHash=' > "$work/m2n.d"
+if grep -q '^frames=' "$work/m2t.d" && cmp -s "$work/m2t.d" "$work/m2n.d" && [ "$(value "$work/m2t.txt" videoHash)" != "$(value "$work/m2n.txt" videoHash)" ]; then
+	pass "turbo: Model 2, the first half not drawn - the rest's pictures, the sound and the steps the same; the first half's pictures not there"
+else
+	fail "turbo: Model 2"; diff "$work/m2t.d" "$work/m2n.d" | head
+fi
+"$native" "$work/m2" --frames $frames2 --press 41:P1Right:30 "${movie2[@]:2}" > "$work/m2late.txt" 2> /dev/null
+if [ -n "$(value "$work/m2late.txt" videoHash)" ] && [ "$(value "$work/m2late.txt" videoHash)" != "$(value "$work/m2n.txt" videoHash)" ]; then
+	pass "teeth: Model 2, Right one frame later is another run (the comparison sees it)"
+else
+	fail "teeth: Model 2, Right one frame later gave the same pictures"
+fi
+if [ "$(value "$work/m2n.txt" lagFrames)" = 75 ] && [ "$(value "$work/m2w.txt" lagFrames)" = 75 ]; then
+	pass "lag: Model 2, 75 of $frames2 frames are lag frames, the program's one frame in eight without a read of the controls (the I/O board's ports)"
+else
+	fail "lag: Model 2, $(value "$work/m2n.txt" lagFrames) and $(value "$work/m2w.txt" lagFrames) lag frames, not 75"
+fi
+# the program shows each control byte's bits from column 1 of rows 44 (coins,
+# starts, service, test), 45 (player 1) and 46 (player 2), red where pressed
+# (f80000), over a dark blue background (000048): a bit's tile is 8 pixels
+"$native" "$work/m2" --frames 80 --press 20:P1Punch:30 --press 22:P2Kick,P2Start:10 --press 25:P1Coin:20 \
+	--screenshot 15:"$work/m2c15.tga" --screenshot 28:"$work/m2c28.tga" --screenshot 70:"$work/m2c70.tga" > /dev/null 2> /dev/null
+m2want="f80000 f80000 f80000 f80000"; m2none="000048 000048 000048 000048"
+m2at() { echo "$(pixel "$1" 12 364) $(pixel "$1" 20 372) $(pixel "$1" 52 356) $(pixel "$1" 12 356)"; }
+if [ "$(m2at "$work/m2c15.tga")" = "$m2none" ] && [ "$(m2at "$work/m2c28.tga")" = "$m2want" ] && [ "$(m2at "$work/m2c70.tga")" = "$m2none" ]; then
+	pass "controls: Model 2, P1 Punch (player 1's bit 0), P2 Kick (player 2's bit 1), P2 Start (bit 5 of the coin bank) and P1 Coin (bit 0) read as pressed while held, and not before or after"
+else
+	fail "controls: Model 2, before $(m2at "$work/m2c15.tga"), held $(m2at "$work/m2c28.tga"), after $(m2at "$work/m2c70.tga") (pressed is f80000, not 000048)"
+fi
+"$native" "$work/m2" --frames 80 --press 10:P1Right:40 --screenshot 15:"$work/m2m15.tga" --screenshot 25:"$work/m2m25.tga" --screenshot 60:"$work/m2m60.tga" > /dev/null 2> /dev/null
+m2b="$(python3 "$root/tests/whereis.py" "$work/m2m15.tga" f8f8f8; python3 "$root/tests/whereis.py" "$work/m2m25.tga" f8f8f8; python3 "$root/tests/whereis.py" "$work/m2m60.tga" f8f8f8)"
+if [ "$m2b" = "$(printf '280 192 64\n360 192 64\n48 192 64')" ]; then
+	pass "controls: Model 2, P1 Right held 40 frames moves the block from column 30 a column a frame (35, 45, then round the 64 columns to 6)"
+else
+	fail "controls: Model 2, the block is at: $(echo $m2b | tr '\n' ' ') (280 192 64, 360 192 64, 48 192 64)"
+fi
+active="$(sed -n 's/^activeButtons=//p' "$work/m2n.txt")"
+axes="$(sed -n 's/^activeAxes=//p' "$work/m2n.txt")"
+if [ "$active" = "P1Coin P1Start P2Coin P2Start ServiceA TestA ServiceB TestB P1Up P1Down P1Left P1Right P2Up P2Down P2Left P2Right P1Punch P1Kick P1Guard P1Escape P2Punch P2Kick P2Guard P2Escape " ] && [ -z "$axes" ]; then
+	pass "controls: Model 2, the test program's cabinet (common, two joysticks, fighting) shows its 24 buttons and no wheel, pedal, gun or other"
+else
+	fail "controls: Model 2, shown: $active / axes: $axes"
+fi
+# sound: the program's sound program is the Model 3 test's (a square wave on the
+# first SCSP); the Model 2's sound board is the same board
+"$native" "$work/m2" --frames 120 --audio "$work/m2tone.raw" > /dev/null 2> /dev/null
+tone2="$(python3 "$root/tests/tone.py" "$work/m2tone.raw")"
+hz2="$(echo "$tone2" | sed -n 's/.* hz=\([0-9]*\).*/\1/p')"; peak2="$(echo "$tone2" | sed -n 's/.* peak=\([0-9]*\) .*/\1/p')"
+if echo "$tone2" | grep -q "^samples=91996 " && [ "${peak2:-0}" -gt 4000 ] && [ "${hz2:-0}" -ge 438 ] && [ "${hz2:-0}" -le 444 ]; then
+	pass "sound: Model 2, the sound board plays the program's square wave, $tone2 (120 frames are 91996 samples at 44100 Hz and 57.524 frames a second)"
+else
+	fail "sound: Model 2, $tone2 (91996 samples, a 441 Hz tone)"
+fi
+mkwork m2x2 "$testzip2" '{"machine": "model2", "drawingScale": "2x"}'
+"$native" "$work/m2x2" --frames 120 --screenshot 119:"$work/m2x2.tga" > "$work/m2x2n.txt" 2> /dev/null
+"$wbx" "$core" "$work/m2x2" --frames 120 > "$work/m2x2w.txt" 2> /dev/null
+"$native" "$work/m2" --frames 120 > "$work/m2x1n.txt" 2> /dev/null
+same scale "$work/m2x2n.txt" "$work/m2x2w.txt" "Model 2, Drawing Scale 2x: native = sandbox, 120 frames"
+digests "$work/m2x2n.txt" | grep -v 'ideoHash=' > "$work/m2x2.d"
+digests "$work/m2x1n.txt" | grep -v 'ideoHash=' > "$work/m2x1.d"
+size2x="$(od -An -tu2 -j12 -N4 "$work/m2x2.tga" 2>/dev/null | tr -s ' ' | sed 's/^ //')"
+if grep -q '^frames=' "$work/m2x2.d" && cmp -s "$work/m2x2.d" "$work/m2x1.d" && [ "$size2x" = "992 768" ]; then
+	pass "scale: Model 2, at 2x the picture is 992x768 and the machine is the one at 1x (steps, sound, cycles, lag)"
+else
+	fail "scale: Model 2, picture $size2x; $(diff "$work/m2x2.d" "$work/m2x1.d" | head -5 | tr '\n' ' ')"
+fi
+# save data: the program counts its boots in the backup RAM (row 43: red = 1
+# bits); the file Export Save Data gives is the game's NVRAM, and given back
+# it is the machine's memory at power-on
+mkdir -p "$work/m2sdn" "$work/m2sdw" "$work/m2sds"
+"$native" "$work/m2" --frames 30 --savedata-out "$work/m2sdn" --screenshot 20:"$work/m2boot1.tga" > /dev/null 2> /dev/null
+"$wbx" "$core" "$work/m2" --frames 30 --savedata-out "$work/m2sdw" > /dev/null 2> /dev/null
+"$wbx" "$core" "$work/m2" --frames 30 --session-at 10 --savedata-out "$work/m2sds" > /dev/null 2> /dev/null
+if [ -s "$work/m2sdn/chimeratest2.nv" ] && cmp -s "$work/m2sdn/chimeratest2.nv" "$work/m2sdw/chimeratest2.nv" && cmp -s "$work/m2sdn/chimeratest2.nv" "$work/m2sds/chimeratest2.nv" &&
+   [ "$(find "$work/m2sdn" -type f | wc -l)" = 1 ] && head -c 64 "$work/m2sdn/chimeratest2.nv" | grep -q "Supermodel NVRAM State"; then
+	pass "save data: Model 2, Export Save Data is one file, chimeratest2.nv, Supermodel's NVRAM format ($(stat -c %s "$work/m2sdn/chimeratest2.nv") bytes); native = sandbox = a session"
+else
+	fail "save data: Model 2, export: $(cd "$work/m2sdn" 2>/dev/null && find . -type f | tr '\n' ' ')"
+fi
+mkdir -p "$work/m2sdin"
+cp "$testzip2" "$work/m2sdn/chimeratest2.nv" "$work/m2sdin/"
+printf '{"game":["chimeratest2.zip"],"savedata":["chimeratest2.nv"]}' > "$work/m2sdin/slots"; printf '{"machine": "model2"}' > "$work/m2sdin/settings"
+"$wbx" "$core" "$work/m2sdin" --frames 30 --screenshot 20:"$work/m2boot2.tga" > /dev/null 2> /dev/null
+bm1="$(pixel "$work/m2boot1.tga" 12 348)$(pixel "$work/m2boot1.tga" 20 348)"
+bm2="$(pixel "$work/m2boot2.tga" 12 348)$(pixel "$work/m2boot2.tga" 20 348)"
+if [ "$bm1" = 000048000048 ] && [ "$bm2" = f80000000048 ]; then
+	pass "save data: Model 2, given back in a project (in the sandbox), the backup RAM is the earlier run's: the program counts one more boot (1), a new machine its first (0)"
+else
+	fail "save data: Model 2, boot counts: new $bm1 (000048000048), with the NVRAM $bm2 (f80000000048)"
+fi
+# the Machine setting: a game runs on the machine it is for, and a game for
+# another is refused, naming the right one
+mkwork m2wrong "$testzip2"
+"$native" "$work/m2wrong" --frames 1 > "$work/m2wrong.txt" 2> /dev/null
+mkwork m3wrong "$testzip" '{"machine": "model2"}'
+"$native" "$work/m3wrong" --frames 1 > "$work/m3wrong.txt" 2> /dev/null
+"$wbx" "$core" "$work/m3wrong" --frames 1 > "$work/m3wrongw.txt" 2> /dev/null
+if grep -q "^loadError=error.wrong_machine${S}Chimera Model 2 test program${S}Sega Model 2" "$work/m2wrong.txt" &&
+   grep -q "^loadError=error.wrong_machine${S}Chimera Model 3 test program${S}Sega Model 3" "$work/m3wrong.txt" &&
+   grep -q "^loadError=error.wrong_machine${S}Chimera Model 3 test program${S}Sega Model 3" "$work/m3wrongw.txt"; then
+	pass "refusals: a Model 2 game in a Model 3 project and a Model 3 game in a Model 2 project are each refused, naming the machine the game is for"
+else
+	fail "refusals: wrong machine: $(grep loadError "$work/m2wrong.txt" "$work/m3wrong.txt" "$work/m3wrongw.txt")"
+fi
+
+# ---------------------------------------------------------------- Model 1
+# The Model 1 start-up test (tests/testprog1): a set whose processor jumps to
+# itself. It proves the machine starts and runs the same natively and in the
+# sandbox, saves and loads, and nothing more: no Model 1 program or game has
+# been run.
+mkwork m1 "$root/build/tests/chimeratest1.zip" '{"machine": "model1"}'
+movie1=(--press 40:P1Right:30 --press 100:P1Punch:30 --press 150:P1Start,P1Coin:3)
+echo "== Model 1 (start-up test, 300 frames)"
+"$native" "$work/m1" --frames 300 "${movie1[@]}" > "$work/m1n.txt" 2> "$work/m1n.err"
+"$wbx" "$core" "$work/m1" --frames 300 "${movie1[@]}" > "$work/m1w.txt" 2> "$work/m1w.err"
+if grep -q "supermodel: Chimera Model 1 start-up test (chimeratest1)" "$work/m1n.err"; then
+	pass "game list: the Model 1 start-up test is found in the core's game list by its ROM's CRC32"
+else
+	fail "game list: Model 1, $(grep -m3 'error' "$work/m1n.err")"
+fi
+same equivalence "$work/m1n.txt" "$work/m1w.txt" "Model 1 (start-up test), native = sandbox, 300 frames: every picture, the sound, the steps, the cycles"
+"$wbx" "$core" "$work/m1" --frames 300 "${movie1[@]}" --rerecord > "$work/m1r.txt" 2> "$work/m1r.err"
+same rerecord "$work/m1r.txt" "$work/m1w.txt" "Model 1, save+load before every frame = straight ($(sed -n 's/stateBytes=//p' "$work/m1r.err") state bytes)"
+"$wbx" "$core" "$work/m1" --frames 300 "${movie1[@]}" --session-at 160 > "$work/m1s.txt" 2> "$work/m1s.err"
+same session "$work/m1s.txt" "$work/m1w.txt" "Model 1, saved at frame 160, loaded into a new host = straight"
+mkwork m1wrong "$root/build/tests/chimeratest1.zip"
+"$native" "$work/m1wrong" --frames 1 > "$work/m1wrong.txt" 2> /dev/null
+if grep -q "^loadError=error.wrong_machine${S}Chimera Model 1 start-up test${S}Sega Model 1" "$work/m1wrong.txt"; then
+	pass "refusals: a Model 1 game in a Model 3 project is refused, naming the machine it is for"
+else
+	fail "refusals: Model 1 in a Model 3 project: $(grep loadError "$work/m1wrong.txt")"
 fi
 
 echo "== real games"
